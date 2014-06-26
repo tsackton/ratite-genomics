@@ -12,10 +12,10 @@ mkdir -p /n/regal/edwards_lab/ratites/data/sra/tinGut
 mkdir -p /n/regal/edwards_lab/ratites/data/sra/melUnd
 
 #fetch ostrich
-ascp -i /n/sw/aspera/etc/asperaweb_id_dsa.putty -k1 -QTr –l200m anonftp@ftp-trace.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByStudy/sra/SRP/SRP028/SRP028745/ /n/regal/edwards_lab/ratites/data/sra/strCam
+ascp -i /n/sw/aspera/etc/asperaweb_id_dsa.putty -QTr -l 250M anonftp@ftp-private.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByStudy/sra/SRP/SRP028/SRP028745/ /n/regal/edwards_lab/ratites/data/sra/strCam
 
 #fetch tinamou
-ascp -i /n/sw/aspera/etc/asperaweb_id_dsa.putty -k1 -QTr –l200m anonftp@ftp-trace.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByStudy/sra/SRP/SRP028/SRP028753/ /n/regal/edwards_lab/ratites/data/sra/tinGut
+ascp -i /n/sw/aspera/etc/asperaweb_id_dsa.putty -QTr -l 250M anonftp@ftp-private.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByStudy/sra/SRP/SRP028/SRP028753/ /n/regal/edwards_lab/ratites/data/sra/tinGut
 
 #fetch budgie
-ascp -i /n/sw/aspera/etc/asperaweb_id_dsa.putty -k1 -QTr –l200m anonftp@ftp-trace.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByStudy/sra/ERP/ERP002/ERP002324/ n/regal/edwards_lab/ratites/data/sra/melUnd
+ascp -i /n/sw/aspera/etc/asperaweb_id_dsa.putty -QTr -l 250M anonftp@ftp-private.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByStudy/sra/ERP/ERP002/ERP002324/ /n/regal/edwards_lab/ratites/data/sra/melUnd
