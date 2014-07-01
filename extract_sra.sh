@@ -15,6 +15,6 @@
 module load bio/sratoolkit.2.3.3-4
 
 declare -a FILES=$(ls *.sra)
-SRA=$FILES[$SLURM_JOB_ARRAY_INDEX]
+SRA=$FILES[$SLURM_ARRAY_TASK_ID]
 fastq-dump --split-files --gzip $SRA
-
+rm $SRA
