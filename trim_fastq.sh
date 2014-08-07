@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -n 16
-#SBATCH --mem 1000
+#SBATCH --mem 8000
 #SBATCH -J trimFastq
 #SBATCH -o trim_%j.out
 #SBATCH -e trim_%j.err
