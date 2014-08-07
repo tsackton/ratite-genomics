@@ -30,4 +30,4 @@ OUTFILE=$2
 
 FILES=($(ls *.fastq.gz)) #all files to be trimmed need to be in one directory
 FASTQ=${FILES[$SLURM_ARRAY_TASK_ID]}
-java -jar $TRIMPATH PE -threads 16 -basein $INFILE -baseout $OUTFILE ILLUMINACLIP:adapters.fa:2:30:10
+java -jar $TRIMPATH PE -threads 16 -basein $INFILE -baseout $OUTFILE ILLUMINACLIP:adapters.fa:2:30:10:1:true
