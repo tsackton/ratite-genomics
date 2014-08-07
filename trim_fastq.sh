@@ -15,7 +15,7 @@
 
 #this is based on a local install of Trimmomatc; change $TRIMPATH as necessary
 
-TRIMPATH=~/sw/progs/Trimmomatic-0.32/trimmomatic
+TRIMPATH=~/sw/progs/Trimmomatic-0.32/trimmomatic-0.32.jar
 
 #make adapter file; assumes that all fastq files to be trimmed use the same adaptor sequence and so doesn't 
 if [ ! -s adapters.fa ]
