@@ -5,7 +5,7 @@
 #SBATCH -J trimFastq
 #SBATCH -o trim_%j.out
 #SBATCH -e trim_%j.err
-#SBATCH -p serial_requeue
+#SBATCH -p general
 #SBATCH -t 4:00:00
 
 #trims Illumina adaptors from paired-end sequencing using Trimmomatic
@@ -17,10 +17,14 @@
 
 TRIMPATH=~/sw/progs/Trimmomatic-0.32/trimmomatic-0.32.jar
 
-#make adapter file; assumes that all fastq files to be trimmed use the same adaptor sequence and so doesn't 
+#make adapter file; assumes that all fastq files to be trimmed use the same adaptor sequence
+#note that this current file merges nextera and other adapters which should be okay but may not be ideal for final processing
+#nextera sequences are derived from files distributed with Trimmomatic but look correct
 if [ ! -s adapters.fa ]
 then
 	echo -e ">PrefixPE/1\nAATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT\n>PrefixPE/2\nGATCGGAAGAGCACACGTCTGAACTCCAGTCAC" > adapters.fa
+	echo -e ">PrefixNX/1\nAGATGTGTATAAGAGACAG\n>PrefixNX/2\nAGATGTGTATAAGAGACAG" >> adapters.fa
+	echo -e ">Trans1\nTCGTCGGCAGCGTCAGATGTGTATAAGAGACAG\n>Trans1_rc\nCTGTCTCTTATACACATCTGACGCTGCCGACGA\n>Trans2\nGTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG\n>Trans2_rc\nCTGTCTCTTATACACATCTCCGAGCCCACGAGAC\n" >> adapters.fa
 fi
 
 #specify the name of the first pair as the first argument on the command line and the base name for the output as the second argument
