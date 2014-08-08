@@ -1,0 +1,2 @@
+PrepareAllPathsInputs.pl DATA_DIR=/scratch/tsackton/allpaths_runs/tinGut/BGI PHRED_64=1 PLOIDY=2
+RunAllpathsLG PRE=/scratch/tsackton/allpaths_runs REFERENCE_NAME=tinGut DATA_SUBDIR=BGI RUN=tinGut20140807 THREADS=24

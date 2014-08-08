@@ -1,0 +1,6 @@
+library_name,project_name,organism_name,type,paired,frag_size,frag_stdev,insert_size,insert_stdev,read_orientation
+frag,tinGut,tinamou,fragment,1,170,17,,,inward
+jump5kb,tinGut,tinamou,jumping,1,,,5000,500,outward
+jump2kb,tinGut,tinamou,jumping,1,,,2000,200,outward
+jump500,tinGut,tinamou,jumping,1,,,500,50,inward
+jump800,tinGut,tinamou,jumping,1,,,800,80,inward

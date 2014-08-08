@@ -1,0 +1,10 @@
+group_name,library_name,file_name
+SRR952232,frag,/scratch/tsackton/tinGut/SRR952232*.fastq.gz
+SRR952233,frag,/scratch/tsackton/tinGut/SRR952233*.fastq.gz
+SRR952236,jump5kb,/scratch/tsackton/tinGut/SRR952236*.fastq.gz
+SRR952237,jump5kb,/scratch/tsackton/tinGut/SRR952237*.fastq.gz
+SRR952239,jump2kb,/scratch/tsackton/tinGut/SRR952239*.fastq.gz
+SRR952240,jump2kb,/scratch/tsackton/tinGut/SRR952240*.fastq.gz
+SRR952234,jump500,/scratch/tsackton/tinGut/SRR952234*.fastq.gz
+SRR952235,jump500,/scratch/tsackton/tinGut/SRR952235*.fastq.gz
+SRR952238,jump800,/scratch/tsackton/tinGut/SRR952238*.fastq.gz
