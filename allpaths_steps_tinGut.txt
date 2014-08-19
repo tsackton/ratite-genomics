@@ -1,2 +1,7 @@
-PrepareAllPathsInputs.pl DATA_DIR=/scratch/tsackton/allpaths_runs/tinGut/BGI PHRED_64=1 PLOIDY=2
-RunAllpathsLG PRE=/scratch/tsackton/allpaths_runs REFERENCE_NAME=tinGut DATA_SUBDIR=BGI RUN=tinGut20140807 THREADS=24
+mkdir -p /scratch/tsackton/allpaths_runs
+mkdir -p /scratch/tsackton/allpaths_runs/tinGut
+mkdir -p /scratch/tsackton/allpaths_runs/tinGut/BGI
+PrepareAllPathsInputs.pl DATA_DIR=/scratch/tsackton/allpaths_runs/tinGut/BGI PHRED_64=1 PLOIDY=2 #in_groups.csv and in_libs.csv must be in same directory
+RunAllPathsLG PRE=/scratch/tsackton/allpaths_runs REFERENCE_NAME=tinGut DATA_SUBDIR=BGI RUN=tinGut20140807 THREADS=24
+mv /scratch/tsackton/allpaths_runs/tinGut/BGI/tinGut20140808/ASSEMBLIES/test/final.* PERMLOC
+mv /scratch/tsackton/allpaths_runs/tinGut/BGI/tinGut20140808/ASSEMBLIES/test/*.report PERMLOC
