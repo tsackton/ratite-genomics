@@ -5,6 +5,7 @@
 #SETUP
 SPEC=$1
 mkdir -p /scratch/tsackton/assemblies/$SPEC/reapr
+mkdir -p /scratch/tsackton/assemblies/$SPEC/final
 cd /scratch/tsackton/assemblies/$SPEC/reapr
 ASSEMBLY="../haplofied/final.assembly.fa"
 LOCAL_AS="$SPEC.fa"
