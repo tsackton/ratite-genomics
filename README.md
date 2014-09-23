@@ -16,8 +16,9 @@ Assembly
 --------
 
 1. run_allpaths_ratites.sh: script to run initial assemblies for all species
-2. run_*_haplo.sh: script to run haploidify=T versions of assemblies for all species
+2. run*haplo.sh: script to run haploidify=T versions of assemblies for all species
 3. source_allpaths.sh: script to set up Allpaths environment on the high memory server (called by above scripts)
+4. *.csv: group and library files for Allpaths for each species
 
 Assembly QC
 -----------
