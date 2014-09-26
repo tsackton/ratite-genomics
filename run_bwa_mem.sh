@@ -14,4 +14,4 @@ OUTPUT=$2
 READ1=$3
 READ2=$4
 
-bwa mem -t 16 -M $GENOME $READ1 $READ2 | samtools -S -b -t $GENOME.fa.gz -F 0x4 -f 0x2 - > ${OUTPUT}.bam
+bwa mem -t 16 -M $GENOME $READ1 $READ2 | samtools view -bT $GENOME.fa.gz -F 0x4 -f 0x2 - > ${OUTPUT}.bam
