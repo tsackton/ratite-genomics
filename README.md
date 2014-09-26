@@ -29,3 +29,10 @@ Assembly QC
 4. run_cegma.sh: run CEGMA pipeline
 
 
+Map reads to assemblies
+-----------------------
+
+1. merge_reads_for_mapping.sh: merge HO and rapid run trimmed reads
+2. make_bwa_index.sh: index assembly
+3. run_bwa_mem.sh: map reads to assembly, keeping only properly paired and mapped reads 
+(submit_mapping_jobs.txt submits this script to SLURM for each read/assembly combination)
