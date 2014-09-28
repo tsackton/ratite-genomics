@@ -32,8 +32,7 @@ Assembly QC
 Map reads to assemblies
 -----------------------
 
-1. merge_reads_for_mapping.sh: merge HO and rapid run trimmed reads
-2. make_bwa_index.sh: index assembly
-3. run_bwa_mem.sh: map reads to assembly, keeping only properly paired and mapped reads 
-(submit_mapping_jobs.txt submits this script to SLURM for each read/assembly combination)
-4. dedup_bams.sh: sort, merge, and remove duplicates from BAM files produced by run_bwa_mem
+1. make_bwa_index.sh: index assembly
+2. run_bwa_mem.sh: map reads to assembly, sort BAM, and dedup
+(submit_mapping_jobs.sh submits this script to SLURM for each read/assembly combination)
+3. merge_bams.sh: merge and second round dedup from BAM files produced by run_bwa_mem

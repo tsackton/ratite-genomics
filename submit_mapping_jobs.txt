@@ -1,8 +1,0 @@
-sbatch run_bwa_mem.sh aptOwe1 aptOwe_frag_mapped aptOwe_frag_R1.fastq.gz aptOwe_frag_R2.fastq.gz 
-sbatch run_bwa_mem.sh aptOwe1 aptOwe_jump_mapped aptOwe_jump_R1.fastq.gz aptOwe_jump_R2.fastq.gz 
-sbatch run_bwa_mem.sh droNov1 droNov_frag_mapped droNov_frag_R1.fastq.gz droNov_frag_R2.fastq.gz 
-sbatch run_bwa_mem.sh droNov1 droNov_jump_mapped droNov_jump_R1.fastq.gz droNov_jump_R2.fastq.gz 
-sbatch run_bwa_mem.sh casCas1 casCas_frag_mapped casCas_frag_R1.fastq.gz casCas_frag_R2.fastq.gz 
-sbatch run_bwa_mem.sh casCas1 casCas_jump_mapped casCas_jump_R1.fastq.gz casCas_jump_R2.fastq.gz 
-sbatch run_bwa_mem.sh rheAme1 rheAme_frag_mapped rheAme_frag_R1.fastq.gz rheAme_frag_R2.fastq.gz 
-sbatch run_bwa_mem.sh rheAme1 rheAme_jump_mapped rheAme_jump_R1.fastq.gz rheAme_jump_R2.fastq.gz 
