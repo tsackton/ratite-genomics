@@ -1,3 +1,4 @@
+#!/bin/bash
 sbatch run_bwa_mem.sh aptOwe 220 rr
 sbatch run_bwa_mem.sh aptOwe 220 ho
 sbatch run_bwa_mem.sh aptOwe 3kb rr
