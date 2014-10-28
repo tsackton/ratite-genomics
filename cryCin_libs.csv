@@ -1,0 +1,3 @@
+library_name,project_name,organism_name,type,paired,frag_size,frag_stddev,insert_size,insert_stddev,read_orientation,genomic_start,genomic_end
+frag,ratite,cryCin,fragment,1,220,22,,,inward,,
+jump3kb,ratite,cryCin,jumping,1,,,3000,300,outward,,
