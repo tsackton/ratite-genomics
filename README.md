@@ -1,9 +1,9 @@
 Comparative genomics of paleognaths
 ===============
 
--Tim Sackton (tsackton at oeb.harvard.edu)
--Michele Clamp (mclamp at g.harvard.edu)
--Scott Edwards (sedwards at oeb.harvard.edu)
+- Tim Sackton (tsackton at oeb.harvard.edu)
+- Michele Clamp (mclamp at g.harvard.edu)
+- Scott Edwards (sedwards at oeb.harvard.edu)
 
 
 Scripts and other material for the assembly and analysis of ratite genomes. This is a work
