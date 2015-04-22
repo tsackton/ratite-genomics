@@ -1,7 +1,0 @@
-library_name,project_name,organism_name,type,paired,frag_size,frag_stddev,insert_size,insert_stddev,read_orientation,genomic_start,genomic_end
-frag_rr,ratite,rheAme,fragment,1,220,22,,,inward,,
-frag_ho,ratite,rheAme,fragment,1,220,22,,,inward,,
-jump3kb_rr,ratite,rheAme,jumping,1,,,3000,300,outward,,
-jump3kb_ho,ratite,rheAme,jumping,1,,,3000,300,outward,,
-
-

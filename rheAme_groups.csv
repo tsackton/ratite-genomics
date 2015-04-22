@@ -1,5 +1,0 @@
-group_name,library_name,file_name
-rheAme220rr,frag_rr,/scratch/tsackton/ratite_trimmed/rheAme220.trim*.fastq.gz
-rheAme220ho,frag_ho,/scratch/tsackton/ratite_trimmed/rheAme_R1_ho_220*.fastq.gz
-rheAme3kbrr,jump3kb_rr,/scratch/tsackton/ratite_trimmed/rheAme3kb.trim*.fastq.gz
-rheAme3kbho,jump3kb_ho,/scratch/tsackton/ratite_trimmed/rheAme_R1_ho_3kb*.fastq.gz

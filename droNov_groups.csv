@@ -1,5 +1,0 @@
-group_name,library_name,file_name
-droNov220rr,frag_rr,/scratch/tsackton/ratite_trimmed/droNov220.trim*.fastq.gz
-droNov220ho,frag_ho,/scratch/tsackton/ratite_trimmed/droNov_R1_ho_220*.fastq.gz
-droNov3kbrr,jump3kb_rr,/scratch/tsackton/ratite_trimmed/droNov3kb.trim*.fastq.gz
-droNov3kbho,jump3kb_ho,/scratch/tsackton/ratite_trimmed/droNov_R1_ho_3kb*.fastq.gz

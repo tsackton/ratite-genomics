@@ -1,5 +1,0 @@
-group_name,library_name,file_name
-aptOwe220rr,frag_rr,/scratch/tsackton/ratite_trimmed/aptOwe220.trim*.fastq.gz
-aptOwe220ho,frag_ho,/scratch/tsackton/ratite_trimmed/aptOwe_R1_ho_220*.fastq.gz
-aptOwe3kbrr,jump3kb_rr,/scratch/tsackton/ratite_trimmed/aptOwe3kb.trim*.fastq.gz
-aptOwe3kbho,jump3kb_ho,/scratch/tsackton/ratite_trimmed/aptOwe_R1_ho_3kb*.fastq.gz
