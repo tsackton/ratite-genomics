@@ -1,0 +1,5 @@
+library_name,project_name,organism_name,type,paired,frag_size,frag_stddev,insert_size,insert_stddev,read_orientation,genomic_start,genomic_end
+frag_rr,ratite,droNov,fragment,1,220,22,,,inward,,
+frag_ho,ratite,droNov,fragment,1,220,22,,,inward,,
+jump3kb_rr,ratite,droNov,jumping,1,,,3000,300,outward,,
+jump3kb_ho,ratite,droNov,jumping,1,,,3000,300,outward,,

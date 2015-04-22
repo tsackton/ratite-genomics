@@ -1,0 +1,5 @@
+group_name,library_name,file_name
+notPer220rr,frag_rr,/scratch/tsackton/ratite_trimmed/notPer_rr_220*.fastq.gz
+notPer220ho,frag_ho,/scratch/tsackton/ratite_trimmed/notPer_ho_220*.fastq.gz
+notPer3kbrr,jump3kb_rr,/scratch/tsackton/ratite_trimmed/notPer_rr_3kb*.fastq.gz
+notPer3kbho,jump3kb_ho,/scratch/tsackton/ratite_trimmed/notPer_ho_3kb*.fastq.gz

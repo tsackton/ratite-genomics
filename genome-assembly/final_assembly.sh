@@ -16,23 +16,29 @@ export LD_LIBRARY_PATH=/n/sw/graphviz-2.22.2/lib:/n/sw/fasrcsw/apps/Core/gcc/4.8
 mkdir -p $SPEC/RAWSEQ/20141223
 
 #Prepare inputs
-if [[ -s $SPEC_groups.csv && -s $SPEC_libs.csv ]] 
+if [[ -s ${SPEC}_groups.csv && -s ${SPEC}_libs.csv ]] 
 then
-	PrepareAllPathsInputs.pl DATA_DIR=/scratch/tsackton/allpaths_runs/$SPEC/RAWSEQ PLOIDY=2 IN_GROUPS_CSV=$SPEC_groups.csv IN_LIBS_CSV=$SPEC_libs.csv 1> $SPEC_prep.log 2> $SPEC_prep.err
+	PrepareAllPathsInputs.pl DATA_DIR=/scratch/tsackton/allpaths_runs/$SPEC/RAWSEQ PLOIDY=2 IN_GROUPS_CSV=${SPEC}_groups.csv IN_LIBS_CSV=${SPEC}_libs.csv > ${SPEC}_prep.log
 else
 	echo "Groups or Libs CSV is missing!"
 	exit 1
 fi
 
 #Run ALLPATHS
-RunAllPathsLG PRE=/scratch/tsackton/allpaths_runs REFERENCE_NAME=$SPEC DATA_SUBDIR=RAWSEQ RUN=20141223 HAPLOIDIFY=TRUE THREADS=30 OVERWRITE=TRUE 1> $SPEC_20141223.log
+RunAllPathsLG PRE=/scratch/tsackton/allpaths_runs REFERENCE_NAME=$SPEC DATA_SUBDIR=RAWSEQ RUN=20141230 HAPLOIDIFY=TRUE THREADS=50 OVERWRITE=TRUE 1> ${SPEC}_20141230.log
 
 #Clean up
-mkdir /scratch/tsackton/assembles/$SPEC
-mv $SPEC_* /scratch/tsackton/assembles/$SPEC
-mv run_$SPEC_haplo.sh /scratch/tsackton/assembles/$SPEC
-mv $SPEC/make_log/ /scratch/tsackton/assembles/$SPEC
-mv $SPEC/RAWSEQ/20141223/*.kspec /scratch/tsackton/assembles/$SPEC
-mv $SPEC/RAWSEQ/20141207/ASSEMBLIES/test/final.{assembly,contigs}.{fasta,fastg,efasta} /scratch/tsackton/assembles/$SPEC
-mv $SPEC/RAWSEQ/20141207/ASSEMBLIES/test/*.report /scratch/tsackton/assembles/$SPEC
-rm -r $SPEC
+mkdir -p /scratch/tsackton/assemblies/$SPEC
+mv ${SPEC}_* /scratch/tsackton/assemblies/$SPEC
+mv run_${SPEC}_haplo.sh /scratch/tsackton/assemblies/$SPEC
+mv $SPEC/make_log/ /scratch/tsackton/assemblies/$SPEC
+mv $SPEC/RAWSEQ/20141230/*.kspec /scratch/tsackton/assemblies/$SPEC
+mv $SPEC/RAWSEQ/20141230/ASSEMBLIES/test/final.{assembly,contigs}.{fasta,fastg,efasta} /scratch/tsackton/assemblies/$SPEC
+mv $SPEC/RAWSEQ/20141230/ASSEMBLIES/test/*.report /scratch/tsackton/assemblies/$SPEC
+if [ -s /scratch/tsackton/assemblies/$SPEC/final.assembly.fasta ]
+then
+	rm -r $SPEC
+else
+	echo "Run failed."
+	exit 1
+fi

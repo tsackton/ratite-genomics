@@ -1,0 +1,5 @@
+group_name,library_name,file_name
+aptRow220rr,frag_rr,/scratch/tsackton/ratite_trimmed/aptRow_rr_220*.fastq.gz
+aptRow220ho,frag_ho,/scratch/tsackton/ratite_trimmed/aptRow_ho_220*.fastq.gz
+aptRow3kbrr,jump3kb_rr,/scratch/tsackton/ratite_trimmed/aptRow_rr_3kb*.fastq.gz
+aptRow3kbho,jump3kb_ho,/scratch/tsackton/ratite_trimmed/aptRow_ho_3kb*.fastq.gz

@@ -1,0 +1,124 @@
+------------------ FindErrors -> frag_reads_edit.fastb
+
+      501205910    total number of original fragment reads
+          133.9    mean length of original fragment reads in bases
+           43.8    % gc content of fragment reads
+            0.0    % of bases pre-corrected
+     1312084984    estimated genome size in bases
+           20.0    % genome estimated to be repetitive (at K=25 scale)
+             41    estimated genome coverage by fragment reads
+           0.21    estimated standard deviation of sequencing bias (at K=25 scale)
+           91.3    % of bases confirmed in cycle 0
+           0.28    % of bases corrected in cycle 0
+           0.02    % of bases with conflicting corrections in cycle 0
+           91.8    % of bases confirmed in cycle 1
+           0.14    % of bases corrected in cycle 1
+           0.02    % of bases with conflicting corrections in cycle 1
+
+------------------ CleanCorrectedReads -> frag_reads_corr.25mer.kspec
+
+            1.8    % of reads removed because of low frequency kmers
+
+------------------ FillFragments -> filled_reads.fastb
+
+           60.1    % of fragment pairs that were filled
+
+------------------ SamplePairedReadStats -> jump_reads_filt.outies
+
+Paired Read Separation Stats:
+       Lib  OrigSep  NewSep  NewDev  3sigma%  %NonJumps  %ReadsAlgnd
+jump3kb_ho     2802    3146     315       98          0  19
+jump3kb_rr     2776    3169     297       98          0  20
+
+------------------ ErrorCorrectJump -> jump_reads_ec.fastb
+
+          72.62    % of jump reads pairs that are error corrected
+
+------------------ SamplePairedReadDistributions -> jump_reads_ec.distribs
+
+Libraries statistics tables:
+
+Table 1: library names, number of pairs (N), original (L0) and new sizes (L)
+
+--------------------------------------------------------------------------
+ id          library name  num pairs N    orig size L0       new size L
+--- --------------------- ------------ ----------------- -----------------
+  0            jump3kb_ho     86679061    3289 +/-   315    3306 +/-   376
+  1            jump3kb_rr     10484894    3465 +/-   297    3351 +/-   366
+
+tot                 total     97163955
+--------------------------------------------------------------------------
+
+
+Table 2: fraction of reads in each length interval
+
+---------------------------------------------------------------------------
+ id   <L>    L < 0    0-500  500-1k   1k-2k   2k-4k   4k-8k  8k-16k    >16k
+--- -----  -------  ------- ------- ------- ------- ------- ------- -------
+  0  3306                              0.3%   98.9%    0.8%                
+  1  3351                              0.2%   98.7%    1.0%                
+---------------------------------------------------------------------------
+
+
+Table 3: number of bridging links over a specific gap size
+
+--------------------------------------------------------------------
+ id   <L> <= 0     0    1k    2k    3k    4k    6k    8k   12k   16k
+--- ----- ---- ----- ----- ----- ----- ----- ----- ----- ----- -----
+  0  3306        251   175   100    27                              
+  1  3351         31    22    13     4                              
+tot              282   197   112    31                              
+--------------------------------------------------------------------
+
+------------------ AllPathsReport -> assembly_stats.report
+
+           1000    contig minimum size for reporting
+          21832    number of contigs
+           18.3    number of contigs per Mb
+           2882    number of scaffolds
+     1180084938    total contig length
+     1192163280    total scaffold length, with gaps
+          138.8    N50 contig size in kb
+           3322    N50 scaffold size in kb
+           3306    N50 scaffold size in kb, with gaps
+           2.42    number of scaffolds per Mb
+            313    median size of gaps in scaffolds
+             36    median dev of gaps in scaffolds
+           0.99    % of bases in captured gaps
+           0.01    % of bases in negative gaps (after 5 devs)
+          45.96    %% of ambiguous bases
+          17.27    ambiguities per 10,000 bases
+
+------------------ LibCoverage -> library_coverage.report
+
+LibCoverage table:
+
+LEGEND
+   n_reads:  number of reads in input
+   %_used:   % of reads assembled
+   scov:     sequence coverage
+   n_pairs:  number of valid pairs assembled
+   pcov:     physical coverage
+
+type  lib_name          lib_stats      n_reads  %_used  scov      n_pairs   pcov
+                                                                                
+frag  frag_ho           28 +/- 22  314,826,734    77.8  26.1  110,903,029   25.5
+frag  frag_rr          -50 +/- 22  186,406,918    82.7  19.6   72,376,585   15.5
+frag  === total ===                501,233,652    79.6  45.6  183,279,614   41.0
+                                                                                
+jump  jump3kb_ho     3146 +/- 315  363,137,974    52.4  16.8   89,587,938  253.2
+jump  jump3kb_rr     3169 +/- 297   34,859,428    70.0   2.4   11,033,305   31.6
+jump  === total ===                397,997,402    53.9  19.2  100,621,243  284.8
+                                                                                
+
+------------------ Memory and CPU usage
+
+             64    available cpus
+          997.4    GB of total available memory
+         1933.8    GB of available disk space
+          73.35    hours of total elapsed time
+          73.39    hours of total per-module elapsed time
+        1470.49    hours of total per-module user time
+          20.04    effective parallelization factor
+         345.10    GB memory usage peak
+

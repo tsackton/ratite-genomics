@@ -1,0 +1,5 @@
+group_name,library_name,file_name
+casCas220rr,frag_rr,/scratch/tsackton/ratite_trimmed/casCas220.trim*.fastq.gz
+casCas220ho,frag_ho,/scratch/tsackton/ratite_trimmed/casCas_R1_ho_220*.fastq.gz
+casCas3kbrr,jump3kb_rr,/scratch/tsackton/ratite_trimmed/casCas3kb.trim*.fastq.gz
+casCas3kbho,jump3kb_ho,/scratch/tsackton/ratite_trimmed/casCas_R1_ho_3kb*.fastq.gz

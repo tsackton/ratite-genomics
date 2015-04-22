@@ -1,0 +1,6 @@
+group_name,library_name,file_name
+droNov220rr,frag_rr,/scratch/tsackton/new_ratities/droNov_rr_220*.fastq.gz
+droNov220rr2,frag_rr,/scratch/tsackton/new_ratities/droNov_rr2_220*.fastq.gz
+droNov220ho,frag_ho,/scratch/tsackton/new_ratities/droNov_ho_220*.fastq.gz
+droNov3kbrr,jump3kb_rr,/scratch/tsackton/new_ratities/droNov_rr_3kb*.fastq.gz
+droNov3kbho,jump3kb_ho,/scratch/tsackton/new_ratities/droNov_ho_3kb*.fastq.gz

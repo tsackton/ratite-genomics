@@ -1,0 +1,5 @@
+group_name,library_name,file_name
+eudEle220rr,frag_rr,/scratch/tsackton/ratite_trimmed/eudEle_rr_220*.fastq.gz
+eudEle220ho,frag_ho,/scratch/tsackton/ratite_trimmed/eudEle_ho_220*.fastq.gz
+eudEle3kbrr,jump3kb_rr,/scratch/tsackton/ratite_trimmed/eudEle_rr_3kb*.fastq.gz
+eudEle3kbho,jump3kb_ho,/scratch/tsackton/ratite_trimmed/eudEle_ho_3kb*.fastq.gz
