@@ -3,13 +3,14 @@ Contiguity
 
 We use the assemblathon_stats.pl (forked here, original from [Keith Bradnam] (https://github.com/ucdavis-bioinformatics/assemblathon2-analysis/blob/master/assemblathon_stats.pl)) script to get genome contiguity measures from FASTA files, as so:
 
-Code to process all fasta files in a directory is:
+Code to process all fasta or gzipped fasta files in a directory is:
 
-	for FILE in $(ls *.fa)
+	for FILE in $(ls *.{fa,fas.gz})
 	do 
-		assemblathon_stats.pl -csv -graph -n 10 $FILE > $FILE.out
-	done
-	
+		SP=${FILE%%.*}
+    	assemblathon_stats.pl -csv -graph -n 10 $FILE > $SP.out
+	done	
+
 Completeness
 ------------
 
