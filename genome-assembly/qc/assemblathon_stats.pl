@@ -459,7 +459,7 @@ sub sequence_statistics{
 		my $file_name = $file;
 		$file_name =~ s/\.gz$//;
 		$file_name =~ s/\.(fa|fasta)$//;
-		$file_name .= ".${type}.NG50.csv";
+		$file_name .= ".${type}.N50.csv";
 		
 		open(my $out, ">", "$file_name") or die "Can't create $file_name\n";
 		print $out join (',',"Assembly",1..99), "\n";
@@ -474,8 +474,8 @@ sub sequence_statistics{
 
 		for (my $i = 1; $i < 100; $i++){
 			# higher NG values might not be present if assembly is poor
-			if (defined $ng_values[$i]){
-				print $out ",$ng_values[$i]";	
+			if (defined $n_values[$i]){
+				print $out ",$n_values[$i]";	
 			} else{
 				print $out ",0";
 			}
