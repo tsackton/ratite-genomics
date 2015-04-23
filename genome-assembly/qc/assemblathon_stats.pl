@@ -459,7 +459,7 @@ sub sequence_statistics{
 		my $file_name = $file;
 		$file_name =~ s/\.gz$//;
 		$file_name =~ s/\.(fa|fasta)$//;
-		$file_name .= ".${type}.NG50.csv";
+		$file_name .= ".${type}.N50.csv";
 		
 		open(my $out, ">", "$file_name") or die "Can't create $file_name\n";
 		print $out join (',',"Assembly",1..99), "\n";
