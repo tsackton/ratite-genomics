@@ -474,8 +474,8 @@ sub sequence_statistics{
 
 		for (my $i = 1; $i < 100; $i++){
 			# higher NG values might not be present if assembly is poor
-			if (defined $ng_values[$i]){
-				print $out ",$ng_values[$i]";	
+			if (defined $n_values[$i]){
+				print $out ",$n_values[$i]";	
 			} else{
 				print $out ",0";
 			}
