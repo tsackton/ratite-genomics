@@ -16,8 +16,14 @@ Completeness
 
 We use the BUSCO approach for estimating completeness (forked here, original from [Simão et al](http://buscos.ezlab.org/)).
 
-Code to process a single genome is:
+Code to process a batch of genomes in a list is:
 
-	SP=<species name>
-	GENOME=/path/to/genome
-	BUSCO_v1.0.py -o $SP -in $GENOME -l V -m genome -c 8 -sp chicken
+	for SPFA in $(cat <GENOME LIST>)
+	 	SP=${SPFA%%.*}
+		mkdir $SP
+		cd $SP
+		ln -s ../metazoa metazoa
+		GENOME=/n/regal/edwards_lab/ratites/qc/genomes/seq/$SP.fa.gz
+		gzip -c -d $GENOME > $SP.genome
+		BUSCO_v1.0.py -o $SP -in $SP.genome -l M -m genome -c 1 -sp chicken
+	done

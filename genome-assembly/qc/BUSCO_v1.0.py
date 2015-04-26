@@ -233,7 +233,7 @@ def gargantua(deck):
 
 def shrink (number):
   number=number*100
-  number=str(number)
+  number=float(number)
 #  if number>=10:
 #    number=str(number)[:2]
 #  elif number<10 and number>0:
