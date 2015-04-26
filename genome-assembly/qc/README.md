@@ -26,4 +26,5 @@ Code to process a batch of genomes in a list is:
 		GENOME=/n/regal/edwards_lab/ratites/qc/genomes/seq/$SP.fa.gz
 		gzip -c -d $GENOME > $SP.genome
 		BUSCO_v1.0.py -o $SP -in $SP.genome -l M -m genome -c 1 -sp chicken
+		cd ..
 	done
