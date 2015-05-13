@@ -25,6 +25,8 @@ Code to process a batch of genomes in a list is:
 		ln -s ../metazoa metazoa
 		GENOME=/n/regal/edwards_lab/ratites/qc/genomes/seq/$SP.fa.gz
 		gzip -c -d $GENOME > $SP.genome
-		BUSCO_v1.0.py -o $SP -in $SP.genome -l M -m genome -c 1 -sp chicken
+		BUSCO_v1.0.py -o $SP -in $SP.genome -l M -m genome -c 1 -sp chicken --flank 30000
 		cd ..
 	done
+
+**Note:** The BUSCO analysis is ongoing as we revise the input gene set to account for various issues
