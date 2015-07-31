@@ -5,6 +5,7 @@ Comparative genomics of paleognaths
 - Michele Clamp (mclamp at g.harvard.edu)
 - Scott Edwards (sedwards at oeb.harvard.edu)
 
+
 Scripts and other material for the assembly and analysis of ratite genomes. This is a work
 in progress, so expect frequent changes and updates. Raw data will be available after publication,
 at which point the script and code in this repository will facilitate replication of our work.

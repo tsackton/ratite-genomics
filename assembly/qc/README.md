@@ -5,11 +5,13 @@ We use the assemblathon_stats.pl (forked here, original from [Keith Bradnam] (ht
 
 Code to process all fasta or gzipped fasta files in a directory is:
 
+```bash
 	for FILE in $(ls *.{fa,fas.gz})
 	do 
 		SP=${FILE%%.*}
     	assemblathon_stats.pl -csv -graph -n 10 $FILE > $SP.out
 	done	
+```
 
 Completeness
 ------------
@@ -18,6 +20,7 @@ We use the BUSCO approach for estimating completeness (forked here, original fro
 
 Code to process a batch of genomes in a list is:
 
+```bash
 	for SPFA in $(cat <GENOME LIST>)
 	 	SP=${SPFA%%.*}
 		mkdir $SP
@@ -28,5 +31,5 @@ Code to process a batch of genomes in a list is:
 		BUSCO_v1.0.py -o $SP -in $SP.genome -l M -m genome -c 1 -sp chicken --flank 30000
 		cd ..
 	done
-
+```
 **Note:** The BUSCO analysis is ongoing as we revise the input gene set to account for various issues
