@@ -1,0 +1,43 @@
+Binomial name	Short name	Common name	Assembly Version	Assembly URL
+Crocodylus porosus	croPor	Saltwater Crocodile	Cpor_2.0	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA_000768395.1_Cpor_2.0/GCA_000768395.1_Cpor_2.0_genomic.fna.gz
+Gavialis gangeticus	gavGan	Indian Gharial	ggan_v0.2	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA_000775435.1_ggan_v0.2/GCA_000775435.1_ggan_v0.2_genomic.fna.gz
+Gallus gallus	galGal	Red Junglefowl (Chicken)	galGal4	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000002315.3_Gallus_gallus-4.0/GCF_000002315.3_Gallus_gallus-4.0_genomic.fna.gz
+Anolis carolinensis	anoCar	Green Anole	AnoCar2.0	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000090745.1_AnoCar2.0/GCF_000090745.1_AnoCar2.0_genomic.fna.gz
+Meleagris gallopavo	melGal	Turkey	Turkey_5.0	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000146605.2_Turkey_5.0/GCF_000146605.2_Turkey_5.0_genomic.fna.gz
+Taeniopygia guttata	taeGut	Zebra Finch	Taeniopygia_guttata-3.2.4	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000151805.1_Taeniopygia_guttata-3.2.4/GCF_000151805.1_Taeniopygia_guttata-3.2.4_genomic.fna.gz
+Melopsittacus undulatus	melUnd	Budgerigar	Melopsittacus_undulatus_6.3	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000238935.1_Melopsittacus_undulatus_6.3/GCF_000238935.1_Melopsittacus_undulatus_6.3_genomic.fna.gz
+Chrysemys picta	chrPic	Painted Turtle	Chrysemys_picta_bellii-3.0.3	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000241765.3_Chrysemys_picta_bellii-3.0.3/GCF_000241765.3_Chrysemys_picta_bellii-3.0.3_genomic.fna.gz
+Ficedula albicollis	ficAlb	Collared Flycatcher	FicAlb1.5	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000247815.1_FicAlb1.5/GCF_000247815.1_FicAlb1.5_genomic.fna.gz
+Alligator mississippiensis	allMis	American Alligator	allMis0.2	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000281125.1_allMis0.2/GCF_000281125.1_allMis0.2_genomic.fna.gz
+Pseudopodoces humilis	pseHum	Tibetan Ground-tit	PseHum1.0	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000331425.1_PseHum1.0/GCF_000331425.1_PseHum1.0_genomic.fna.gz
+Columba livia	colLiv	Rock Pigeon (domestic)	Cliv_1.0	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000337935.1_Cliv_1.0/GCF_000337935.1_Cliv_1.0_genomic.fna.gz
+Falco peregrinus	falPer	Peregrine Falcon	F_peregrinus_v1.0	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000337955.1_F_peregrinus_v1.0/GCF_000337955.1_F_peregrinus_v1.0_genomic.fna.gz
+Chelonia mydas	cheMyd	Green Sea Turtle	CheMyd_1.0	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000344595.1_CheMyd_1.0/GCF_000344595.1_CheMyd_1.0_genomic.fna.gz
+Anas platyrhynchos	anaPla	Mallard (domestic)	BGI_duck_1.0	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000355885.1_BGI_duck_1.0/GCF_000355885.1_BGI_duck_1.0_genomic.fna.gz
+Alligator sinensis	allSin	Chinese Alligator	ASM45574v1	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000455745.1_ASM45574v1/GCF_000455745.1_ASM45574v1_genomic.fna.gz
+Fulmarus glacialis	fulGla	Northern Fulmar	ASM69083v1	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000690835.1_ASM69083v1/GCF_000690835.1_ASM69083v1_genomic.fna.gz
+Leptosomus discolor	lepDis	Cuckoo Roller	ASM69178v1	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000691785.1_ASM69178v1/GCF_000691785.1_ASM69178v1_genomic.fna.gz
+Corvus brachyrhynchos	corBra	American Crow	ASM69197v1	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000691975.1_ASM69197v1/GCF_000691975.1_ASM69197v1_genomic.fna.gz
+Mesitornis unicolor	mesUni	Brown Mesite	ASM69576v1	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000695765.1_ASM69576v1/GCF_000695765.1_ASM69576v1_genomic.fna.gz
+Picoides pubescens	picPub	Downy Woodpecker	ASM69900v1	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000699005.1_ASM69900v1/GCF_000699005.1_ASM69900v1_genomic.fna.gz
+Calypte anna	calAnn	Anna's Hummingbird	ASM69908v1	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000699085.1_ASM69908v1/GCF_000699085.1_ASM69908v1_genomic.fna.gz
+Pygoscelis adeliae	pygAde	Adelie Penguin	ASM69910v1	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000699105.1_ASM69910v1/GCF_000699105.1_ASM69910v1_genomic.fna.gz
+Aptenodytes forsteri	aptFor	Emperor Penguin	ASM69914v1	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000699145.1_ASM69914v1/GCF_000699145.1_ASM69914v1_genomic.fna.gz
+Tinamus guttatus	tinGut	White throated tinamou	ASM70537v2	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000705375.1_ASM70537v2/GCF_000705375.1_ASM70537v2_genomic.fna.gz
+Charadrius vociferus	chaVoc	Killdeer	ASM70802v2	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000708025.1_ASM70802v2/GCF_000708025.1_ASM70802v2_genomic.fna.gz
+Nipponia nippon	nipNip	Crested Ibis	ASM70822v1	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000708225.1_ASM70822v1/GCF_000708225.1_ASM70822v1_genomic.fna.gz
+Cuculus canorus	cucCan	Common Cuckoo	ASM70932v1	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000709325.1_ASM70932v1/GCF_000709325.1_ASM70932v1_genomic.fna.gz
+Balearica regulorum	balReg	Grey Crowned Crane	ASM70989v1	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000709895.1_ASM70989v1/GCF_000709895.1_ASM70989v1_genomic.fna.gz
+Haliaeetus leucocephalus	halLeu	Bald Eagle	Haliaeetus_leucocephalus-4.0	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000737465.1_Haliaeetus_leucocephalus-4.0/GCF_000737465.1_Haliaeetus_leucocephalus-4.0_genomic.fna.gz
+Chaetura pelagica	chaPel	Chimney Swift	ChaPel_1.0	ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000747805.1_ChaPel_1.0/GCF_000747805.1_ChaPel_1.0_genomic.fna.gz
+Apteryx haastii	aptHaa	Great spotted kiwi	XXXXXX	XXXXXX
+Apteryx owenii	aptOwe	Little spotted kiwi	XXXXXX	XXXXXX
+Apteryx rowi	aptRow	Okarito brown kiwi	XXXXXX	XXXXXX
+Casuarius casuarius	casCas	Southern cassowary	XXXXXX	XXXXXX
+Crypturellus cinnamomeus	cryCin	Thicket tinamou	XXXXXX	XXXXXX
+Dromaius novaehollandiae	droNov	Emu	XXXXXX	XXXXXX
+Eudromia elegans	eudEle	Elegant crested tinamou	XXXXXX	XXXXXX
+Nothoprocta perdicaria	notPer	Chilean tinamou	XXXXXX	XXXXXX
+Rhea americana	rheAme	Greater rhea	XXXXXX	XXXXXX
+Rhea pennata	rhePen	Lesser rhea	XXXXXX	XXXXXX
+Struthio camelus	strCam	Ostrich	XXXXXX	XXXXXX

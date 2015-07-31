@@ -1,24 +1,17 @@
-Comparative genomics of paleognaths
+Genome annotation
 ===============
 
-- Tim Sackton (tsackton at oeb.harvard.edu)
-- Michele Clamp (mclamp at g.harvard.edu)
-- Scott Edwards (sedwards at oeb.harvard.edu)
+To annotate protein-coding genes in our newly assembled genomes, we used [MAKER v2.31.8](http://www.yandell-lab.org/software/maker.html).
+We used a 2-step approach where we first annotated the emu and Chilean tinamou genomes, 
+for which we have RNA-seq data, used the initial annotations to build improved SNAP and AUGUSTUS 
+models, and then annotated all 10 species using the improved models. For the species without
+same-species RNA-seq data, we use the closest appropriate alternate-species RNA-seq as 
+evidence, but we do not retrain gene models for these species. 
+
+Initial MAKER run.
+------------------
+
+For the initial MAKER run, we used the Augustus chicken models distributed with Augustus, and
+generated chicken-trained SNAP models ourselves, as follows:
 
 
-Scripts and other material for the assembly and analysis of ratite genomes. This is a work
-in progress, so expect frequent changes and updates. Raw data will be available after publication,
-at which point the script and code in this repository will facilitate replication of our work.
-
-**Disclaimer:** Although we welcome re-use of these materials, except where noted the code
-we are sharing here is specific to this project and to the Harvard compute cluster. 
-Filenames and paths are often hard-coded in scripts, and software versions/dependencies are
-often managed via calls to the Harvard Odyssey cluster Lmod system.
-
-
-Organization of this repository
-------------
-
-Each directory contains the scripts for a particular analysis, along with a README describing
-that analysis. In many cases logs and/or output files are also stored in in a /data subdirectory 
-under each analysis.
