@@ -1,17 +1,19 @@
-Genome annotation
+Whole genome alignment
 ===============
 
-To annotate protein-coding genes in our newly assembled genomes, we used [MAKER v2.31.8](http://www.yandell-lab.org/software/maker.html).
-We used a 2-step approach where we first annotated the emu and Chilean tinamou genomes, 
-for which we have RNA-seq data, used the initial annotations to build improved SNAP and AUGUSTUS 
-models, and then annotated all 10 species using the improved models. For the species without
-same-species RNA-seq data, we use the closest appropriate alternate-species RNA-seq as 
-evidence, but we do not retrain gene models for these species. 
+We used [progressiveCactus](https://github.com/glennhickey/progressiveCactus) to generate
+a whole genome alignment from 35 bird genomes and 7 non-avian reptile outgroups. Our
+version of progressiveCactus uses a modified version of [jobTree](https://github.com/harvardinformatics/jobTree) in order to work with SLURM.
 
-Initial MAKER run.
-------------------
+Alignment steps
+---------------
 
-For the initial MAKER run, we used the Augustus chicken models distributed with Augustus, and
-generated chicken-trained SNAP models ourselves, as follows:
+1. Selection of genomes: in addition to our 10 new palaeognath genomes, we focused on
+other bird genomes of relatively high quality measured by both contiguity statistics 
+(contig and scaffold N50) and completeness (BUSCO). We make a few exceptions for important 
+outgroups. The full list of species used, including assembly versions, is in 
+species_list.tsv, and the script to fetch them from NCBI is get_genomes.sh.
 
+2. Guide tree generation: see branchlengths subdirectory
 
+3. Whole-genome alignment: see progressiveCactus subdirectory
