@@ -1,0 +1,10 @@
+#---------------------------------------------------------------------------------------------
+# grid type:
+grid=SLURM
+# template for a grid submission
+cmd=sbatch -p serial_requeue -A edwards_lab -n 1 -N 1 --mem=3000 --time=02:00:00
+# number of grid submissions to be maintained at steady state by the Trinity submission system
+max_nodes=1000
+# number of commands that are batched into a single grid submission job.
+cmds_per_node=300
+#----------------------------------------------------------------------------------------------
