@@ -1,0 +1,41 @@
+#####TESTING#######
+[tsackton@bioinf01 test]$ fathom notper_chicken.test notper_test.dna -compare-genes notper_real.ann 
+Nucleotide: 0.687 0.718
+Gene: 0.005 0.012
+Acceptor: 0.542 0.605
+Donor: 0.526 0.598
+Start: 0.099 0.206
+Stop: 0.102 0.194
+Exon: 0.421 0.510
+[tsackton@bioinf01 test]$ fathom notper_tinamou.test notper_test.dna -compare-genes notper_real.ann 
+Nucleotide: 0.717 0.744
+Gene: 0.005 0.010
+Acceptor: 0.562 0.634
+Donor: 0.547 0.630
+Start: 0.140 0.240
+Stop: 0.127 0.191
+Exon: 0.451 0.535
+[tsackton@bioinf01 test]$ fathom dronov_chicken.test dronov_testing.dna -compare-genes dronov_real.test 
+Nucleotide: 0.723 0.698
+Gene: 0.005 0.011
+Acceptor: 0.550 0.602
+Donor: 0.531 0.594
+Start: 0.127 0.198
+Stop: 0.101 0.136
+Exon: 0.440 0.503
+[tsackton@bioinf01 test]$ fathom dronov_ratite.test dronov_testing.dna -compare-genes dronov_real.test 
+Nucleotide: 0.694 0.745
+Gene: 0.004 0.008
+Acceptor: 0.545 0.632
+Donor: 0.526 0.622
+Start: 0.129 0.213
+Stop: 0.111 0.162
+Exon: 0.438 0.530
+[tsackton@bioinf01 test]$ fathom dronov_emu.test dronov_testing.dna -compare-genes dronov_real.test 
+Nucleotide: 0.714 0.731
+Gene: 0.004 0.007
+Acceptor: 0.546 0.632
+Donor: 0.528 0.624
+Start: 0.137 0.195
+Stop: 0.114 0.138
+Exon: 0.446 0.528
