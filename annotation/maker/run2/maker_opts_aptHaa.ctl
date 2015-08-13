@@ -13,9 +13,9 @@ pred_pass=0 #use ab-initio predictions in maker_gff: 1 = yes, 0 = no
 other_pass=0 #passthrough anyything else in maker_gff: 1 = yes, 0 = no
 
 #-----EST Evidence (for best results provide a file for at least one)
-est= #set of ESTs or assembled mRNA-seq in fasta format
-altest=../../evidence/rnaseq/aptMan.trinity.final.fasta #EST/cDNA sequence file in fasta format from an alternate organism
-est_gff= #aligned ESTs or mRNA-seq from an external GFF3 file
+est=../../evidence/rnaseq/aptMan.trinity.final.fasta #set of ESTs or assembled mRNA-seq in fasta format
+altest=../../evidence/rnaseq/droNov.trinity.final.fasta #EST/cDNA sequence file in fasta format from an alternate organism
+est_gff=../../evidence/rnaseq/aptHaa.est.gff #aligned ESTs or mRNA-seq from an external GFF3 file
 altest_gff=../../evidence/rnaseq/aptHaa.altest.gff #aligned ESTs from a closly relate species in GFF3 format
 
 #-----Protein Homology Evidence (for best results provide a file for at least one)
