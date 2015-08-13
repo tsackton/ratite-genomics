@@ -28,4 +28,6 @@ optimize_augustus.pl --species=emu droNov.gb --cpus=12 1>emu.stdout 2>emu.stderr
 optimize_augustus.pl --species=ratite ratite.gb --cpus=12 1>ratite.stdout 2>ratite.stderr &
 optimize_augustus.pl --species=tinamou notPer.gb --cpus=12 1>tinamou.stdout 2>tinamou.stderr &
 
+##NOTE: IN END DID NOT USE RATITE (PROBLEMS WITH RUN)##
+##JUST USED EMU FOR RATITES AND TINAMOU FOR TINAMOUS##
 
