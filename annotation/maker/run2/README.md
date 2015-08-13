@@ -33,3 +33,7 @@ So in this case, we used the droNov/kiwi merged data for the TopHat mapping, and
 this choice is a bit arbitrary; however, the computational cost of MAKER is too high to repeat with alternative choices to see what
 impact it has.
 5. Tinamous: we used the tinamou data only (notPer), either as same-species or alt-species as appropriate.
+
+To submit the jobs, we ran:
+```for SP in aptHaa aptRow aptOwe droNov casCas cryCin notPer eudEle rheAme rhePen; do sbatch maker_mpi.sh $SP; done```
+from the MAKER base directory
