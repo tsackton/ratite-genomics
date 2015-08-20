@@ -12,8 +12,11 @@ Alignment steps
 other bird genomes of relatively high quality measured by both contiguity statistics 
 (contig and scaffold N50) and completeness (BUSCO). We make a few exceptions for important 
 outgroups. The full list of species used, including assembly versions, is in 
-species_list.tsv, and the script to fetch them from NCBI is get_genomes.sh.
+species_list.tsv, and the script to fetch them from NCBI is get_genomes.sh (in the progressiveCactus subdirectory).
 
-2. Guide tree generation: see branchlengths subdirectory
+2. Guide tree generation: the code in the branchlengths subdirectory includes the methods and data sources for generating the guide tree
+we used for our whole genome alignment. The R script compute_br_for_cactus.R contains all the information and scripts needed to
+generate our final branch lengths.
 
-3. Whole-genome alignment: see progressiveCactus subdirectory
+3. Whole-genome alignment: the code in the progressiveCactus subdirectory includes our configuration files and
+scripts to run progressiveCactus. For more details about progressiveCactus, please see [here](https://github.com/glennhickey/progressiveCactus).

@@ -19,5 +19,5 @@ Organization of this repository
 ------------
 
 Each directory contains the scripts for a particular analysis, along with a README describing
-that analysis. In many cases logs and/or output files are also stored in in a /data subdirectory 
+that analysis. In many cases logs and/or output files are also stored in a subdirectory 
 under each analysis.

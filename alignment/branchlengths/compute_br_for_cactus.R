@@ -5,13 +5,15 @@ library(ape)
 library(geiger)
 library(phytools)
 
-croc<-read.tree("crocpaper4d.tre")
-uce<-read.tree("ExaML_concatenated_best_tree_with_bootstraps_rerooted.tre")
+croc<-read.tree("crocpaper4d.tre") #4-fold degenerate tree from the crocodile genome paper
+uce<-read.tree("ExaML_concatenated_best_tree_with_bootstraps_rerooted.tre") #preliminary UCE tree generated from our assemblies
+
+##code to generate the UCE tree used here will be added in the future##
 
 uce$tip.label=c("allMis", "anaPla", "melGal", "galGal", "mesUni", "colLiv", "chaPel", "calAnn", "cucCan", "chaVoc", "nipNip", "fulGla", "aptFor", "pygAde", "balReg", "picPub", "lepDis", "halLeu", "falPer", "melUnd", "corBra", "pseHum", "taeGut", "ficAlb", "casCas", "droNov", "aptHaa", "aptOwe", "aptRow", "rheAme", "rhePen", "notPer", "eudEle", "tinGut", "cryCin", "strCam")
 croc$tip.label=sub("\\d+", "", croc$tip.label)
 
-target<-read.tree("target.tre")
+target<-read.tree("target.tre") #the topology derived from collapsing low confidence or conflicted nodes from Jarvis et al 2014
 
 name.check(uce, data.names=target$tip.label)
 name.check(croc, data.names=target$tip.label)

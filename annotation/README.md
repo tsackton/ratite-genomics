@@ -12,6 +12,22 @@ Initial MAKER run.
 ------------------
 
 For the initial MAKER run, we used the Augustus chicken models distributed with Augustus, and
-generated chicken-trained SNAP models ourselves, as follows:
+generated chicken-trained SNAP models ourselves. See maker/snap/train_snap_chicken.sh for details on
+training.
+
+The control files for the MAKER runs are in maker/run1/.
+
+Retraining
+----------
+
+We retrained both SNAP and AUGUSTUS based on high-confidence gene models from the initial maker run for
+notPer and droNov (the two species we have RNA-seq data for). See the maker/snap/ and maker/augustus/ subdirectories
+for code to do this retraining.
+
+Final MAKER run.
+----------------
+
+For our final MAKER run, we used the trained gene predictors, as well as expanded evidence sources (TopHat junctions
+in additional to Trinity assemblies). The control files for the final MAKER runs are in maker/run2/.
 
 
