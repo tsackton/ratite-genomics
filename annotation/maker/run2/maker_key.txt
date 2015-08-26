@@ -1,0 +1,10 @@
+aptHaa	AHAA
+aptRow	AROW
+aptOwe	AOWE
+casCas	CCAS
+droNov	DNOV
+rheAme	RAME
+rhePen	RPEN
+notPer	NPER
+eudEle	EELE
+cryCin	CCIN
