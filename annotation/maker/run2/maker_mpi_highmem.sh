@@ -2,7 +2,7 @@
 #SBATCH -p general
 #SBATCH --mem-per-cpu 8000
 #SBATCH -n 256
-#SBATCH -t 6-00:00
+#SBATCH -t 7-00:00
 #SBATCH -o maker_%A.out
 #SBATCH -e maker_%A.err
 #SBATCH -J mkerMPI
