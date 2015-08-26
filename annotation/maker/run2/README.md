@@ -37,3 +37,10 @@ impact it has.
 To submit the jobs, we ran:
 ```for SP in aptHaa aptRow aptOwe droNov casCas cryCin notPer eudEle rheAme rhePen; do sbatch maker_mpi.sh $SP; done```
 from the MAKER base directory
+
+Cleanup
+-------
+
+After running MAKER, we clean up and parse the results with this code:
+ ```while read LINE; do ./cleanup_maker.sh $LINE & done < maker_key.txt```
+ 
