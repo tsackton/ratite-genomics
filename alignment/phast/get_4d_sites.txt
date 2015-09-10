@@ -1,0 +1,30 @@
+#convert to GTF
+module load cufflinks
+gffread --no-pseudo -C -T -o galGal4.gtf GCF_000002315.3_Gallus_gallus-4.0_genomic.gff 
+grep -v "^NC_001323.1" galGal4.gtf | grep "protein_coding" | grep -P "\tCDS\t" > galGal4_filt.gtf
+
+#convert to genepred
+gtfToGenePred galGal4_filt.gtf galGal4.gp
+
+#convert to bed
+genePredToBed galGal4.gp galGal4.bed
+
+#extract 4D sites
+hal4dExtract --conserved --inMemory /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal galGal galGal4.bed galGal4_4d.bed
+
+#not going to use the wrapper scripts as they seem to do odd things. So let's first get a chicken-referenced MAF
+
+hal2mafMP.py --numProc 48 --refGenome galGal --noAncestors --noDupes --refTargets galGal4_4d.bed /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal neut4d_input_galGal_ref.maf
+
+#fix MAF with sed
+sed -i -e 2d neut4d_input_galGal_ref.maf
+
+##STOPPED BELOW HERE## ##NEED BIFURCATING TREE##
+
+#run phyloFit
+phyloFit --tree tree1.nh --subst-mod SSREV --out-root neut_tree1 --msa-format MAF --sym-freqs neut4d_input_galGal_ref.maf
+
+#run halPhyloPTrain.py to train the neutral model
+
+halPhyloPTrain.py --no4d --numProc 36 --noAncestors --substMod SSREV --noModFreqs /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal galGal galGal4_4d.bed neut4d.mod &> phyloptrain.log
+

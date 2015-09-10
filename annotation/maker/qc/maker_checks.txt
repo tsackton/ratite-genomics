@@ -1,0 +1,7 @@
+#MAKER checks
+
+grep -c ">" inputs/*.fa > scaffold_counts &
+grep -c "STARTED" annotation/*/*.maker.output/*_master_datastore_index.log  > scaffolds_started &
+grep -c "FINISHED" annotation/*/*.maker.output/*_master_datastore_index.log  > scaffolds_finished &
+
+##NEED TO RERUN / FINISH RHEAME AND RHEPEN
