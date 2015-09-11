@@ -43,7 +43,8 @@ cp aptOwe.kiwi.junctions.bed.gff aptOwe.est.gff
 cp aptOwe.dronov.junctions.bed.gff aptOwe.altest.gff
 
 #cassowary, rheas have just altest of both kiwi and notper
+#added -l option to deal with multiple indentical ids
 gff3_merge -o casCas.altest.gff casCas*.junctions.bed.gff
-gff3_merge -o rheAme.altest.gff rheAme*.junctions.bed.gff
-gff3_merge -o rhePen.altest.gff rhePen*.junctions.bed.gff
+gff3_merge -l -o rheAme.altest.gff rheAme*.junctions.bed.gff
+gff3_merge -l -o rhePen.altest.gff rhePen*.junctions.bed.gff
 
