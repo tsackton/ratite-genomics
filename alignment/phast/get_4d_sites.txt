@@ -44,5 +44,6 @@ msa_view neut4d_input_galGal_ref.maf --out-format SS --unordered-ss > neut4d_inp
 
 #run phyloFit
 phyloFit --tree ratiteTree.ver1.nh --subst-mod SSREV --out-root neut_ver1 --msa-format SS --sym-freqs neut4d_input.ss
-
+phyloFit --tree ratiteTree.ver2.nh --subst-mod SSREV --out-root neut_ver2 --msa-format SS --sym-freqs neut4d_input.ss
+phyloFit --tree ratiteTree.ver3.nh --subst-mod SSREV --out-root neut_ver3 --msa-format SS --sym-freqs neut4d_input.ss
 
