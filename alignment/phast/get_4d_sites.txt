@@ -47,3 +47,49 @@ phyloFit --tree ratiteTree.ver1.nh --subst-mod SSREV --out-root neut_ver1 --msa-
 phyloFit --tree ratiteTree.ver2.nh --subst-mod SSREV --out-root neut_ver2 --msa-format SS --sym-freqs neut4d_input.ss
 phyloFit --tree ratiteTree.ver3.nh --subst-mod SSREV --out-root neut_ver3 --msa-format SS --sym-freqs neut4d_input.ss
 
+##phyloFit logs
+[tsackton@bioinf01 phast]$ phyloFit --tree ratiteTree.ver1.nh --subst-mod SSREV --out-root neut_ver1 --msa-format SS --sym-freqs neut4d_input.ss
+Reading alignment from neut4d_input.ss ...
+Compacting sufficient statistics ...
+Fitting tree model to neut4d_input.ss using SSREV ...
+numpar = 87
+Done.  log(likelihood) = -37564346.336406 numeval=18634
+WARNING: BFGS algorithm reached its maximum number of iterations.
+Writing model to neut_ver1.mod ...
+Done.
+
+[tsackton@bioinf01 phast]$ phyloFit --tree ratiteTree.ver2.nh --subst-mod SSREV --out-root neut_ver2 --msa-format SS --sym-freqs neut4d_input.ss
+Reading alignment from neut4d_input.ss ...
+Compacting sufficient statistics ...
+Fitting tree model to neut4d_input.ss using SSREV ...
+numpar = 87
+Done.  log(likelihood) = -37564931.298420 numeval=11930
+Writing model to neut_ver2.mod ...
+Done.
+
+[tsackton@bioinf01 phast]$ phyloFit --tree ratiteTree.ver3.nh --subst-mod SSREV --out-root neut_ver3 --msa-format SS --sym-freqs neut4d_input.ss
+Reading alignment from neut4d_input.ss ...
+Compacting sufficient statistics ...
+Fitting tree model to neut4d_input.ss using SSREV ...
+numpar = 87
+Done.  log(likelihood) = -37663646.724282 numeval=7763
+Writing model to neut_ver3.mod ...
+Done.
+
+#want to be sure the neutral models are reliable, so rerun with --init-random, start 5 independent runs of each model (15 total)
+#also because of convergence error on ver1, rerun with --init-model to retry 
+#code to run random iterations:
+
+for ITER in 1 2 3 4 5
+do
+	phyloFit --tree ratiteTree.ver1.nh --init-random --subst-mod SSREV --out-root neut_ver1_${ITER} --msa-format SS --sym-freqs neut4d_input.ss &> phyloFit_ver1_${ITER}.log &
+	phyloFit --tree ratiteTree.ver2.nh --init-random --subst-mod SSREV --out-root neut_ver2_${ITER} --msa-format SS --sym-freqs neut4d_input.ss &> phyloFit_ver2_${ITER}.log &
+	phyloFit --tree ratiteTree.ver3.nh --init-random --subst-mod SSREV --out-root neut_ver3_${ITER} --msa-format SS --sym-freqs neut4d_input.ss &> phyloFit_ver3_${ITER}.log &
+done
+
+#code to improve ver1 model 
+phyloFit --init-model neut_ver1.mod --out-root neut_ver1_run2 --msa-format SS --sym-freqs neut4d_input.ss &> phyloFit_ver1_rerun.log &
+
+
+
+	
