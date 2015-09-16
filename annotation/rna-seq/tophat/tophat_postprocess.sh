@@ -15,11 +15,18 @@ do
 	awk '{if($5 >= 5) print $0}' $BED > $TARGET.junctions.bed
 done
 
+#fix names in casCas.dronov, rheAme.dronov, rhePen.dronov
+for SPFIX in casCas rheAme rhePen
+do
+	perl -p -i -e "s/JUNC/JUNC2/" $SPFIX.dronov.junctions.bed
+done
+
 #convert to GFF
-for BED in 	$(ls *.bed)
+for BED in $(ls *.bed)
 do
 	tophat2gff3 $BED > $BED.gff
 done
+
 
 #merge and rename
 
@@ -42,9 +49,7 @@ cp aptRow.dronov.junctions.bed.gff aptRow.altest.gff
 cp aptOwe.kiwi.junctions.bed.gff aptOwe.est.gff
 cp aptOwe.dronov.junctions.bed.gff aptOwe.altest.gff
 
-#cassowary, rheas have just altest of both kiwi and notper
-#added -l option to deal with multiple indentical ids
+#cassowary and rhea just have altest, but need to be renamed
 gff3_merge -o casCas.altest.gff casCas*.junctions.bed.gff
-gff3_merge -l -o rheAme.altest.gff rheAme*.junctions.bed.gff
-gff3_merge -l -o rhePen.altest.gff rhePen*.junctions.bed.gff
-
+gff3_merge -o rheAme.altest.gff rheAme*.junctions.bed.gff
+gff3_merge -o rhePen.altest.gff rhePen*.junctions.bed.gff
