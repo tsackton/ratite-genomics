@@ -9,9 +9,9 @@ NCBI formatted gff to bed converter.  Takes a file with each exon on separate li
 
 import csv
 
-file_out = '/Users/Phil/Desktop/PseudoSearch/Chicken_CDS_Only1.bed'
+file_out = '/Users/Phil/Desktop/PseudoSearch/Chicken_CDS.bed'
 fout = open(file_out, 'w')
-with open('/Users/Phil/Desktop/PseudoSearch/Chicken_CDS_Only.gff', 'rU') as handle: #opens bed in universal mode
+with open('/Users/Phil/Desktop/PseudoSearch/Chicken_CDS.gff', 'rU') as handle: #opens bed in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader:
         Genome = strLine[0]
