@@ -18,7 +18,7 @@ done
 #fix names in casCas.dronov, rheAme.dronov, rhePen.dronov
 for SPFIX in casCas rheAme rhePen
 do
-	perl -p -i -e "s/JUNC/JUNC2/" $SPFIX.dronov.junctions.bed
+	perl -p -i -e "s/JUNC/JUNC2/g" $SPFIX.dronov.junctions.bed
 done
 
 #convert to GFF
