@@ -1,0 +1,23 @@
+#merge output from data store
+
+for SPEC in $(cat maker_key.txt | cut -f1,1)
+do
+	./merge_maker_output.sh $SPEC &> ${SPEC}_merge.log &
+done
+
+
+#make MAKER ids for each species
+
+while read LINE; 
+do 
+	declare -a SPECINFO=($LINE)
+	maker_map_ids --prefix ${SPECINFO[1]} --suffix '-R' --iterate 'A' --justify 8 annotation/${SPECINFO[0]}/${SPECINFO[0]}.genome.gff 1> annotation/${SPECINFO[0]}/${SPECINFO[0]}.map.ids 2> ${SPECINFO[0]}_map.log & 
+done < maker_key.txt
+
+#replace ids in fasta files with new ids
+for SPEC in $(cat maker_key.txt | cut -f1,1)
+do
+	map_fasta_ids annotation/${SPEC}/${SPEC}.map.ids annotation/${SPEC}/${SPEC}.genome.all.maker.proteins.fasta &> ${SPEC}_protmap.log &
+	map_fasta_ids annotation/${SPEC}/${SPEC}.map.ids annotation/${SPEC}/${SPEC}.genome.all.maker.transcripts.fasta &> ${SPEC}_transmap.log &
+	map_gff_ids annotation/${SPEC}/${SPEC}.map.ids annotation/${SPEC}/${SPEC}.genome.gff &> ${SPEC}_gffmap.log &
+done
