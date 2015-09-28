@@ -66,12 +66,8 @@ SPECIES=$(nw_labels ratiteTree.nh | sort | tr '\n' ',')
 MSAFILES=$(ls extract_maf/*.maf)
 msa_view --aggregate ${SPECIES%?} --in-format MAF --out-format SS --unordered-ss $MSAFILES > neut4d_input.ss
 
-#NEED TO RERUN EVERYTHING BELOW HERE#
-
-
 #run phyloFit
 #want to be sure the neutral models are reliable, so run with --init-random, start 5 independent runs of each model (15 total)
-#also because of convergence error on ver1, rerun with --init-model to retry 
 #code to run random iterations:
 
 for ITER in 1 2 3 4 5
@@ -81,7 +77,7 @@ do
 	phyloFit --tree ratiteTree.ver3.nh --init-random --subst-mod SSREV --out-root neut_ver3_${ITER} --msa-format SS --sym-freqs --log phyloFit_ver3_${ITER}.log neut4d_input.ss &> phyloFit_ver3_${ITER}.out &
 done
 
-#if any models fail to converge as indicated by the log file, rerun with --init-model
+#NEED TO RERUN EVERYTHING BELOW HERE#
 
 #finally, improve all random models with same approach as above
 for MOD in $(ls neut*.mod);
