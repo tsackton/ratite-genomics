@@ -1,0 +1,140 @@
+#################################################################################
+#        ___           ___           ___     
+#       /\  \         /\__\         /\  \    
+#      /::\  \       /::|  |       /::\  \   
+#     /:/\:\  \     /:|:|  |      /:/\:\  \  
+#    /:/  \:\  \   /:/|:|__|__   /::\~\:\  \ 
+#   /:/__/ \:\__\ /:/ |::::\__\ /:/\:\ \:\__\
+#   \:\  \ /:/  / \/__/~~/:/  / \/__\:\/:/  /
+#    \:\  /:/  /        /:/  /       \::/  / 
+#     \:\/:/  /        /:/  /        /:/  /  
+#      \::/  /        /:/  /        /:/  /   
+#       \/__/         \/__/         \/__/    
+#   
+################################################################################
+
+# Type of input sequence data, has to be either 'DNA' or 'AA'
+InputDataType := 'AA';
+
+# if you want to recompute everything from scratch everytime the script
+# is run, set the following parameter to false.
+ReuseCachedResults := true;
+
+# number of pairwise protein alignments done in one unit. The larger this 
+# number, the longer each unit runs, and the fewer files get produced. This 
+# allows to adjust the frequency of milestone steps (e.g. in case of computer 
+# crash)
+AlignBatchSize := 1e7;
+
+# alignments which have a score lower than MinScore will not be considered.
+# The scores are in Gonnet PAM matrices units.
+MinScore := 181;
+
+# Length tolerance ratio.  If the length of the effective alignement is less 
+# than LengthTol*min(length(s1),length(s2)) then the alignment is not 
+# considered.
+LengthTol := 0.61;
+
+# During the stable pair formation, if a pair has a distance provable higher 
+# than another pair (i.e. StablePairTol standard deviations away) then it is 
+# discarded.
+StablePairTol := 1.81;
+
+# For the verification of stable pairs, there is also a tolerance parameter 
+# (for details, see Dessimoz et al, Nucl Acids Res 2006)
+VerifiedPairTol := 1.53;
+
+# Any sequence which is less than MinSeqLen amino acids long in regular 
+# genomes is not considered.
+MinSeqLen := 30;
+
+# use experimental code (single processor only) to compute homologous
+# clusters instead of full All-against-all. 
+UseExperimentalHomologousClusters := false;
+
+##############################################################
+# Output parameters
+##############################################################
+# Enables/disables the generation of stable identifiers for OMA groups (and 
+# Hierarchical Groups if their computation enabled). The identifier consists 
+# of a prefix to determine the type of the group ('OMA' or 'HOG'), and a 
+# subsequence of the amino acid sequence uniquely present in this group. The 
+# computation of these ids might require a substantial amount of time. The ids 
+# are stored in the OrthoXML files only.
+StableIdsForGroups := false;
+
+# Avoid producing some of the output files. This can reduce computing time
+# and especially avoids the generation of many files in large analysis. By 
+# default all the output files are generated. Uncomment certain lines to 
+# avoid the production of the corresponding output.
+#WriteOutput_PairwiseOrthologs := false;
+#WriteOutput_OrthologousPairs_orthoxml := false;  #this file requires lots of time.
+#WriteOutput_OrthologousGroupsFasta := false;
+WriteOutput_HOGFasta := true;
+
+
+##############################################################
+# Hierarchical Orthologous Groups
+##############################################################
+# Compute Hierarchical groups?
+# You can either set it to 'true', which will enable the computation or 
+# disable it by setting it to 'false'. Keep in mind that the current 
+# implementation is not yet parallelized and hence needs quite some time.
+DoHierarchicalGroups := true;
+
+# Define maximum umount of time (in sec) spent by the program for  breaking 
+# every connected component of the orthology graph at its weakest link on a 
+# given taxonomic level. If set to a negative value, no timelimit is enforced.
+MaxTimePerLevel := -1; # 20min
+
+# The hierarchical groups need a hierarchy of the involved species in from of 
+# a tree. This tree can either be estimated from the OMA Groups by setting the 
+# SpeciesTree variable to 'estimate', or a (partially resolved) tree can be 
+# given in Newick format. The estimation step needs again additional computing 
+# time.
+#SpeciesTree := 'estimate';
+SpeciesTree := '((((((((((((((taeGut,ficAlb,pseHum,serCan,geoFor),corBra),melUnd),falPer),((picPub,lepDis),(aquChr,halLeu))),(((aptFor,pygAde),fulGla),(egrGar,nipNip))),(balReg,chaVoc)),((calAnn,chaPel),cucCan)),(colLiv,mesUni)),((galGal,melGal),anaPla)),(((((aptHaa,aptOwe),aptRow),(casCas,droNov)),((cryCin,tinGut),(eudEle,notPer)),(rheAme,rhePen)),strCam)),allMis),chrPic),anoCar);';
+
+# The cutoff of 'average reachability within two steps' defines up to what 
+# point a cluster is split into sub-clusters.
+ReachabilityCutoff := 0.65;
+
+
+
+###############################################################################
+# ESPRIT -- Detection of split genes
+###############################################################################
+# Use Esprit?
+# You can either set this to 'true', which will enable esprit and shut down the
+# parts of OMA that are not directly needed for esprit, or set it to 'false' to
+# make no use of esprit at all.
+UseEsprit := false;
+
+# NOTE: Genomes in which split genes are to be found should be called 
+#       "{unique name}.contig.fa". All other genomes are considered
+#       reference genomes.
+
+
+# ESPRIT PARAMETERS 
+
+# Confidence level variable for contigs  (this is the parameter "tol" 
+# described in the paper)
+DistConfLevel := 2;
+
+# Min proportion of genomes with which contigs form many:1 BestMatches to 
+# consider that we might be dealing with fragments of the same gene (this is 
+# the parameter "MinRefGenomes" described in the paper, normalized by the 
+# total number of reference genomes)
+MinProbContig := 0.4;
+
+# Maximum overlap between fragmnents of same gene from different contigs
+MaxContigOverlap := 5;
+
+# Any sequence which is less than MinSeqLen amino acids long in contigs is not 
+# considered.
+MinSeqLenContig := 20;
+
+# Minimum score for BestMatch in scaffold recognition
+MinBestScore := 250;
+
+
