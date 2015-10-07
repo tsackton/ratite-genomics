@@ -77,8 +77,6 @@ do
 	phyloFit --tree ratiteTree.ver3.nh --init-random --subst-mod SSREV --out-root neut_ver3_${ITER} --msa-format SS --sym-freqs --log phyloFit_ver3_${ITER}.log neut4d_input.ss &> phyloFit_ver3_${ITER}.out &
 done
 
-#NEED TO RERUN EVERYTHING BELOW HERE#
-
 #finally, improve all random models with same approach as above
 for MOD in $(ls neut*.mod);
 do
@@ -88,13 +86,18 @@ done
 
 #verify convergence of models
 #copy each version to _final.mod
+
+cp neut_ver1_1_update.mod neut_ver1_final.mod
+cp neut_ver2_2_update.mod neut_ver2_final.mod
+cp neut_ver3_2_update.mod neut_ver3_final.mod
+
 #run halPhyloPMP.py with 12 processors per on each neutral version
 for VER in 1 2 3;
 do
 	mkdir neut_ver$VER
 	cp neut_ver${VER}_final.mod neut_ver$VER
 	cd neut_ver$VER
-	halPhyloPMP.py /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal galGal neut_ver${VER}_final.mod galGal_phyloP_ver$VER.wig &> halPhyloP.log &
+	halPhyloPMP.py --numProc 12 /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal galGal neut_ver${VER}_final.mod galGal_phyloP_ver$VER.wig &> halPhyloP.log &
 	cd ..
 done
 
@@ -102,9 +105,16 @@ done
 for VER in 1 2 3;
 do
 	cd neut_ver$VER
-	halPhyloPMP.py /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal strCam neut_ver${VER}_final.mod strCam_phyloP_ver$VER.wig &> halPhyloP_strCam.log &
+	halPhyloPMP.py --numProc 12 /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal strCam neut_ver${VER}_final.mod strCam_phyloP_ver$VER.wig &> halPhyloP_strCam.log &
 	cd ..
 done
 
+#finally also run tree version
+for VER in 1 2 3 
+do
+	cd neut_ver$VER
+	halTreePhyloP.py --numProc 24 /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal neut_ver${VER}_final.mod . &> halTreePhyloP.log &
+	cd ..
+done
 
 	
