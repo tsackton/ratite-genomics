@@ -117,4 +117,15 @@ do
 	cd ..
 done
 
-	
+### RUNNING PHASTCONS ###
+#to run phastCons, we need to take a slightly different approach as there is no direct interface with hal
+#so the first step is to export the MAFs that we want, in this case starting with two: chicken, ostrich
+#for each MAF, we then run phastCons
+#sources: https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=cons100way and http://compgen.cshl.edu/phast/phastCons-HOWTO.html
+for TARGET in galGal strCam
+do
+	mkdir -p $TARGET
+	cd $TARGET
+	hal2mafMP.py --numProc 12 --splitBySequence --smallSize 10000 --refGenome $TARGET --noAncestors /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal  ${TARGET}_ref.maf &
+	cd ..
+done
