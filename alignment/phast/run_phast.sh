@@ -1,4 +1,9 @@
-#make tree
+#CODE TO RUN PHAST AND RELATED ANALYSIS
+#MOSTLY RUN INTERACTIVELY ON A LARGE MEMORY MACHINE, SO FEW SLURM SCRIPT
+
+### GETTING NEUTRAL MODELS ###
+
+#Step 1. Make tree
 halStats --tree /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal > tree1.nh
 perl -p -i -e 's/Anc\d+//g' tree1.nh 
 nw_topology tree1.nh > ratiteTree.nh
@@ -19,6 +24,7 @@ nw_labels ratiteTree.nh > species_list
 #ver2 = Mitchell tree (rheas outgroup to non-ostrichs)
 #ver3 = rheas + ECK clade
 
+#Step 2. Get 4-fold degenerate sites based on galGal4 NCBI annotations
 #convert to GTF
 module load cufflinks
 gffread --no-pseudo -C -T -o galGal4.gtf GCF_000002315.3_Gallus_gallus-4.0_genomic.gff 
@@ -34,11 +40,6 @@ genePredToBed galGal4.gp galGal4.bed
 hal4dExtract --conserved --inMemory /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal galGal galGal4.bed galGal4_4d.bed
 
 #not going to use the wrapper scripts as they seem to do odd things. So let's first get a chicken-referenced MAF
-
-#NOTE: 9/22/2015 THIS CODE DOES NOT WORK DUE TO HAL2MAF BUG/UNDOCUMENTED FEATURE WITH REFSEQUENCE / REFTARGETS
-#hal2mafMP.py --numProc 48 --refGenome galGal --noAncestors --noDupes --refTargets galGal4_4d.bed /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal neut4d_input_galGal_ref.maf
-
-#NEW CODE BELOW:
 mkdir extract_maf
 cd extract_maf
 cp ../galGal4_4d.bed .
@@ -66,7 +67,9 @@ SPECIES=$(nw_labels ratiteTree.nh | sort | tr '\n' ',')
 MSAFILES=$(ls extract_maf/*.maf)
 msa_view --aggregate ${SPECIES%?} --in-format MAF --out-format SS --unordered-ss $MSAFILES > neut4d_input.ss
 
-#run phyloFit
+#neut4d_input.ss is now an SS-format alignment of all 4d sites in the original alignment
+
+#Step 3. phyloFit
 #want to be sure the neutral models are reliable, so run with --init-random, start 5 independent runs of each model (15 total)
 #code to run random iterations:
 
@@ -77,7 +80,7 @@ do
 	phyloFit --tree ratiteTree.ver3.nh --init-random --subst-mod SSREV --out-root neut_ver3_${ITER} --msa-format SS --sym-freqs --log phyloFit_ver3_${ITER}.log neut4d_input.ss &> phyloFit_ver3_${ITER}.out &
 done
 
-#finally, improve all random models with same approach as above
+#finally, improve all random models to guarantee convergence
 for MOD in $(ls neut*.mod);
 do
 	NEWMOD=${MOD%%.*}
@@ -91,9 +94,7 @@ cp neut_ver1_1_update.mod neut_ver1_final.mod
 cp neut_ver2_2_update.mod neut_ver2_final.mod
 cp neut_ver3_2_update.mod neut_ver3_final.mod
 
-##NOTE ADDED 10/14/2015 -- do not adjust background freqs in model prior to running phyloP, and it is not clear that halPhyloPMP.py does this automatically...
-##Rerun with adjusted model in phyloPv2 directory. However in the tree version this seems odd as GC content may vary across species
-
+#Step 4. Adjust background GC content to be reflective of the average GC content across the non-ancestral genomes in the alignment
 ###code added to get GC content for each genome, by sampling every 100 bp
 mkdir -p baseComp
 cd baseComp
@@ -111,8 +112,9 @@ do
 	modFreqs neut_ver${VER}_final.mod $GC > neut_ver${VER}_corrected.mod
 done
 
+### RUN PHYLOP ##
 #run halPhyloPMP.py with 12 processors per on each neutral version
-##RERUN CODE STARTING HERE WITH UPDATED MODELS TO REFLECT DIFFERENT GC CONTENT
+#use the _corrected version of each model
 for VER in 1 2 3;
 do
 	mkdir neut_ver$VER
@@ -137,8 +139,8 @@ do
 	halTreePhyloP.py --numProc 24 /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal neut_ver${VER}_corrected.mod . &> halTreePhyloP.log &
 	cd ..
 done
-###END PHYLOP RERUN SECTION
 
+##RUN CODE (SEPARATE SCRIPT, R & BASH) TO VERIFY THAT THERE IS NO EFFECTIVE DIFFERENCE BETWEEN THE THREE RHEA PLACEMENTS IN PHYLOP SCORES
 
 ### RUNNING PHASTCONS ###
 #to run phastCons, we need to take a slightly different approach as there is no direct interface with hal
@@ -153,7 +155,8 @@ do
 	cd ..
 done
 
-#Next -- estimate rho for (a subset of) alignments, after using modFreq utility to adjust neutral models for expected GC content across alignment
+#Next -- split alignments into chunks of 1MB - 5 MB
+#Next -- estimate rho for (a subset of) alignments
 #Next -- average rho to get a global rho estimate
 #Next -- run phastCons to predict conserved elements on each target segment
 #Next -- merge predictions and estimate coverage, look at length, other tuning measures
