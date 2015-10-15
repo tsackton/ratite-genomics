@@ -7,10 +7,11 @@ note that first strand will always be chicken.
 """
 
 import csv
-import re
+from Bio import SeqIO
+import os
 
-#file_out = '/Users/Phil/Desktop/Chicken_messingaround.txt'
-#fout = open(file_out, 'w')
+fout = open('/Users/Phil/Desktop/Chicken_messingaround.txt','w')
+os.chdir('/Users/Phil/Desktop/')
 with open('/Users/Phil/Desktop/fulGla.psl', 'rU') as handle: #opens bed in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader:
@@ -28,24 +29,25 @@ with open('/Users/Phil/Desktop/fulGla.psl', 'rU') as handle: #opens bed in unive
         blockSizes = strLine[19]
         qStarts = strLine[20]
         tStarts = strLine[21]
+        if strand == "+-":
+            rc = True
+        elif strand == "--":
+            rc = True
+        else:
+            rc = False
         qExonSize=qEnd-qStart
-        tExonSize=tEnd-tStart        
-        #print name+"_"+str(qExonSize)+"_"+str(tExonSize)
-        if qExonSize != tExonSize:
-            difExon = qExonSize-tExonSize            
-            print name+"_"+str(difExon)
-        #print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (name,strand,qName,qSize,qStart,qEnd,tName,tSize,tStart,tEnd,blockCount,blockSizes,qStarts,tStarts)
-        
-        
-        
-        
-        """Start = int(strLine[3])-1 #BED is 0 based and GFF is 1 based
-        Stop = strLine[4]
-        MetaD = strLine[8]
-        Zero = 0
-        Strand = strLine[6]
-        IDsearch = re.search('Dbxref\=([a-zA-Z0-9\.\,\_\:\/\-]*)',MetaD)
-        MetaData= IDsearch.group(1)+",Start:"+str(Start)+",Stop:"+str(Stop)+",Strand:"+Strand
-        outStr = "%s\t%s\t%s\t%s\t%s\t%s" % (Scaffold,Start,Stop,MetaData,Zero,Strand)
-        fout.write(outStr + '\n') #and write that string out
-fout.close()"""
+        tExonSize=tEnd-tStart
+        if qExonSize==tExonSize:
+            #genome=os.getenv('1')#link to $1 in batch script
+            #genome=str(file)+".fa"
+            genome='fulGla.fa'
+            z = SeqIO.index_db(genome+".idx", genome, "fasta")
+            z = z.get(tName)[tStart:tEnd] #returns the target exon from the target scaffold as a SeqRecord 
+            fasta = z.format("fasta") #returns the SeqRecord in fasta format
+            if rc:
+                zrc=(z.reverse_complement(id="rc_",description=z.description))
+                rcfasta=zrc.format("fasta")
+                fout.write(rcfasta)
+            else:
+                fout.write(fasta)
+    fout.close()
