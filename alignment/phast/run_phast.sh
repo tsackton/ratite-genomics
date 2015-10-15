@@ -91,13 +91,34 @@ cp neut_ver1_1_update.mod neut_ver1_final.mod
 cp neut_ver2_2_update.mod neut_ver2_final.mod
 cp neut_ver3_2_update.mod neut_ver3_final.mod
 
+##NOTE ADDED 10/14/2015 -- do not adjust background freqs in model prior to running phyloP, and it is not clear that halPhyloPMP.py does this automatically...
+##Rerun with adjusted model in phyloPv2 directory. However in the tree version this seems odd as GC content may vary across species
+
+###code added to get GC content for each genome, by sampling every 100 bp
+mkdir -p baseComp
+cd baseComp
+for TARGET in $(halStats --genomes /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal)
+do
+	#output is fraction_of_As fraction_of_Gs fraction_of_Cs fraction_of_Ts
+	halStats --baseComp $TARGET,100 /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal > $TARGET.basecomp
+done
+cd ..
+
+#get average gc content in non-ancestral genomes and update models:
+GC=$(cat /n/regal/edwards_lab/ratites/phast/baseComp/??????.basecomp | awk '{SUM+=$2;SUM+=$3;print SUM/42}' | tail -n 1)
+for VER in 1 2 3;
+do
+	modFreqs neut_ver${VER}_final.mod $GC > neut_ver${VER}_corrected.mod
+done
+
 #run halPhyloPMP.py with 12 processors per on each neutral version
+##RERUN CODE STARTING HERE WITH UPDATED MODELS TO REFLECT DIFFERENT GC CONTENT
 for VER in 1 2 3;
 do
 	mkdir neut_ver$VER
-	cp neut_ver${VER}_final.mod neut_ver$VER
+	cp neut_ver${VER}_corrected.mod neut_ver$VER
 	cd neut_ver$VER
-	halPhyloPMP.py --numProc 12 /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal galGal neut_ver${VER}_final.mod galGal_phyloP_ver$VER.wig &> halPhyloP.log &
+	halPhyloPMP.py --numProc 12 /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal galGal neut_ver${VER}_corrected.mod galGal_phyloP_ver$VER.wig &> halPhyloP_galGal.log &
 	cd ..
 done
 
@@ -105,7 +126,7 @@ done
 for VER in 1 2 3;
 do
 	cd neut_ver$VER
-	halPhyloPMP.py --numProc 12 /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal strCam neut_ver${VER}_final.mod strCam_phyloP_ver$VER.wig &> halPhyloP_strCam.log &
+	halPhyloPMP.py --numProc 12 /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal strCam neut_ver${VER}_corrected.mod strCam_phyloP_ver$VER.wig &> halPhyloP_strCam.log &
 	cd ..
 done
 
@@ -113,9 +134,11 @@ done
 for VER in 1 2 3 
 do
 	cd neut_ver$VER
-	halTreePhyloP.py --numProc 24 /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal neut_ver${VER}_final.mod . &> halTreePhyloP.log &
+	halTreePhyloP.py --numProc 24 /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal neut_ver${VER}_corrected.mod . &> halTreePhyloP.log &
 	cd ..
 done
+###END PHYLOP RERUN SECTION
+
 
 ### RUNNING PHASTCONS ###
 #to run phastCons, we need to take a slightly different approach as there is no direct interface with hal
@@ -126,6 +149,13 @@ for TARGET in galGal strCam
 do
 	mkdir -p $TARGET
 	cd $TARGET
-	hal2mafMP.py --numProc 12 --splitBySequence --smallSize 10000 --refGenome $TARGET --noAncestors /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal  ${TARGET}_ref.maf &
+	hal2mafMP.py --numProc 24 --splitBySequence --sliceSize 5000000 --smallSize 500000 --refGenome $TARGET --noAncestors /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal ${TARGET}_ref.maf &
 	cd ..
 done
+
+#Next -- estimate rho for (a subset of) alignments, after using modFreq utility to adjust neutral models for expected GC content across alignment
+#Next -- average rho to get a global rho estimate
+#Next -- run phastCons to predict conserved elements on each target segment
+#Next -- merge predictions and estimate coverage, look at length, other tuning measures
+#Next -- iterate until things look good
+#Next -- run final predictions using fixed values for rho, coverage, length in all reference species, but also outputting per base estimates
