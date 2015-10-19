@@ -4,11 +4,14 @@ import os
 import re
 total = 0
 perfect = 0
-
+imperfect = 0
+falseStart = 0
+falseEnd = 0
+falseBoth = 0
 
 fout = open('/Users/Phil/Desktop/messingaroundfulGla.txt','w')
 os.chdir('/Users/Phil/Desktop/')
-with open('/Users/Phil/Desktop/10000fulGla.psl', 'rU') as handle: #opens bed in universal mode
+with open('/Users/Phil/Desktop/fulGla.psl', 'rU') as handle: #opens bed in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader:
         name = strLine[0]
@@ -29,9 +32,31 @@ with open('/Users/Phil/Desktop/10000fulGla.psl', 'rU') as handle: #opens bed in 
         qnamestop = re.search('Stop\:([0-9]*)\,', name)
         total += 1
         if int(qnamestart.group(1)) == qStart and int(qnamestop.group(1)) == qEnd:
-            perfect += 1
-print "total ="+str(total)
-print "perfect ="+str(perfect)
+            qExonSize=qEnd-qStart
+            tExonSize=tEnd-tStart
+            if qExonSize==tExonSize:
+                perfect +=1
+            else:
+                imperfect +=1
+        else:
+            if int(qnamestart.group(1)) != qStart and int(qnamestop.group(1)) == qEnd:
+                falseStart +=1
+            elif int(qnamestop.group(1)) != qEnd and int(qnamestart.group(1)) == qStart:
+                falseEnd +=1
+            else:
+                falseBoth +=1
+components = (int(perfect+imperfect+falseStart+falseEnd+falseBoth))
+fout.write("total = "+str(total))
+fout.write("\n"+"perfect = "+str(perfect))
+fout.write("\n"+"imperfect = "+str(imperfect))
+fout.write("\n"+"falseStart = "+str(falseStart))
+fout.write("\n"+"falseEnd = "+str(falseEnd))
+fout.write("\n"+"falseBoth = "+str(falseBoth))
+fout.write("\n"+"total is "+str(total)+" and components add to "+str(components))
+if int(total) != int(components):
+    fout.write("\n"+"We've got a problem here")
+fout.close()
+
 #            if strand == "+-":
 #                rc = True
 #            elif strand == "--":
