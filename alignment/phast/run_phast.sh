@@ -151,14 +151,49 @@ for TARGET in galGal strCam
 do
 	mkdir -p $TARGET
 	cd $TARGET
-	hal2mafMP.py --numProc 24 --splitBySequence --sliceSize 5000000 --smallSize 500000 --refGenome $TARGET --noAncestors /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal ${TARGET}_ref.maf &
+	hal2mafMP.py --numProc 36 --splitBySequence --sliceSize 5000000 --smallSize 500000 --refGenome $TARGET --noAncestors /n/regal/edwards_lab/ratites/wga/ratite_final_20150627/ratiteAlign.hal ${TARGET}_ref.maf &
 	cd ..
 done
 
-#Next -- split alignments into chunks of 1MB - 5 MB
+#fix MAFs
+for MAF in $(ls galGal_ref*.maf);
+do
+	sed -i -e 2d $MAF &
+done
+
+#filter duplicates using mafTools
+for MAF in $(ls galGal_ref*.maf);
+do
+	mafDuplicateFilter --maf $REF > ${REF%.maf}.pruned.maf
+done
+
+#Split alignments into chunks
+mkdir -p chunks            # put fragments here
+#use samtools to split reference fasta into separate files for each chr
+samtools faidx galGal.fa
+for FILE in *.pruned.maf ; do
+	CHR1=${FILE#galGal_ref_}
+	CHR=${CHR1%.pruned.maf}
+	if [ ! "$CHR" == "small" ]
+	then
+		samtools faidx galGal.fa $CHR > $CHR.fa
+		msa_split $FILE --in-format MAF --refseq $CHR.fa \
+			--windows 1000000,0 --out-root chunks/$CHR --out-format SS \
+			--min-informative 1000 --between-blocks 5000 &
+	fi
+done
+
+
 #Next -- estimate rho for (a subset of) alignments
 #Next -- average rho to get a global rho estimate
 #Next -- run phastCons to predict conserved elements on each target segment
 #Next -- merge predictions and estimate coverage, look at length, other tuning measures
 #Next -- iterate until things look good
 #Next -- run final predictions using fixed values for rho, coverage, length in all reference species, but also outputting per base estimates
+
+## TESTS FOR RATITE-SPECIFIC ACCELERATION, ETC ##
+#this is a preliminary test based on phyloP and the galGal3->galGal4 CNEEs from the feather paper
+#the idea is to test whether the 'named branches' in this case the ratites are accelerated or conserved relative to background
+#as a null, run the same test on the tinamou clade
+
+
