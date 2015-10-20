@@ -1,18 +1,14 @@
 import csv
 import os
 import re
+import sys
 IDic = {}
 single = []
 duplicate = []
 
-#fout_singles = open('/Users/Phil/Desktop/fulGla_singles.txt','w')
-#fout_duplicates = open('/Users/Phil/Desktop/fulGla_duplicates.txt','w') 
 fout_singles = open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/singles/singles_'+os.getenv('FILE'),'w') #out files will be ${FILE}.txt
 fout_duplicates = open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/duplicates/duplicates_'+os.getenv('FILE'),'w') 
-#os.chdir('/Users/Phil/Desktop/')
-#fout = open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/counts/'+os.getenv('FILE')+'.text','w') #out files will be ${FILE}.txt
-#with open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/'+os.getenv('FILE'), 'rU') as handle:
-with open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/'+os.getenv('FILE'), 'rU') as handle: #opens bed in universal mode
+with open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/'+os.getenv('FILE'), 'rU') as handle: #opens psl in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader: #read the tab delimited file in and give names to bits that will be used
         name = strLine[0]
@@ -23,7 +19,7 @@ with open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/'+os.getenv('FIL
             single.append(key)
         else:
             duplicate.append(key)
-with open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/'+os.getenv('FILE'), 'rU') as handle: #opens bed in universal mode
+with open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/'+os.getenv('FILE'), 'rU') as handle:
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader: #read the tab delimited file in and give names to bits that will be used
         name = strLine[0]        
