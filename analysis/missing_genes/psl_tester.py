@@ -8,7 +8,7 @@ falseStart = 0
 falseEnd = 0
 falseBoth = 0
 
-fout = open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/counts/'+os.getenv('FILE')+'.text','w') #out files will be ${FILE}.txt
+fout = open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/counts/'+os.getenv('FILE')+'.txt','w') #out files will be ${FILE}.txt
 with open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/'+os.getenv('FILE'), 'rU') as handle:
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader: #read the tab delimited file in and give names to bits that will be used
@@ -42,7 +42,6 @@ with open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/'+os.getenv('FIL
             elif int(qnamestop.group(1)) != qEnd and int(qnamestart.group(1)) == qStart: #missing end, but start is correct
                 falseEnd +=1
             elif int(qnamestop.group(1)) != qEnd and int(qnamestart.group(1)) != qStart: #missing start and end
-            #else: #missing start and end
                 falseBoth +=1
 components = (int(perfect+imperfect+falseStart+falseEnd+falseBoth)) #add all the components up
 fout.write("total = "+str(total)) #write the total
