@@ -54,9 +54,9 @@ fout.write("\n"+"imperfect = "+str(imperfect))
 fout.write("\n"+"falseStart = "+str(falseStart))
 fout.write("\n"+"falseEnd = "+str(falseEnd))
 fout.write("\n"+"falseBoth = "+str(falseBoth))
-fout.write("\n"+"total is "+str(total)+" and components add to "+str(components))
+fout.write("\n"+"total is "+str(total)+" and components add to "+str(components)+"\n")
 if int(total) != int(components):
-    fout.write("\n"+"We've got a problem here")
+    fout.write("\n"+"We've got a problem here"+"\n")
 fout.close()
 
 #            if strand == "+-":
