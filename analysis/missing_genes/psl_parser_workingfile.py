@@ -2,38 +2,36 @@ import csv
 from Bio import SeqIO
 import os
 import re
-x = [] #empty list for matches
-y = [] #empty list to start collecting bed lines in  
+x = [] #empty list for gene ID matches
+y = [] #empty list to start collecting psl lines in  
 
 #fout = open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/counts/'+os.getenv('FILE')+'.text','w') #out files will be ${FILE}.txt
 #with open('/n/regal/edwards_lab/phil/PseudoSearch/Final/HLO_psl/'+os.getenv('FILE'), 'rU') as handle:
-fout = open('/Users/Phil/Desktop/messingaroundfulGla.txt','w')
+fout = open('/Users/Phil/Desktop/messingaroundfulGla.txt','w') #multifasta file
+fout2 = open('/Users/Phil/Desktop/messingaroundfulGla2.txt','w') #table with exon numbers and classifications of exons
 os.chdir('/Users/Phil/Desktop/')
-with open('/Users/Phil/Desktop/1fulGla.psl', 'rU') as handle: #opens bed in universal mode
+with open('/Users/Phil/Desktop/1fulGla.psl', 'rU') as handle: #opens psl in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
-    for strLine in reader: #read the tab delimited file in and give names to bits that will be used
+    for strLine in reader: #read the tab delimited file in call the first column name
         name = strLine[0]
         if len(x)==0:  #if the program has just started, there is nothing in x      
-            namegrab = re.search('[a-zA-z\/\-]*\:([0-9]*)\,(.*\:[\+\-])',name)                        
-            genegrab = namegrab.group(1) #everything in re brackets becomes genegrab          
+            namegrab = re.search('[a-zA-z\/\-]*\:([0-9]*)\,.*\:[\+\-]',name) #grab (gene ID) from name                    
+            genegrab = namegrab.group(1) #group 1 becomes genegrab          
             x = [genegrab] #and now x is genegrab too
-            if genegrab in name:
-                y.append(strLine)
-        else:
-            nextgrab = re.search('[a-zA-z\/\-]*\:([0-9]*)\,(.*\:[\+\-])',name)
-            if x[0] == nextgrab.group(1):
-            #if genegrab in name:
-                y.append(strLine)
-            #if genegrab not in name:
-            else:
+            if genegrab in name: #if genegrab is in name
+                y.append(strLine) #append the whole line to y
+        else: #if the script hasn't just started
+            nextgrab = re.search('[a-zA-z\/\-]*\:([0-9]*)\,.*\:[\+\-]',name) #as above, but called nextgrab 
+            if x[0] == nextgrab.group(1): #if x[0] from above matches nextgrab
+                y.append(strLine) #append the line
+            else: #if they don't match, we have all exons for a transcript
                 total = 0 #a bunch of counts that start at 0
                 perfect = 0
                 imperfect = 0
                 falseStart = 0
                 falseEnd = 0
-                falseBoth = 0                
-                for listLine in y:
-                    print len(listLine)
+                falseBoth = 0                            
+                for listLine in y: #y is a list of psl lines for a transcript, label the columns
                     name = listLine[0]                    
                     strand = listLine[9]
                     qName = listLine[10]
@@ -55,22 +53,79 @@ with open('/Users/Phil/Desktop/1fulGla.psl', 'rU') as handle: #opens bed in univ
                         tExonSize=tEnd-tStart #check tExon size
                         if qExonSize==tExonSize: #if both these exons are the same size
                             perfect +=1 #this is a perfect sequence
+                            listLine.append("perfect") #add "perfect" to the listLine for later
                         else:
                             imperfect +=1 #otherwise, it is imperfect (i.e., it has indels)
-                    else: #if the chicken start and end don't jive, there are 3 more categories
+                            listLine.append("imperfect") 
+                    else: #if the entire chicken exon is not captured, there are 3 more categories
                         if int(qnamestart.group(1)) != qStart and int(qnamestop.group(1)) == qEnd: #missing start, but end is correct
                             falseStart +=1
+                            fS = abs(int(qnamestart.group(1)) - qStart)
+                            listLine.append("falseStart")
+                            listLine.append(str(fS))
+                            listLine.append("0")
                         elif int(qnamestop.group(1)) != qEnd and int(qnamestart.group(1)) == qStart: #missing end, but start is correct
                             falseEnd +=1
+                            fE = abs(int(qnamestop.group(1)) - qEnd)                            
+                            listLine.append("falseEnd")
+                            listLine.append("0")
+                            listLine.append(str(fE))
                         elif int(qnamestop.group(1)) != qEnd and int(qnamestart.group(1)) != qStart: #missing start and end
                             falseBoth +=1
-                if falseStart == falseEnd == falseBoth == 0: #if y contains only perfect and imperfect exons
+                            fS = abs(int(qnamestart.group(1)) - qStart)
+                            fE = abs(int(qnamestop.group(1)) - qEnd)
+                            listLine.append("falseBoth")
+                            listLine.append(str(fS))
+                            listLine.append(str(fE))
+                if falseStart == falseEnd == falseBoth == 0 and perfect + imperfect >= 1: #if y contains a gene with only perfect and imperfect exons
+                    exonlist = [] #create a list for exons                   
+                    exoncount = 0 #start counting exons at 0                   
                     for listLine in y:
-                        print len(listLine)
+                        name = listLine[0] 
                         tName = listLine[14]
                         strand = listLine[9]
                         tStart = int(listLine[16])
                         tEnd = int(listLine[17])
+                        classif = str(listLine[22])
+                        if strand == "+-": #make sure that reverse compliment is considered
+                            rc = True
+                        elif strand == "--":
+                            rc = True
+                        else:
+                            rc = False
+                        genome='fulGla.fa' #import the genome
+                        z = SeqIO.index_db(genome+".idx", genome, "fasta") #call the genome's index
+                        z = z.get(tName)[tStart:tEnd] #return the target exon from the target scaffold as a SeqRecord 
+                        if rc:
+                            zrc=(z.reverse_complement(id="rc_",description=z.description)) #rc the piece
+                            exonlist.append(zrc.seq) #add it to exon list
+                            exoncount +=1 #add to exon count
+                            listLine.append("Exon_"+str(exoncount)) #append the exon number to listLine
+                            listLine2 = '\t'.join(listLine) #turn that line (which is in list format) into a tab delimited string                        
+                            fout2.write(listLine2 + '\n') #write that line to the table file
+                        else:
+                            exonlist.append(z.seq) #just normal, so no rc
+                            exoncount +=1 #as above
+                            listLine.append("Exon_"+str(exoncount)) 
+                            listLine2 = '\t'.join(listLine)                        
+                            fout2.write(listLine2 + '\n')
+                    transcript="".join([str(seq_rec) for seq_rec in exonlist]) #concatenate all exons in exonlist
+                    if rc:
+                        fout.write(">"+"RC_"+z.description+"\n"+transcript+"\n") #write them out with appropriate label
+                    else:
+                        fout.write(">"+z.description+"\n"+transcript+"\n") #as above
+                else: #if we do not have only perfect and imperfect exons in the transcript
+                    exonlist = [] #all as above                   
+                    exoncount = 0                    
+                    for listLine in y:
+                        name = listLine[0] 
+                        tName = listLine[14]
+                        strand = listLine[9]
+                        tStart = int(listLine[16])
+                        tEnd = int(listLine[17])
+                        classif = str(listLine[22])
+                        falS = int(listLine[23])
+                        falE = int(listLine[24])
                         if strand == "+-":
                             rc = True
                         elif strand == "--":
@@ -79,17 +134,57 @@ with open('/Users/Phil/Desktop/1fulGla.psl', 'rU') as handle: #opens bed in univ
                             rc = False
                         genome='fulGla.fa'
                         z = SeqIO.index_db(genome+".idx", genome, "fasta")
-                        z = z.get(tName)[tStart:tEnd] #returns the target exon from the target scaffold as a SeqRecord 
-                        fasta = z.format("fasta") #returns the SeqRecord in fasta format
-                        if rc:
-                            zrc=(z.reverse_complement(id="rc_",description=z.description))
-                            rcfasta=zrc.format("fasta")
-                            fout.write(rcfasta)
+                        z = z.get(tName)[tStart:tEnd]
+                        print z
+                        if "perfect" in classif: #if a given exon is perfect or imperfect (all as above)                            
+                            if rc: 
+                                zrc=(z.reverse_complement(id="rc_",description=z.description))
+                                exonlist.append(zrc.seq)
+                                exoncount +=1
+                                listLine.append("Exon_"+str(exoncount))
+                                listLine2 = '\t'.join(listLine)                        
+                                fout2.write(listLine2 + '\n')
+                            else:
+                                exonlist.append(z.seq)
+                                exoncount +=1
+                                listLine.append("Exon_"+str(exoncount)) 
+                                listLine2 = '\t'.join(listLine)                    
+                                fout2.write(listLine2 + '\n')
                         else:
-                            fout.write(fasta)
-                else:
-                    print "not this one"
-fout.close()       
+                            if classif == "falseStart": #if the exon isn't perfect or imperfect, we classify and add ns as appropriate
+                                z.seq=("N"*falS)+z.seq
+                            elif classif == "falseEnd":
+                                z.seq=z.seq+("N"*falE)
+                            elif classif == "falseBoth":
+                                z.seq=("N"*falS)+z.seq+("N"*falE)
+                            if rc: 
+                                zrc=(z.reverse_complement(id="rc_",description=z.description))
+                                exonlist.append(zrc.seq)
+                                exoncount +=1
+                                listLine.append("Exon_"+str(exoncount))
+                                listLine2 = '\t'.join(listLine)                        
+                                fout2.write(listLine2 + '\n')
+                            else:
+                                exonlist.append(z.seq)
+                                exoncount +=1
+                                listLine.append("Exon_"+str(exoncount)) 
+                                listLine2 = '\t'.join(listLine)                    
+                                fout2.write(listLine2 + '\n')            
+                    transcript="".join([str(seq_rec) for seq_rec in exonlist]) #concatenate all exons in exonlist
+                    if rc:
+                        fout.write(">"+"RC_"+z.description+"\n"+transcript+"\n") #write them out with appropriate label
+                    else:
+                        fout.write(">"+z.description+"\n"+transcript+"\n") #as above
+            y = []
+            y.append(strLine)
+            x =[nextgrab.group(1)]
+fout.close()
+fout2.close()                     
+
+#                            
+                
+                
+    
         
         
         
@@ -234,3 +329,9 @@ fout.close()
             else:
                 fout.write(fasta)
     fout.close()
+
+
+##if we need to do different things for different rev comps :
+#                            exontot = len(y)+1
+#                            exoncount += 1
+#                            listLine.append("Exon_"+str(exontot-exoncount))
