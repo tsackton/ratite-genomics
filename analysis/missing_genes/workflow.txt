@@ -3,7 +3,7 @@ PseudoSearch
 1. Began with the GCF_000002315.3_Gallus_gallus-4.0_genomic.gff (chicken GFF file).
 2. Ran GFF_CDS_grab.py to extract only the lines that denote CDS regions of protein coding genes.
 3. Ran Convert_GFF_to_BED.py to convert this CDS only chicken GFF file to a CDS only chicken BED file.
-4. Ran leftover.sh to utilize halLiftover with the chicken BED file and each target genome.  This program produces a psl file which contains a lot of wonderful information about how each chicken exon for each chicken gene aligns with each target genome in our massive whole genome alignment.
+4. Ran liftover.sh to utilize halLiftover with the chicken BED file and each target genome.  This program produces a psl file which contains a lot of wonderful information about how each chicken exon for each chicken gene aligns with each target genome in our massive whole genome alignment.
 5. Obtained all refGenomes from Tim’s folder in the Edwards lab and created indexes for each using Indexmaker.sh which calls to index maker.py
 6. Ran psl_checker.sh which calls psl_tester.py.  This allowed me to determine the different classes of exons within the psls for all species.  These were classified as: 
  a. perfect: the entire chicken exon aligns to the target genome and these two exons are identical in size)
