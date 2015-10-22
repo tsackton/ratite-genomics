@@ -20,19 +20,11 @@ with open('/Users/Phil/Desktop/1fulGla.psl', 'rU') as handle: #opens psl in univ
             x = [genegrab] #and now x is genegrab too
             if genegrab in name: #if genegrab is in name
                 y.append(strLine) #append the whole line to y
-                print " at the top when x was []"
-                print y
         else: #if the script hasn't just started
             nextgrab = re.search('[a-zA-z\/\-]*\:([0-9]*)\,.*\:[\+\-]',name) #as above, but called nextgrab 
-            if x[0] == nextgrab.group(1): #if x[0] from above matches nextgrab
-                print "in the middle before you add"
-                print y                
+            if x[0] == nextgrab.group(1): #if x[0] from above matches nextgrab              
                 y.append(strLine) #append the line
-                print "in the middle after you add"
-                print y
-            else: #if they don't match, we have all exons for a transcript
-                print "as we start the main else"
-                print y               
+            else: #if they don't match, we have all exons for a transcript             
                 total = 0 #a bunch of counts that start at 0
                 perfect = 0
                 imperfect = 0
@@ -90,8 +82,6 @@ with open('/Users/Phil/Desktop/1fulGla.psl', 'rU') as handle: #opens psl in univ
                             listLine.append(str(fS))
                             listLine.append(str(fE))
                 if falseStart == falseEnd == falseBoth == 0 and perfect + imperfect >= 1: #if y contains a gene with only perfect and imperfect exons                   
-                    print "when no false anything" 
-                    print y
                     exonlist = [] #create a list for exons                   
                     exoncount = 0 #start counting exons at 0                   
                     for listLine in y:
@@ -133,8 +123,6 @@ with open('/Users/Phil/Desktop/1fulGla.psl', 'rU') as handle: #opens psl in univ
                         y=[]
                         y.append(strLine)
                 else: #if we do not have only perfect and imperfect exons in the transcript                   
-                    print "the false else"
-                    print y
                     exonlist = [] #all as above                   
                     exoncount = 0                   
                     for listLine in y:
@@ -198,12 +186,7 @@ with open('/Users/Phil/Desktop/1fulGla.psl', 'rU') as handle: #opens psl in univ
                         fout.write(">"+z.description+"\n"+transcript+"\n") #as above
                         y=[]
                         y.append(strLine)
-            print "at the bottom before before the []"
-            print y
-            #y = []
-            #y.append(strLine)
             x =[nextgrab.group(1)]
-            #x=[]
 fout.close()
 fout2.close()                    
 
