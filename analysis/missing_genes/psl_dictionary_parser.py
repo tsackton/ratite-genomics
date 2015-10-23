@@ -31,7 +31,7 @@ class Exon(dict):
         
 cdic = Vividict()
 exonkey={}
-with open('/Users/Phil/Desktop/singles_galGal.psl', 'rU') as handle: #opens psl in universal mode
+with open('/Users/Phil/Desktop/chickentestpsl.txt', 'rU') as handle: #opens psl in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader: #read the tab delimited file in call the first column name
         name = strLine[0]        
@@ -46,11 +46,48 @@ with open('/Users/Phil/Desktop/singles_galGal.psl', 'rU') as handle: #opens psl 
             cdic[namegrab.group(1)][int(exoncount)] = Exon(tStart,tEnd)
             exonkey[name]=int(exoncount)
         except:
+            None #necessary for CDS entries that do not code for proteins
+
+with open('/Users/Phil/Desktop/fulGlatestpsl.txt', 'rU') as handle:
+    reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
+    for strLine in reader: #read the tab delimited file in call the first column name
+        name = strLine[0]
+        tStart = int(strLine[16])
+        tEnd = int(strLine[17]) 
+        tName = strLine[14]        
+        try: 
+            namegrab = re.search('[a-zA-z\/\-]*\:([P0-9]*\,Genbank\:[A-Za-z0-9/./_]*)\,(.*\:[\+\-])',name)
+        except:
             None
+        exnum = int(exonkey[namegrab.group(1)])
+        cdic[namegrab.group(1)][exnum]['tStart']=tStart
+        cdic[namegrab.group(1)][exnum]['tEnd']=tEnd
+        cdic[namegrab.group(1)][exnum]['tName']=tName
         
+        try: 
+                namegrab = re.search('[a-zA-z\/\-]*\:([P0-9]*\,Genbank\:[A-Za-z0-9/./_]*)\,(.*\:[\+\-])',name)
+                tStart = int(strLine[16])
+                tEnd = int(strLine[17])      
+                if namegrab.group(1) not in cdic:
+                    exoncount = 1
+                else:
+                    exoncount +=1
+                cdic[namegrab.group(1)][int(exoncount)] = Exon(tStart,tEnd)
+                exonkey[name]=int(exoncount)
+            except:
+                None #necessary for CDS entries that do not code for proteins
+
+
+
+       
 cdic['425783,Genbank:NP_001264787.1'][1].reflen() #tells how long the exon is
 
 sort(cdic['425783,Genbank:NP_001264787.1'].keys()) #will be useful to sort through exons in order        
+
+
+for key in cdic.keys():
+    for a in cdic[key].keys():
+        print cdic[key][a].reflen() #this tells you the reflen of every exon 
 
 """import sys
 import os
