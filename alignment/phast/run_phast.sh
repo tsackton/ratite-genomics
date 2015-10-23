@@ -112,6 +112,13 @@ do
 	modFreqs neut_ver${VER}_final.mod $GC > neut_ver${VER}_corrected.mod
 done
 
+#name all ancestral nodes in the tree model
+for MOD in 1 2 3
+do
+	tree_doctor --name-ancestors neut_ver${MOD}_corrected.mod > neut_ver${MOD}_final.named.mod 
+done
+
+
 ### RUN PHYLOP ##
 #run halPhyloPMP.py with 12 processors per on each neutral version
 #use the _corrected version of each model
@@ -162,29 +169,64 @@ do
 done
 
 #filter duplicates using mafTools
-for MAF in $(ls galGal_ref*.maf);
+#first step -- remove chicken lines that are from scaffolds other than target with perl script
+#second step -- filter with mafDuplicateFilter
+for MAF in $(ls galGal_ref_NC*.maf);
 do
-	mafDuplicateFilter --maf $REF > ${REF%.maf}.pruned.maf
+	./keep_ref_only.pl $MAF &
+done
+
+for MAF in $(ls galGal_ref_NC*.temp.maf);
+do
+	mafDuplicateFilter --maf ${MAF%.temp.maf}.temp.maf > ${MAF%.maf}.pruned.maf &
+done
+
+
+#the output MAFs from mafDuplicateFilter do not guarantee correct strand or order, particularly for galGal specific duplications
+#the following code updates / fixes that, first by correcting strand and then order
+for MAF in $(ls galGal_ref_NC*.temp.pruned.maf);
+do
+	mafStrander --maf $MAF --seq galGal --strand + > ${MAF%.pruned.maf}.strand.maf &
+done
+
+#finally, we sort the MAF
+for FILE in $(ls galGal_ref_NC*.temp.strand.maf);
+do
+	CHR1=${FILE#galGal_ref_}
+	CHR=${CHR1%.temp.strand.maf}
+	echo "Processing $CHR"
+	mafSorter --maf $FILE --seq galGal.$CHR > $CHR.final.maf &
+done
+
+#get rid of temp mafs
+rm *.temp*.maf
+
+#split reference into separate files for each chr with samtools
+samtools faidx galGal.fa
+for FILE in *.final.maf
+do
+	CHR=${FILE%.final.maf}
+	samtools faidx galGal.fa $CHR > $CHR.fa &
 done
 
 #Split alignments into chunks
 mkdir -p chunks            # put fragments here
-#use samtools to split reference fasta into separate files for each chr
-samtools faidx galGal.fa
-for FILE in *.pruned.maf ; do
-	CHR1=${FILE#galGal_ref_}
-	CHR=${CHR1%.pruned.maf}
-	if [ ! "$CHR" == "small" ]
-	then
-		samtools faidx galGal.fa $CHR > $CHR.fa
-		msa_split $FILE --in-format MAF --refseq $CHR.fa \
-			--windows 1000000,0 --out-root chunks/$CHR --out-format SS \
-			--min-informative 1000 --between-blocks 5000 &
-	fi
+for FILE in *.final.maf
+do
+	CHR=${FILE%.final.maf}
+	msa_split $FILE --in-format MAF --refseq $CHR.fa --windows 1000000,0 --out-root chunks/$CHR --out-format SS --min-informative 1000 --between-blocks 5000 2> $CHR.split.log &
 done
 
-
 #Next -- estimate rho for (a subset of) alignments
+#This will be done with slurm, processing batches of 10 alignments each
+
+#set up job array input
+mkdir -p rho
+cd rho
+ls ../chunks > files
+split -a 3 -d -l 10 files part. #make file parts
+sbatch est_rho.sh
+
 #Next -- average rho to get a global rho estimate
 #Next -- run phastCons to predict conserved elements on each target segment
 #Next -- merge predictions and estimate coverage, look at length, other tuning measures
@@ -195,5 +237,22 @@ done
 #this is a preliminary test based on phyloP and the galGal3->galGal4 CNEEs from the feather paper
 #the idea is to test whether the 'named branches' in this case the ratites are accelerated or conserved relative to background
 #as a null, run the same test on the tinamou clade
+#do this as a job array using the same framework as est_rho.sh
 
+#need to convert chr coordinates in LoweCNEEs.galGal4.bed to NCBI accessions
+./replace_chrs.pl LoweCNEEs.galGal4.bed
+sbatch est_accel.sh
 
+#clean up 
+#phyloP has a bug / issue with bed files with multiple chromosomes in them, it does not do any kind of sensible filtering
+#so for each file, need to parse only the lines that match file name
+#note also that because this was run on split data, there are a few CNEEs that fall into multiple MAFs and are thus duplicated
+for CHR in $(tail -n +2 galGal4.chr2acc | cut -f2,2)
+do
+	cat ratite/$CHR* | grep "^$CHR" >> ratite_accel.final.out
+	cat tinamou/$CHR* | grep "^$CHR" >> tinamou_accel.final.out
+done
+
+#replace 0s in pval column with 1e-05 or -1e-05
+perl -p -i -e 's/0.00000$/0.00001/' ratite_accel.final.out
+perl -p -i -e 's/0.00000$/0.00001/' tinamou_accel.final.out
