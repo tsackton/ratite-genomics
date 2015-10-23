@@ -2,6 +2,9 @@ import sys
 import os
 import re
 import csv
+from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 exoncount=0
 os.chdir('/Users/Phil/Desktop/')
 
@@ -10,23 +13,23 @@ class Vividict(dict): #used as autovivification
         value = self[key] = type(self)()
         return value
 
-class Exon(dict):
-    def __init__(self, Start, End): 
-        self.Start = Start
-        self.End = End
+class Exon(dict): #this class 
+    def __init__(self, refStart, refEnd): 
+        self.refStart = refStart
+        self.refEnd = refEnd
         self.qStart = None
         self.qEnd = None
     
     def reflen(self):
-        exonlen=(self.End - self.Start)        
+        exonlen=(self.refEnd - self.refStart)        
         return exonlen
     
     def leftPadStr(self):
-        nlen=abs(int(self.Start - self.qStart))
+        nlen=abs(int(self.refStart - self.qStart))
         return("N"*nlen)
          
     def rightPadStr(self):
-        nlen=abs(int(self.End - self.qEnd))
+        nlen=abs(int(self.refEnd - self.qEnd))
         return("N"*nlen)     
         
 cdic = Vividict()
@@ -37,130 +40,64 @@ with open('/Users/Phil/Desktop/chickentestpsl.txt', 'rU') as handle: #opens psl 
         name = strLine[0]        
         try: 
             namegrab = re.search('[a-zA-z\/\-]*\:([P0-9]*\,Genbank\:[A-Za-z0-9/./_]*)\,(.*\:[\+\-])',name)
-            tStart = int(strLine[16])
-            tEnd = int(strLine[17])      
+            rStart = int(strLine[16])
+            rEnd = int(strLine[17])
             if namegrab.group(1) not in cdic:
                 exoncount = 1
             else:
                 exoncount +=1
-            cdic[namegrab.group(1)][int(exoncount)] = Exon(tStart,tEnd)
+            cdic[namegrab.group(1)][int(exoncount)] = Exon(rStart,rEnd)
             exonkey[name]=int(exoncount)
         except:
             None #necessary for CDS entries that do not code for proteins
 
+
 with open('/Users/Phil/Desktop/fulGlatestpsl.txt', 'rU') as handle:
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
-    for strLine in reader: #read the tab delimited file in call the first column name
+    for strLine in reader: #read the tab delimited file in identify the necessary columns
         name = strLine[0]
         tStart = int(strLine[16])
         tEnd = int(strLine[17]) 
-        tName = strLine[14]        
+        tName = strLine[14]
+        qStart = int(strLine[12])
+        qEnd = int(strLine[13])
+        strand = strLine[9]        
         try: 
             namegrab = re.search('[a-zA-z\/\-]*\:([P0-9]*\,Genbank\:[A-Za-z0-9/./_]*)\,(.*\:[\+\-])',name)
         except:
             None
-        exnum = int(exonkey[namegrab.group(1)])
-        cdic[namegrab.group(1)][exnum]['tStart']=tStart
-        cdic[namegrab.group(1)][exnum]['tEnd']=tEnd
-        cdic[namegrab.group(1)][exnum]['tName']=tName
-        
-        try: 
-                namegrab = re.search('[a-zA-z\/\-]*\:([P0-9]*\,Genbank\:[A-Za-z0-9/./_]*)\,(.*\:[\+\-])',name)
-                tStart = int(strLine[16])
-                tEnd = int(strLine[17])      
-                if namegrab.group(1) not in cdic:
-                    exoncount = 1
-                else:
-                    exoncount +=1
-                cdic[namegrab.group(1)][int(exoncount)] = Exon(tStart,tEnd)
-                exonkey[name]=int(exoncount)
-            except:
-                None #necessary for CDS entries that do not code for proteins
+        exnum = int(exonkey[name])
+        cdic[namegrab.group(1)][exnum].update({"tStart":tStart,"tEnd":tEnd,"Scaff":tName,"Strand":strand}) #add all of the target info to cdic
+        cdic[namegrab.group(1)][exnum].qStart=qStart #assign chicken qStart for that exon
+        cdic[namegrab.group(1)][exnum].qEnd=qEnd #assign chicken qEnd for that exon
 
-
-
-       
-cdic['425783,Genbank:NP_001264787.1'][1].reflen() #tells how long the exon is
-
-sort(cdic['425783,Genbank:NP_001264787.1'].keys()) #will be useful to sort through exons in order        
-
-
-for key in cdic.keys():
-    for a in cdic[key].keys():
-        print cdic[key][a].reflen() #this tells you the reflen of every exon 
-
-"""import sys
-import os
-import re
-import csv
-exoncount=0
-os.chdir('/Users/Phil/Desktop/')
-elist=[]
-class Transcript:
-    #def __init__(self, name, gene, exon, tStart, tEnd): 
-    def __init__(self, name,tStart, tEnd,ename): 
-        self.name = name
-        self.ename = ename
-        #self.gene = gene
-        #self.exon = exon
-        self.tStart = tStart
-        self.tEnd = tEnd
-    
-    def getName(self):
-        return self.name
-    
-    def __str__(self):
-        return "Name: %s, tStart: %s, tEnd: %s, ename: %s" % \
-     (self.name, self.tStart, self.tEnd, self.ename)
-       # return "Name: %s, Gene: %s, Exon: %s, tStart: %s, tEnd: %s" % \
-     #(self.name, self.gene, self.exon, self.tStart, self.tEnd)
-
-ecount=0
-with open('/Users/Phil/Desktop/chickentestpsl.txt', 'rU') as handle: #opens psl in universal mode
-    reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
-    for strLine in reader: #read the tab delimited file in call the first column name       
-        ecount += 1       
-        Name = strLine[0]
-        namegrab = re.search('[a-zA-z\/\-]*\:([P0-9]*\,Genbank\:[A-Za-z0-9/./_]*)\,(.*\:[\+\-])',Name)
-        name = namegrab.group(1)        
-        tStart = int(strLine[16])
-        tEnd = int(strLine[17])
-        #if ename.getName()==namegrab.group(1):
-        ename = "line%s" % (ecount)
-        ename = Transcript(name,tStart,tEnd,ename)
-        elist.append(ename)
-    for ename in elist:
-        print ename
-
-e.ename
-
-
-        
-print e
-
-fout = open('/Users/Phil/Desktop/messingaroundfulGla.txt','w')
-fout.write(str(e.name))
+fout = open('/Users/Phil/Desktop/fulGla_concat.txt','w') #multifasta file
+exonlist = []
+genome='fulGla.fa'      
+for trans in cdic.keys():
+    for exon in sorted(cdic[trans].keys()):
+        if len (cdic[trans][exon].keys()) == 0:
+            missingexon = str("N"*cdic[trans][exon].reflen())
+            z = SeqRecord(Seq(missingexon))
+            exonlist.append(z.seq)
+        else:
+            z = SeqIO.index_db(genome+".idx", genome, "fasta")
+            z = z.get(cdic[trans][exon]['Scaff'])[cdic[trans][exon]['tStart']:cdic[trans][exon]['tEnd']]
+            z.seq=(cdic[trans][exon].leftPadStr())+z.seq+(cdic[trans][exon].rightPadStr())
+            exonlist.append(z.seq)
+            if cdic[trans][exon]['Strand'] == "+-":
+                rc = True
+            elif cdic[trans][exon]['Strand'] == "--":
+                rc = True
+            else:
+                rc = False
+            description=z.description
+    transcript="".join([str(seq_rec) for seq_rec in exonlist])
+    exonlist=[]
+    if rc:
+        transcript = SeqRecord(Seq(transcript))
+        rctranscript=(transcript.reverse_complement(id="rc_",description=description))      
+        fout.write(">"+"RC_"+description+"\n"+str(rctranscript.seq)+"\n")
+    else:       
+        fout.write(">"+description+"\n"+transcript+"\n")
 fout.close()
-
-
-
-                    strand = listLine[9]
-                    qName = listLine[10]
-                    qSize = int(listLine[11])
-                    qStart = int(listLine[12])
-                    qEnd = int(listLine[13])
-                    tName = listLine[14]
-                    tSize = int(listLine[15])
-                    
-                    blockCount = int(listLine[18])
-                    blockSizes = listLine[19]
-                    qStarts = listLine[20]
-                    tStarts = listLine[21]
-      
-        name = strLine[0]
-        if len(x)==0:  #if the program has just started, there is nothing in x      
-            namegrab = re.search('[a-zA-z\/\-]*\:([0-9]*)\,.*\:[\+\-]',name) #grab (gene ID) from name                    
-            genegrab = namegrab.group(1) #group 1 becomes genegrab          
-            x = [genegrab] #and now x is genegrab too
-            if genegrab in name: #if genegrab is in name
-                y.append(strLine) #append the whole line to y"""  
