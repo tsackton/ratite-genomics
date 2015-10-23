@@ -30,4 +30,19 @@ Final MAKER run.
 For our final MAKER run, we used the trained gene predictors, as well as expanded evidence sources (TopHat junctions
 in additional to Trinity assemblies). The control files for the final MAKER runs are in maker/run2/.
 
+IMPORTANT NOTE ADDED 10/22/2015:
+--------
+We have preliminary evidence that one of the emu tissue samples (emu female liver) is actually a tinamou sample. Implications:
+-the Trinity assembly of the droNov reads will contain some tinamou contamination
+-the TopHat mapping of the droNov reads will contain some tinamou contamination in the junctions.bed files
+-thus, the Trinity assemblies and TopHat mappings of the pooled data should not be used for downstream analysis
+
+However, we believe that the gene models should be relatively robust to a low level of tinamou sequence in the input droNov sequence:
+-because MAKER relies on evidence that maps to the genome, divergent transcripts assembled by Trinity that are derived from tinamou sequence generally won't map
+-in many cases in the Trinity assembly, the tinamou sequence ends up as an alternative splice form; however, when these are mapped to the genome the "tinamou" isoform either 1) won't map, or 2) will map but overlapping with an "emu" isoform
+-finally, we filtered the junctions.bed files from TopHat before using, so junctions with weak support will not be passed to MAKER
+
+Ultimately we see little evidence that the droNov gene models are notably different in any way than the other ratite gene models, and given the computational costs to rerun MAKER we are considering these models frozen, despite being produced with pooled RNA-seq data that included some misclassified sequence (i.e, tinamou reads called as emu)
+
+
 
