@@ -34,7 +34,7 @@ class Exon(dict): #this class
         
 cdic = Vividict()
 exonkey={}
-with open('/Users/Phil/Desktop/chickentestpsl.txt', 'rU') as handle: #opens psl in universal mode
+with open('/Users/Phil/Desktop/singles_galGal.psl', 'rU') as handle: #opens psl in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader: #read the tab delimited file in call the first column name
         name = strLine[0]        
@@ -52,7 +52,7 @@ with open('/Users/Phil/Desktop/chickentestpsl.txt', 'rU') as handle: #opens psl 
             None #necessary for CDS entries that do not code for proteins
 
 
-with open('/Users/Phil/Desktop/fulGlatestpsl.txt', 'rU') as handle:
+with open('/Users/Phil/Desktop/fulGla_singles.txt', 'rU') as handle:
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader: #read the tab delimited file in identify the necessary columns
         name = strLine[0]
@@ -64,12 +64,12 @@ with open('/Users/Phil/Desktop/fulGlatestpsl.txt', 'rU') as handle:
         strand = strLine[9]        
         try: 
             namegrab = re.search('[a-zA-z\/\-]*\:([P0-9]*\,Genbank\:[A-Za-z0-9/./_]*)\,(.*\:[\+\-])',name)
+            exnum = int(exonkey[name])
+            cdic[namegrab.group(1)][exnum].update({"tStart":tStart,"tEnd":tEnd,"Scaff":tName,"Strand":strand}) #add all of the target info to cdic
+            cdic[namegrab.group(1)][exnum].qStart=qStart #assign chicken qStart for that exon
+            cdic[namegrab.group(1)][exnum].qEnd=qEnd #assign chicken qEnd for that exon
         except:
             None
-        exnum = int(exonkey[name])
-        cdic[namegrab.group(1)][exnum].update({"tStart":tStart,"tEnd":tEnd,"Scaff":tName,"Strand":strand}) #add all of the target info to cdic
-        cdic[namegrab.group(1)][exnum].qStart=qStart #assign chicken qStart for that exon
-        cdic[namegrab.group(1)][exnum].qEnd=qEnd #assign chicken qEnd for that exon
 
 fout = open('/Users/Phil/Desktop/fulGla_concat.txt','w') #multifasta file
 exonlist = []
@@ -84,7 +84,7 @@ for trans in cdic.keys():
             z = SeqIO.index_db(genome+".idx", genome, "fasta")
             z = z.get(cdic[trans][exon]['Scaff'])[cdic[trans][exon]['tStart']:cdic[trans][exon]['tEnd']]
             z.seq=(cdic[trans][exon].leftPadStr())+z.seq+(cdic[trans][exon].rightPadStr())
-            exonlist.append(z.seq)
+            #exonlist.append(z.seq)
             if cdic[trans][exon]['Strand'] == "+-":
                 rc = True
             elif cdic[trans][exon]['Strand'] == "--":
@@ -92,12 +92,15 @@ for trans in cdic.keys():
             else:
                 rc = False
             description=z.description
-    transcript="".join([str(seq_rec) for seq_rec in exonlist])
+            if rc:
+                zrc=(z.reverse_complement(description=description))
+                exonlist.append(zrc.seq)
+            else:
+                exonlist.append(z.seq)
+    transcript="".join([str(seq_rec) for seq_rec in exonlist])    
     exonlist=[]
     if rc:
-        transcript = SeqRecord(Seq(transcript))
-        rctranscript=(transcript.reverse_complement(id="rc_",description=description))      
-        fout.write(">"+"RC_"+description+"\n"+str(rctranscript.seq)+"\n")
-    else:       
-        fout.write(">"+description+"\n"+transcript+"\n")
+        fout.write(">"+"RC_"+description+"\n"+transcript+"\n") #write them out with appropriate label
+    else:
+        fout.write(">"+description+"\n"+transcript+"\n") #as above   
 fout.close()
