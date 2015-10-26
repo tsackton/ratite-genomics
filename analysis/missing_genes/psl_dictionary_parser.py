@@ -98,5 +98,8 @@ for trans in cdic.keys(): #for a given transcript
                 exonlist.append(z.seq)
     transcript="".join([str(seq_rec) for seq_rec in exonlist]) #join all the exons in exonlist in the right order    
     exonlist=[] #empty the list
-    fout.write(">ChickenGeneID:"+trans+",pslStrand:"+st+","+description+"\n"+transcript+"\n") #write them out with appropriate label
+    try:
+        fout.write(">ChickenGeneID:"+trans+",pslStrand:"+st+","+description+"\n"+transcript+"\n") #write them out with appropriate label
+    except:
+        fout.write(">ChickenGeneID:"+trans+"_Missing"+"\n"+transcript+"\n") #if it is all N's, write missing
 fout.close() #close the outfile
