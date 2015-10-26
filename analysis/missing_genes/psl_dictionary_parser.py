@@ -92,6 +92,7 @@ for trans in cdic.keys():
             else:
                 rc = False
             description=z.description
+            st=str(cdic[trans][exon]['Strand'])
             if rc:
                 zrc=(z.reverse_complement(description=description))
                 exonlist.append(zrc.seq)
@@ -99,8 +100,5 @@ for trans in cdic.keys():
                 exonlist.append(z.seq)
     transcript="".join([str(seq_rec) for seq_rec in exonlist])    
     exonlist=[]
-    if rc:
-        fout.write(">"+"RC_"+description+"\n"+transcript+"\n") #write them out with appropriate label
-    else:
-        fout.write(">"+description+"\n"+transcript+"\n") #as above   
+    fout.write(">ChickenGeneID:"+trans+",pslStrand:"+st+","+description+"\n"+transcript+"\n") #write them out with appropriate label
 fout.close()
