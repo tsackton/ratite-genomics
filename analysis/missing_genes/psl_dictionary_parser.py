@@ -6,7 +6,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 exoncount=0
-os.chdir('/Users/Phil/Desktop/')
+phile = str(os.getenv('FILE'))
 
 class Vividict(dict): #used as autovivification
     def __missing__(self, key):
@@ -34,7 +34,7 @@ class Exon(dict): #this class
         
 cdic = Vividict()
 exonkey={}
-with open('/Users/Phil/Desktop/singles_galGal.psl', 'rU') as handle: #opens psl in universal mode
+with open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/singles_galGal.psl', 'rU') as handle: #opens psl in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader: #read the tab delimited file in call the first column name
         name = strLine[0]        
@@ -52,7 +52,7 @@ with open('/Users/Phil/Desktop/singles_galGal.psl', 'rU') as handle: #opens psl 
             None #necessary for CDS entries that do not code for proteins
 
 
-with open('/Users/Phil/Desktop/fulGla_singles.txt', 'rU') as handle:
+with open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/singles_'+phile.split('.')[0]+'.psl', 'rU') as handle:
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader: #read the tab delimited file in identify the necessary columns
         name = strLine[0]
@@ -71,9 +71,9 @@ with open('/Users/Phil/Desktop/fulGla_singles.txt', 'rU') as handle:
         except:
             None
 
-fout = open('/Users/Phil/Desktop/fulGla_concat.txt','w') #multifasta file
+fout = open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/outSingles/concat_'+os.getenv('FILE'),'w') #multifasta file
 exonlist = []
-genome='fulGla.fa'      
+genome='/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/'+os.getenv('FILE')      
 for trans in cdic.keys():
     for exon in sorted(cdic[trans].keys()):
         if len (cdic[trans][exon].keys()) == 0:
