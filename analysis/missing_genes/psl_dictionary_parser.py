@@ -6,7 +6,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 exoncount=0
-phile = str(os.getenv('FILE'))
+phile = str(sys.argv[1])
 
 class Vividict(dict): #used as autovivification
     def __missing__(self, key):
@@ -71,9 +71,9 @@ with open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/singles_'
         except:
             None
 
-fout = open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/outSingles/concat_'+os.getenv('FILE'),'w') #multifasta file
+fout = open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/outSingles/concat_'+phile,'w') #multifasta file
 exonlist = []
-genome='/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/'+os.getenv('FILE')      
+genome=phile 
 for trans in cdic.keys():
     for exon in sorted(cdic[trans].keys()):
         if len (cdic[trans][exon].keys()) == 0:
