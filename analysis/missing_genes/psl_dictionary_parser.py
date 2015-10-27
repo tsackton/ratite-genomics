@@ -30,6 +30,16 @@ class Exon(dict): #this class is utilized with the galGal sequences
     def rightPadStr(self): #as above, but for rightPads 
         nlen=abs(int(self.refEnd - self.qEnd))
         return("N"*nlen)     
+
+
+try:
+    outlist = []    
+    with open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic'+phile,'rU') as outlog:
+        for eachline in outlog:
+            outlist.append(eachline)
+except:
+    outlist = []
+            
         
 cdic = Vividict() #the main dictionary
 exonkey={} #the dictionary to keep track of exon number
@@ -70,39 +80,49 @@ with open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/singles_'
         except:
             None #this is necessary to allow the program to continue past exons that are missing in our target
 
-fout = open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/outSingles/concat_'+phile,'w') #multifasta out file is created
+
+try:
+    flog = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic'+phile,'a')
+    fout = open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/outSingles/concat_'+phile,'a')
+except:
+    flog = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic'+phile,'w')
+    fout = open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/outSingles/concat_'+phile,'w') #multifasta out file is created
 exonlist = [] #exonlist is used to collect all exons from a given transcript
 genome=phile #call the genome
 for trans in cdic.keys(): #for a given transcript
-    for exon in sorted(cdic[trans].keys()): #for each exon of that transcript
-        if len (cdic[trans][exon].keys()) == 0: #if the exon length is 0
-            missingexon = str("N"*cdic[trans][exon].reflen()) #missingexon is created as a string of N's that equals the exon length in chicken
-            z = SeqRecord(Seq(missingexon)) #create a SeqRecord for this string of N's
-            exonlist.append(z.seq) #append this SR to exonlist
-        else: #if the exon is not 0-length
-            z = SeqIO.index_db(genome+".idx", genome, "fasta") #call to the genome and its index
-            z = z.get(cdic[trans][exon]['Scaff'])[cdic[trans][exon]['tStart']:cdic[trans][exon]['tEnd']] #pull the full length of aligned target exon from the target genome
-            z.seq=(cdic[trans][exon].leftPadStr())+z.seq+(cdic[trans][exon].rightPadStr()) #place the appropriate # of N's onto each end of this sequence to match it to the exon length in chicken
-            if cdic[trans][exon]['Strand'] == "+-": #here is where we introduce reverse complement as a variable based on the psl's strand column in our cdic
-                rc = True
-            elif cdic[trans][exon]['Strand'] == "--":
-                rc = True
-            else:
-                rc = False
-            description=z.description #save the description of the SeqRecord that has been pulled (used in final fasta header)
-            st=str(cdic[trans][exon]['Strand']) #create st variable to keep track of strand in final fasta header
-            if rc: #if rc is True, reverse complement the sequence
-                zrc=(z.reverse_complement(description=description))
-                exonlist.append(zrc.seq) #and append it to the exonlist
-            else: #if not, just append the exon
-                exonlist.append(z.seq)
+    if trans not in outlist:    
+        for exon in sorted(cdic[trans].keys()): #for each exon of that transcript
+            if len (cdic[trans][exon].keys()) == 0: #if the exon length is 0
+                missingexon = str("N"*cdic[trans][exon].reflen()) #missingexon is created as a string of N's that equals the exon length in chicken
+                z = SeqRecord(Seq(missingexon)) #create a SeqRecord for this string of N's
+                exonlist.append(z.seq) #append this SR to exonlist
+            else: #if the exon is not 0-length
+                z = SeqIO.index_db(genome+".idx", genome, "fasta") #call to the genome and its index
+                z = z.get(cdic[trans][exon]['Scaff'])[cdic[trans][exon]['tStart']:cdic[trans][exon]['tEnd']] #pull the full length of aligned target exon from the target genome
+                z.seq=(cdic[trans][exon].leftPadStr())+z.seq+(cdic[trans][exon].rightPadStr()) #place the appropriate # of N's onto each end of this sequence to match it to the exon length in chicken
+                if cdic[trans][exon]['Strand'] == "+-": #here is where we introduce reverse complement as a variable based on the psl's strand column in our cdic
+                    rc = True
+                elif cdic[trans][exon]['Strand'] == "--":
+                    rc = True
+                else:
+                    rc = False
+                description=z.description #save the description of the SeqRecord that has been pulled (used in final fasta header)
+                st=str(cdic[trans][exon]['Strand']) #create st variable to keep track of strand in final fasta header
+                if rc: #if rc is True, reverse complement the sequence
+                    zrc=(z.reverse_complement(description=description))
+                    exonlist.append(zrc.seq) #and append it to the exonlist
+                else: #if not, just append the exon
+                    exonlist.append(z.seq)
     transcript="".join([str(seq_rec) for seq_rec in exonlist]) #join all the exons in exonlist in the right order    
     exonlist=[] #empty the list
     if transcript != len(transcript) * 'N':
         try:
             fout.write(">ChickenGeneID:"+trans+",pslStrand:"+st+","+description+"\n"+transcript+"\n") #write them out with appropriate label
+            flog.write(trans+"\n")
         except:
             fout.write(">ChickenGeneID:"+trans+"_Missing"+"\n"+transcript+"\n") #if it is all N's, write missing
+            flog.write(trans+"\n")
     else:
-        None
+        None        
 fout.close() #close the outfile
+flog.close() #close the logfile
