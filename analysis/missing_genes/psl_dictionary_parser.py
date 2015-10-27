@@ -34,7 +34,7 @@ class Exon(dict): #this class is utilized with the galGal sequences
 
 try:
     outlist = []    
-    with open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic'+phile,'rU') as outlog:
+    with open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic/'+phile,'rU') as outlog:
         for eachline in outlog:
             outlist.append(eachline)
 except:
@@ -82,10 +82,10 @@ with open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/singles_'
 
 
 try:
-    flog = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic'+phile,'a')
+    flog = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic/'+phile,'a')
     fout = open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/outSingles/concat_'+phile,'a')
 except:
-    flog = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic'+phile,'w')
+    flog = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic/'+phile,'w')
     fout = open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/outSingles/concat_'+phile,'w') #multifasta out file is created
 exonlist = [] #exonlist is used to collect all exons from a given transcript
 genome=phile #call the genome
