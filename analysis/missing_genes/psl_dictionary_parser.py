@@ -93,6 +93,7 @@ gindex = SeqIO.index_db(genome+".idx", genome, "fasta") #call to the genome and 
 for trans in cdic.keys(): #for a given transcript
     if trans not in outlist:
         st = 'None'
+        description = 'None'
         for exon in sorted(cdic[trans].keys()): #for each exon of that transcript
             if len (cdic[trans][exon].keys()) == 0: #if the exon length is 0
                 missingexon = str("N"*cdic[trans][exon].reflen()) #missingexon is created as a string of N's that equals the exon length in chicken
