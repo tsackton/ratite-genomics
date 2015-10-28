@@ -1,6 +1,7 @@
 import sys
 import re
 import csv
+import os
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
@@ -82,10 +83,10 @@ with open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/singles_'
 
 
 try:
-    flog = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic/'+phile,'a')
+    flog = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic/'+phile.split('.')[0]+".txt",'a')
     fout = open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/outSingles/concat_'+phile,'a')
 except:
-    flog = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic/'+phile,'w')
+    flog = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic/'+phile.split('.')[0]+".txt",'w')
     fout = open('/n/home12/pgrayson/regal/PseudoSearch/Final/HLO_psl/singles/outSingles/concat_'+phile,'w') #multifasta out file is created
 exonlist = [] #exonlist is used to collect all exons from a given transcript
 genome=phile #call the genome
@@ -118,6 +119,11 @@ for trans in cdic.keys(): #for a given transcript
     transcript="".join([str(seq_rec) for seq_rec in exonlist]) #join all the exons in exonlist in the right order    
     exonlist=[] #empty the list
     fout.write(">ChickenGeneID:"+trans+",pslStrand:"+st+","+description+"\n"+transcript+"\n") #write them out with appropriate label
-    flog.write(trans+"\n")       
+    fout.flush() #flush internal buffer
+    os.fsync(fout.fileno()) #flush os buffer
+    flog.write(trans+"\n")
+    flog.flush()
+    os.fsync(flog.fileno())
+       
 fout.close() #close the outfile
 flog.close() #close the logfile
