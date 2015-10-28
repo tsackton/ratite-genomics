@@ -227,8 +227,21 @@ ls ../chunks > files
 split -a 3 -d -l 10 files part. #make file parts
 sbatch est_rho.sh
 
+#run local rerun
+./est_rho_local.sh
+
+#kill processes that have not converged after 2 days
 #Next -- average rho to get a global rho estimate
+
+ls mods/*.cons.mod > cons.txt
+phyloBoot --read-mods '*cons.txt' --output-average ave.cons.mod 
+ls mods/*.noncons.mod > noncons.txt
+phyloBoot --read-mods '*noncons.txt' --output-average ave.noncons.mod 
+
 #Next -- run phastCons to predict conserved elements on each target segment
+sbatch run_phastCons.sh
+
+
 #Next -- merge predictions and estimate coverage, look at length, other tuning measures
 #Next -- iterate until things look good
 #Next -- run final predictions using fixed values for rho, coverage, length in all reference species, but also outputting per base estimates
@@ -242,6 +255,7 @@ sbatch est_rho.sh
 #need to convert chr coordinates in LoweCNEEs.galGal4.bed to NCBI accessions
 ./replace_chrs.pl LoweCNEEs.galGal4.bed
 sbatch est_accel.sh
+
 
 #clean up 
 #phyloP has a bug / issue with bed files with multiple chromosomes in them, it does not do any kind of sensible filtering
