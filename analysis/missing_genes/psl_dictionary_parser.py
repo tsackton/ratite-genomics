@@ -116,14 +116,14 @@ for trans in cdic.keys(): #for a given transcript
                     exonlist.append(zrc.seq) #and append it to the exonlist
                 else: #if not, just append the exon
                     exonlist.append(z.seq)
-    transcript="".join([str(seq_rec) for seq_rec in exonlist]) #join all the exons in exonlist in the right order    
-    exonlist=[] #empty the list
-    fout.write(">ChickenGeneID:"+trans+",pslStrand:"+st+","+description+"\n"+transcript+"\n") #write them out with appropriate label
-    fout.flush() #flush internal buffer
-    os.fsync(fout.fileno()) #flush os buffer
-    flog.write(trans+"\n")
-    flog.flush()
-    os.fsync(flog.fileno())
+        transcript="".join([str(seq_rec) for seq_rec in exonlist]) #join all the exons in exonlist in the right order    
+        exonlist=[] #empty the list
+        fout.write(">ChickenGeneID:"+trans+",pslStrand:"+st+","+description+"\n"+transcript+"\n") #write them out with appropriate label
+        fout.flush() #flush internal buffer
+        os.fsync(fout.fileno()) #flush os buffer
+        flog.write(trans+"\n")
+        flog.flush()
+        os.fsync(flog.fileno())
        
 fout.close() #close the outfile
 flog.close() #close the logfile
