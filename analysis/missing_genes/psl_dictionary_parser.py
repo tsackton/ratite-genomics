@@ -37,7 +37,7 @@ try:
     outlist = []    
     with open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic/'+phile.split('.')[0]+".txt",'rU') as outlog:
         for eachline in outlog:
-            outlist.append(eachline)
+            outlist.append(eachline.strip('\n'))
 except:
     outlist = []
             
@@ -92,7 +92,7 @@ exonlist = [] #exonlist is used to collect all exons from a given transcript
 genome=phile #call the genome
 gindex = SeqIO.index_db(genome+".idx", genome, "fasta") #call to the genome and its index
 for trans in cdic.keys(): #for a given transcript
-    if trans not in outlist:
+    if str(trans) not in outlist:
         st = 'None'
         description = 'None'
         for exon in sorted(cdic[trans].keys()): #for each exon of that transcript
