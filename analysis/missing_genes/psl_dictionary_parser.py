@@ -35,7 +35,7 @@ class Exon(dict): #this class is utilized with the galGal sequences
 
 try:
     outlist = []    
-    with open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic/'+phile,'rU') as outlog:
+    with open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/dic/'+phile.split('.')[0]+".txt",'rU') as outlog:
         for eachline in outlog:
             outlist.append(eachline)
 except:
