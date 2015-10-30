@@ -6,14 +6,19 @@ Created on Mon Oct 26 17:10:11 2015
 """
 from Bio import SeqIO
 from Bio.Seq import Seq
+import re
+import sys
 
 star = "*"
 star = (Seq(star))
 ts_ed = []
-fout = open('/Users/Phil/Desktop/testoutgG_orfs.txt','w')
-fout2 = open('/Users/Phil/Desktop/testoutgG_longest.txt','w')
-fout3 = open('/Users/Phil/Desktop/testoutgG_trans.txt','w')
-infile = '/Users/Phil/Desktop/concat_galGal.fa'
+phile = str(sys.argv[1])
+nameo = phile.split("_")[1].split(".")[0]
+fout = open('/Users/Phil/Desktop/'+nameo+'_orfs.txt','w')
+fout.write("ChickenSeqID"+"\t"+nameo+"\n")
+fout2 = open('/Users/Phil/Desktop/'+nameo+'_longest.txt','w')
+fout3 = open('/Users/Phil/Desktop/'+nameo+'_trans.txt','w')
+infile = '/Users/Phil/Desktop/'+phile
 for record in SeqIO.parse(infile,"fasta"):
     trans = record.seq.translate()    
     trans_split = trans.split('*') #translate the sequence and split on stops  
@@ -40,7 +45,9 @@ for record in SeqIO.parse(infile,"fasta"):
     ts_ed.append(rf) #and once that is complete, add on the final reading frame (either "*", seq with "*", or seq without "*" based on biology)
     longest = max(ts_ed, key=len) #call the longest reading frame for a given transcript longest
     ts_ed=[]
-    fout.write(str(record.description)+"\t"+str(orfs)+"\n")    
+    recordgrab = re.search('ChickenGeneID\:([0-9]*.*Genbank\:[A-Za-z0-9/./_]*)',record.description)
+    recordgrab2 = re.search('ChickenGeneID\:([0-9]*.*Genbank\:[A-Za-z0-9/./_]*)',record.description)    
+    fout.write(str(recordgrab.group(1))+"\t"+str(orfs)+"\n")    
     fout2.write(">"+str(record.description)+"\n"+str(longest)+"\n") #and write this out with appropriate records
     fout3.write(">"+str(record.description)+"\n"+str(trans)+"\n")
 fout.close()
