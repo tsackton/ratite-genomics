@@ -241,9 +241,66 @@ phyloBoot --read-mods '*noncons.txt' --output-average ave.noncons.mod
 #Next -- run phastCons to predict conserved elements on each target segment
 sbatch run_phastCons.sh
 
-
 #Next -- merge predictions and estimate coverage, look at length, other tuning measures
+#merge predictions
+cat ELEMENTS/*.bed > initCNEEs.bed
+cp /n/regal/edwards_lab/phil/PseudoSearch/Final/Chicken_CDS_HLO.bed  chicken_genes.bed
+cp /n/regal/edwards_lab/tsackton/ratites/phast/accel/LoweCNEEs.galGal4.bed.fixed lowe_cnees.bed
+
+bedtools coverage -a chicken_genes.bed -b initCNEEs.bed > gene.coverage
+awk '{len += $9 ; cov += $8} END {print cov/len}' gene.coverage
+
+#ite1 = 0.558639
+
+bedtools coverage -a lowe_cnees.bed -b initCNEEs.bed > lowe.coverage
+awk '{len += $7 ; cov += $6} END {print cov/len}' lowe.coverage
+
+#ite1 = 0.725789
+
+#these are a bit low, so going to try again
+#it also seems like perhaps the cnees are a bit fragmentary
+
+#also get total length of elements
+awk '{sum+=$3-$2}END{print sum}' phastCons/ite1/initCNEEs.bed 
+
+#83094900
+
+grep "^NC" galGal.chromsizes | awk '{sum+=$2}END{print sum}' 
+
+#1004818361
+
+#implies ~8.2% conserved -- slightly higher than in the feather paper, but probably not surprising given the bird bias in our alignment
+
 #Next -- iterate until things look good
+#going to do this by sampling a subset of mafs to calculate rho, averaging the models, and computing with the averaged models
+
+#ite1 is targetcoverage = 0.3, length = 45
+#try target coverage from 0.2 to 0.4, length from 20 to 70
+
+cd ite2
+./iterate_phastCons.sh 0.40 20
+cd ..
+cd ite3
+./iterate_phastCons.sh 0.40 45
+cd ..
+cd ite4
+./iterate_phastCons.sh 0.40 70
+cd ..
+cd ite5
+./iterate_phastCons.sh 0.20 20
+cd ..
+cd ite6
+./iterate_phastCons.sh 0.20 45
+cd ..
+cd ite7
+./iterate_phastCons.sh 0.20 70
+cd ..
+cd ite8
+./iterate_phastCons.sh 0.30 70
+cd ..
+cd ite9
+./iterate_phastCons.sh 0.30 20
+
 #Next -- run final predictions using fixed values for rho, coverage, length in all reference species, but also outputting per base estimates
 
 ## TESTS FOR RATITE-SPECIFIC ACCELERATION, ETC ##
@@ -255,7 +312,6 @@ sbatch run_phastCons.sh
 #need to convert chr coordinates in LoweCNEEs.galGal4.bed to NCBI accessions
 ./replace_chrs.pl LoweCNEEs.galGal4.bed
 sbatch est_accel.sh
-
 
 #clean up 
 #phyloP has a bug / issue with bed files with multiple chromosomes in them, it does not do any kind of sensible filtering
@@ -270,3 +326,11 @@ done
 #replace 0s in pval column with 1e-05 or -1e-05
 perl -p -i -e 's/0.00000$/0.00001/' ratite_accel.final.out
 perl -p -i -e 's/0.00000$/0.00001/' tinamou_accel.final.out
+
+##generate a null model with 10 random samples of lineages
+for i in 2 3 4 5 6 7 8 9 10
+do
+	brinput=$(nw_labels named_tree.nh | grep -v "anoCar" | chooseLines -k 13 - | tr '\n' ',')
+	echo $brinput > rand$i.branches
+	sbatch est_accel_rand.sh $i $brinput
+done
