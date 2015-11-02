@@ -13,4 +13,7 @@ PseudoSearch
  e. falseBoth: the beginning and end of the alignment are not at the beginning or end of the chicken exon
 7. Ran psl_Duplicate.sh which calls psl_duplicate_parser.py in order to split the psl file for each species into two psl files, the first contains only those genes which appear as 1-to-1 orthologs in our alignment, the second contains all those genes that have at least one region that aligns to more than one position on the chicken.
 8. Ran psl_duplicate_checker.py to ensure that all lines of each genomes’ psl file were placed in either singles or duplicates.
-9. Ran psl_checker.sh again to compare the before and after effects of removing duplicates.
+9. Ran psl_checker.sh again to compare the before and after effects of removing duplicates. Maybe?
+10. Ran psl_dictionary_parser.py with psl_dict.sbatch through psl_submit.sh to generate concatenated transcripts for each gene.
+11. Ran translation_tester.py on a subset of the genomes to determine if one strand orientation was being concatenated incorrectly.
+12. Ran multifasta_reader.py on all genomes to get 3 pieces of information: (1) translate the transcript, (2) identify the number of orfs in each transcript, pull the longest orf for each transcript.
