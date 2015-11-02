@@ -17,7 +17,7 @@ nameo = phile.split("_")[1].split(".")[0]
 fout = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/concat/orfs/'+nameo+'_orfs.txt','w')
 fout.write("ChickenSeqID"+"\t"+nameo+"\n")
 fout2 = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/concat/longest/'+nameo+'_longest.txt','w')
-fout3 = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/concat/translation'+nameo+'_trans.txt','w')
+fout3 = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/concat/translation/'+nameo+'_trans.txt','w')
 for record in SeqIO.parse(phile,"fasta"):
     trans = record.seq.translate()    
     trans_split = trans.split('*') #translate the sequence and split on stops  
