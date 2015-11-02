@@ -14,12 +14,11 @@ star = (Seq(star))
 ts_ed = []
 phile = str(sys.argv[1])
 nameo = phile.split("_")[1].split(".")[0]
-fout = open('/Users/Phil/Desktop/'+nameo+'_orfs.txt','w')
+fout = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/concat/orfs/'+nameo+'_orfs.txt','w')
 fout.write("ChickenSeqID"+"\t"+nameo+"\n")
-fout2 = open('/Users/Phil/Desktop/'+nameo+'_longest.txt','w')
-fout3 = open('/Users/Phil/Desktop/'+nameo+'_trans.txt','w')
-infile = '/Users/Phil/Desktop/'+phile
-for record in SeqIO.parse(infile,"fasta"):
+fout2 = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/concat/longest/'+nameo+'_longest.txt','w')
+fout3 = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/concat/translation'+nameo+'_trans.txt','w')
+for record in SeqIO.parse(phile,"fasta"):
     trans = record.seq.translate()    
     trans_split = trans.split('*') #translate the sequence and split on stops  
     orfs = len(trans_split)
