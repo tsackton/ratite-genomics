@@ -23,14 +23,14 @@ none_2 = 0
 none_2plus = 0
 fout = open('/Users/Phil/Desktop/testoutgG_orfs_counts.txt','w')
 
-with open('/Users/Phil/Desktop/testoutgG_orfs.txt', 'rU') as handle:
+with open('/Users/Phil/Desktop/chicktest.txt', 'rU') as handle:
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader: #line by line, calls the first column name
         total += 1
         des = strLine[0]
         orfs = strLine[1]
         strand = re.search('pslStrand\:([\-\+None]*)\,',des)
-        if int(orfs) == 2:
+        if int(orfs) == 1 or int(orfs) == 0:
             overall_2 += 1
             if str(strand.group(1)) == '--':
                 minusminus_2 += 1
