@@ -9,7 +9,7 @@ import sys
 
 phile = str(sys.argv[1])
 nameo = phile.split("_")[1].split(".")[0]
-fout = open('/Users/Phil/Desktop/chicktest.txt','w')
+fout = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/concat/stopnums/step1/'+nameo+'_into.txt','w')
 for record in SeqIO.parse(phile,"fasta"):
     trans = record.seq.translate() #frame 1
     trans2 = record.seq[1:].translate() #frame 2
