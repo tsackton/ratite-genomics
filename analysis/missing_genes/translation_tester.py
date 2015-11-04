@@ -7,7 +7,10 @@ Created on Fri Oct 30 12:17:41 2015
 import sys
 import re
 import csv
-import os
+
+phile = str(sys.argv[1])
+nameo = phile.split("_")[1].split(".")[0]
+
 total = 0
 overall_2 = 0
 overall_2plus = 0
@@ -21,14 +24,14 @@ plusplus_2 = 0
 plusplus_2plus = 0
 none_2 = 0
 none_2plus = 0
-fout = open('/Users/Phil/Desktop/testoutgG_orfs_counts.txt','w')
+fout = open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/concat/stopnums/'+nameo+".txt",'w')
 
-with open('/Users/Phil/Desktop/chicktest.txt', 'rU') as handle:
+with open('/n/home12/pgrayson/regal/PseudoSearch/genomes/raw/concat/'+phile, 'rU') as handle:
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader: #line by line, calls the first column name
         total += 1
         des = strLine[0]
-        orfs = strLine[1]
+        orfs = strLine[4]
         strand = re.search('pslStrand\:([\-\+None]*)\,',des)
         if int(orfs) == 1 or int(orfs) == 0:
             overall_2 += 1
@@ -74,4 +77,5 @@ fout.write("\n"+"plusplus_2plus = "+str(plusplus_2plus))
 fout.write("\n"+"none_2 = "+str(none_2))
 fout.write("\n"+"none_2plus = "+str(none_2plus))
 fout.write("\n"+"total is "+str(total)+" and components add to "+str(components)+"\n")
+fout.write("\n"+"overall, "+str("{0:.2f}".format((overall_2plus/total)*100))+" percent of the transcripts have more than 2 orfs"+"\n")
 fout.close()
