@@ -1,5 +1,27 @@
-setwd("~/Desktop/orf_missing/")
-path = "~/Desktop/orf_missing/"
+setwd("~/Desktop/out_of_stops/")
+path = "~/Desktop/out_of_stops/"
+
+rA <- read.delim("rheAme_stops.txt")
+rA$best <- apply(rA[,c(2,3,4)],1,min)
+rA$Gene <- sub(",.*","",rA$ChickenSeqID,perl=TRUE)
+rasub <- subset(rA, select=c(6,7))
+rasub <- rasub[order(rasub$Gene,rasub$best),]
+ragene <- rasub[!duplicated(rasub$Gene),]
+table(ragene$best)
+
+best.out<-""
+file.names <- dir(path, pattern =".txt")
+for(i in 1:length(file.names)){
+  file <- read.delim(file.names[i])
+  file$best <- apply(file[,c(2,3,4)],1,min)
+  file$Gene <- sub(",.*","",file$ChickenSeqID,perl=TRUE)
+  filesub <- subset(file, select=c(6,7))
+  filesub <- filesub[order(filesub$Gene,filesub$best),]
+  gene <- filesub[!duplicated(filesub$Gene),]
+  best.out <- Reduce(function(x, y) merge(x, y, all=TRUE), list(best.out,gene))
+}
+
+
 
 out.file<-""
 file.names <- dir(path, pattern =".txt")
@@ -26,6 +48,14 @@ write.table(out.file, file = "testing.txt",sep="\t")
 #ratite.lowfruit <- writer_names_df <- subset(orf.table, orf.table$rheAme > 2 & orf.table$rhePen > 2 & orf.table$casCas > 2 & orf.table$droNov > 2 & orf.table$strCam > 2 & orf.table$aptFor > 2 & orf.table$aptHaa > 2 & orf.table$aptOwe > 2 & orf.table$aptRow > 2 & orf.table$eudEle <= 2 & orf.table$cryCin <= 2 & orf.table$notPer <= 2 & orf.table$tinGut <= 2)
 
 ratite.lowfruit <- writer_names_df <- subset(orf.table, orf.table$rheAme > 2 & orf.table$rhePen > 2 & orf.table$casCas > 2 & orf.table$droNov > 2 & orf.table$strCam > 2 & orf.table$aptHaa > 2 & orf.table$aptOwe > 2 & orf.table$aptRow > 2 & orf.table$eudEle <= 2 & orf.table$cryCin <= 2 & orf.table$notPer <= 2 & orf.table$melUnd <= 2 & orf.table$pseHum <= 2 & orf.table$colLiv <= 2 & orf.table$falPer <= 2 & orf.table$anaPla <= 2 & orf.table$fulGla <= 2 & orf.table$lepDis <= 2 & orf.table$corBra <= 2 & orf.table$mesUni <= 2 & orf.table$picPub <= 2  & orf.table$calAnn <= 2 & orf.table$pygAde <= 2 & orf.table$aptFor <= 2 & orf.table$chaVoc <= 2 & orf.table$nipNip <= 2 & orf.table$cucCan <= 2 & orf.table$balReg <= 2 & orf.table$halLeu <= 2 & orf.table$chaPel & orf.table$tinGut <= 2 )
+
+#ratite_indexes = c(1,2,3,4)
+#fly_indexes= same but diff
+orf.table$badRats <- apply(orf.table[ratite_indexes,], 1, function(x) sum(x > 2)/length(x))
+
+#compute new column apply(orf.table[ratite_indexes,], 1, function(x) sum(x > 2)/length(x))
+
+new.lowfruit 
 
 out.file[grep("100170842,Genbank:NP_001124216.1",out.file$ChickenSeqID),]
 rA[grep("100170842,Genbank:NP_001124216.1",rA$ChickenSeqID),]
