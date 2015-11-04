@@ -1,29 +1,35 @@
 setwd("~/Desktop/orf_missing/")
-listy <- list.files(path = ".")
-
-rA <- read.delim("rheAme_orfs.txt")
-cP <- read.delim("croPor_orfs.txt")
-nP <- read.delim("notPer_orfs.txt")
-fP <- read.delim("falPer_orfs.txt")
-mU <- read.delim("mesUni_orfs.txt")
-
-all.equal(rA$ChickenSeqID,cP$ChickenSeqID)
-all.equal(rA$ChickenSeqID,nP$ChickenSeqID)
-all.equal(rA$ChickenSeqID,fP$ChickenSeqID)
-all.equal(rA$ChickenSeqID,mU$ChickenSeqID)
-
 path = "~/Desktop/orf_missing/"
+
 out.file<-""
 file.names <- dir(path, pattern =".txt")
 for(i in 1:length(file.names)){
   file <- read.delim(file.names[i])
   out.file <- Reduce(function(x, y) merge(x, y, all=TRUE), list(out.file,file))
 }
+
+drops <- c("x") #create a list of the columns that will be uninformative soon and we'd like to drop
+orf.table <- out.file[,!(names(out.file) %in% drops)]
+
 write.table(out.file, file = "testing.txt",sep="\t")
+#rA <- read.delim("rheAme_orfs.txt")
+#cP <- read.delim("croPor_orfs.txt")
+#nP <- read.delim("notPer_orfs.txt")
+#fP <- read.delim("falPer_orfs.txt")
+#mU <- read.delim("mesUni_orfs.txt")
+
+#all.equal(rA$ChickenSeqID,cP$ChickenSeqID)
+#all.equal(rA$ChickenSeqID,nP$ChickenSeqID)
+#all.equal(rA$ChickenSeqID,fP$ChickenSeqID)
+#all.equal(rA$ChickenSeqID,mU$ChickenSeqID)
+
+#ratite.lowfruit <- writer_names_df <- subset(orf.table, orf.table$rheAme > 2 & orf.table$rhePen > 2 & orf.table$casCas > 2 & orf.table$droNov > 2 & orf.table$strCam > 2 & orf.table$aptFor > 2 & orf.table$aptHaa > 2 & orf.table$aptOwe > 2 & orf.table$aptRow > 2 & orf.table$eudEle <= 2 & orf.table$cryCin <= 2 & orf.table$notPer <= 2 & orf.table$tinGut <= 2)
+
+ratite.lowfruit <- writer_names_df <- subset(orf.table, orf.table$rheAme > 2 & orf.table$rhePen > 2 & orf.table$casCas > 2 & orf.table$droNov > 2 & orf.table$strCam > 2 & orf.table$aptHaa > 2 & orf.table$aptOwe > 2 & orf.table$aptRow > 2 & orf.table$eudEle <= 2 & orf.table$cryCin <= 2 & orf.table$notPer <= 2 & orf.table$melUnd <= 2 & orf.table$pseHum <= 2 & orf.table$colLiv <= 2 & orf.table$falPer <= 2 & orf.table$anaPla <= 2 & orf.table$fulGla <= 2 & orf.table$lepDis <= 2 & orf.table$corBra <= 2 & orf.table$mesUni <= 2 & orf.table$picPub <= 2  & orf.table$calAnn <= 2 & orf.table$pygAde <= 2 & orf.table$aptFor <= 2 & orf.table$chaVoc <= 2 & orf.table$nipNip <= 2 & orf.table$cucCan <= 2 & orf.table$balReg <= 2 & orf.table$halLeu <= 2 & orf.table$chaPel & orf.table$tinGut <= 2 )
 
 out.file[grep("100170842,Genbank:NP_001124216.1",out.file$ChickenSeqID),]
 rA[grep("100170842,Genbank:NP_001124216.1",rA$ChickenSeqID),]
-
+rAsort <- rA[order(rA$ChickenSeqID),]
 
 
 Reduce(function(x, y) merge(x, y, all=TRUE), list(rA,cP,nP,fP,mU))
@@ -51,5 +57,5 @@ str(ldf[[1]])
 
 #All_things <- rA
 #All_things$croPor <- cP$croPor
-
+#listy <- list.files(path = ".")
 
