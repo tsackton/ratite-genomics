@@ -1,2 +1,4 @@
 .DS_Store
+.RData
+.Rhistory
 alignment/phast/phastCons_output/*
