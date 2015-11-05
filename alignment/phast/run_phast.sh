@@ -301,7 +301,29 @@ cd ..
 cd ite9
 ./iterate_phastCons.sh 0.30 20
 
+#get predictions for each iteration
+for i in 1 2 3 4 5 6 7 8 9
+do
+	echo "Processing iteration $i"
+	cat ite$i/ELEMENTS/*.bed > cons_ite${i}.bed
+	bedtools coverage -a chicken_genes.bed -b cons_ite${i}.bed > gene.coverage.ite${i}
+	bedtools coverage -a lowe_cnees.bed -b cons_ite${i}.bed  > lowe.coverage.ite${i}		
+	awk '{len += $9 ; cov += $8} END {print cov/len}' gene.coverage.ite${i}
+	awk '{len += $7 ; cov += $6} END {print cov/len}' lowe.coverage.ite${i}
+	awk '{sum+=$3-$2}END{print sum}' cons_ite${i}.bed
+done
+
+#get counts of elements per exon
+for i in 1 2 3 4 5 6 7 8 9 
+do 
+	bedtools intersect -a chicken_genes.bed -b cons_ite${i}.bed -c > ite${i}.gene.count
+	bedtools intersect -a lowe_cnees.bed -b cons_ite${i}.bed -c > ite${i}.lowe_cnee.count
+done
+
 #Next -- run final predictions using fixed values for rho, coverage, length in all reference species, but also outputting per base estimates
+#Do this for all three versions of the tree
+#Estimate rho with all parts
+
 
 ## TESTS FOR RATITE-SPECIFIC ACCELERATION, ETC ##
 #this is a preliminary test based on phyloP and the galGal3->galGal4 CNEEs from the feather paper
@@ -328,9 +350,21 @@ perl -p -i -e 's/0.00000$/0.00001/' ratite_accel.final.out
 perl -p -i -e 's/0.00000$/0.00001/' tinamou_accel.final.out
 
 ##generate a null model with 10 random samples of lineages
-for i in 2 3 4 5 6 7 8 9 10
+for i in 1 2 3 4 5 6 7 8 9 10
 do
 	brinput=$(nw_labels named_tree.nh | grep -v "anoCar" | chooseLines -k 13 - | tr '\n' ',')
 	echo $brinput > rand$i.branches
 	sbatch est_accel_rand.sh $i $brinput
 done
+
+#concatenate output
+for CHR in $(tail -n +2 galGal4.chr2acc | cut -f2,2)
+do
+	for i in 1 2 3 4 5 6 7 8 9 10
+	do
+		cat rand$i/$CHR* | grep "^$CHR" >> rand${i}_accel.final.out
+	done
+done
+
+#replace 0s
+for FILE in $(ls rand*.out); do perl -p -i -e 's/0.00000$/0.00001/' $FILE; done
