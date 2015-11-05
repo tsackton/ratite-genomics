@@ -1,22 +1,38 @@
+#the following loop works with the species_stops.txt files that were produced with stop_number_3frame.py
+
 setwd("~/Desktop/out_of_stops/")
 path = "~/Desktop/out_of_stops/"
-
-rA <- read.delim("rheAme_stops.txt")
-rA$best <- apply(rA[,c(2,3,4)],1,min)
-rA$Gene <- sub(",.*","",rA$ChickenSeqID,perl=TRUE)
-rasub <- subset(rA, select=c(6,7))
-rasub <- rasub[order(rasub$Gene,rasub$best),]
-ragene <- rasub[!duplicated(rasub$Gene),]
-table(ragene$best)
 
 best.out<-""
 file.names <- dir(path, pattern =".txt")
 for(i in 1:length(file.names)){
-  file <- read.delim(file.names[i])
-  file$best <- apply(file[,c(2,3,4)],1,min)
+  file <- read.delim(file.names[i])[,c(1,5)]
   file$Gene <- sub(",.*","",file$ChickenSeqID,perl=TRUE)
-  filesub <- subset(file, select=c(6,7))
-  filesub <- filesub[order(filesub$Gene,filesub$best),]
+  filesub <- subset(file, select=c(3,2))
+  filesub <- filesub[order(filesub[,1],filesub[,2]),]
+  gene <- filesub[!duplicated(filesub$Gene),]
+  best.out <- Reduce(function(x, y) merge(x, y, all=TRUE), list(best.out,gene))
+}
+
+
+
+
+#file <- read.delim("rheAme_stops.txt")[,c(1,5)]
+#rA$best <- apply(rA[,c(2,3,4)],1,min)
+#rA$Gene <- sub(",.*","",rA$ChickenSeqID,perl=TRUE)
+#rasub <- subset(rA, select=c(6,7))
+#rasub <- rasub[order(rasub$Gene,rasub$best),]
+#ragene <- rasub[!duplicated(rasub$Gene),]
+#table(ragene$best)
+
+
+best.out<-""
+file.names <- dir(path, pattern =".txt")
+for(i in 1:length(file.names)){
+  file <- read.delim(file.names[i])[,c(1,5)]
+  file$Gene <- sub(",.*","",file$ChickenSeqID,perl=TRUE)
+  filesub <- subset(file, select=c(3,2))
+  filesub <- filesub[order(filesub[,1],filesub[,2]),]
   gene <- filesub[!duplicated(filesub$Gene),]
   best.out <- Reduce(function(x, y) merge(x, y, all=TRUE), list(best.out,gene))
 }
