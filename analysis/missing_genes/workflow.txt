@@ -16,4 +16,6 @@ PseudoSearch
 9. Ran psl_checker.sh again to compare the before and after effects of removing duplicates. Maybe?
 10. Ran psl_dictionary_parser.py with psl_dict.sbatch through psl_submit.sh to generate concatenated transcripts for each gene.
 11. Ran translation_tester.py on a subset of the genomes to determine if one strand orientation was being concatenated incorrectly.
-12. Ran multifasta_reader.py using mfreader.sbatch on all genomes to get 3 pieces of information: (1) translate the transcript, (2) identify the number of orfs in each transcript, pull the longest orf for each transcript.
+12. Ran multifasta_reader.py using mfreader.sbatch on all genomes to get 3 pieces of information: (1) translate the transcript, (2) identify the number of orfs in each transcript, and (3) pull the longest orf for each transcript.
+13. Ran stop_number_3frame.py using Stopsplitter.sbatch and 3frame.sh to give the number of stop codons in each frame of forward translation.  These species_stops.txt files were used in R.
+14. R script MissingGenes.R is being used to access the number of stops in each species and predict genes that have seen pseudogenization.
