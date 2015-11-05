@@ -1,22 +1,39 @@
+#the following loop works with the species_stops.txt files that were produced with stop_number_3frame.py
+
 setwd("~/Desktop/out_of_stops/")
 path = "~/Desktop/out_of_stops/"
-
-rA <- read.delim("rheAme_stops.txt")
-rA$best <- apply(rA[,c(2,3,4)],1,min)
-rA$Gene <- sub(",.*","",rA$ChickenSeqID,perl=TRUE)
-rasub <- subset(rA, select=c(6,7))
-rasub <- rasub[order(rasub$Gene,rasub$best),]
-ragene <- rasub[!duplicated(rasub$Gene),]
-table(ragene$best)
 
 best.out<-""
 file.names <- dir(path, pattern =".txt")
 for(i in 1:length(file.names)){
-  file <- read.delim(file.names[i])
-  file$best <- apply(file[,c(2,3,4)],1,min)
+  file <- read.delim(file.names[i])[,c(1,5)]
   file$Gene <- sub(",.*","",file$ChickenSeqID,perl=TRUE)
-  filesub <- subset(file, select=c(6,7))
-  filesub <- filesub[order(filesub$Gene,filesub$best),]
+  filesub <- subset(file, select=c(3,2))
+  filesub <- filesub[order(filesub[,1],filesub[,2]),]
+  gene <- filesub[!duplicated(filesub$Gene),]
+  best.out <- Reduce(function(x, y) merge(x, y, all=TRUE), list(best.out,gene))
+}
+
+ratite.lowfruit <- subset(best.out, best.out$rheAme > 1 & best.out$rhePen > 1 & best.out$casCas > 1 & best.out$droNov > 1 & best.out$strCam > 1 & best.out$aptHaa > 1 & best.out$aptOwe > 1 & best.out$aptRow > 1 & best.out$eudEle <= 1 & best.out$cryCin <= 1 & best.out$notPer <= 1 & best.out$melUnd <= 1 & best.out$pseHum <= 1 & best.out$colLiv <= 1 & best.out$falPer <= 1 & best.out$anaPla <= 1 & best.out$fulGla <= 1 & best.out$lepDis <= 1 & best.out$corBra <= 1 & best.out$mesUni <= 1 & best.out$picPub <= 1 & best.out$calAnn <= 1 & best.out$pygAde <= 1 & best.out$aptFor <= 1 & best.out$chaVoc <= 1 & best.out$nipNip <= 1 & best.out$cucCan <= 1 & best.out$balReg <= 1 & best.out$halLeu <= 1 & best.out$chaPel & best.out$tinGut <= 1)
+
+
+
+#file <- read.delim("rheAme_stops.txt")[,c(1,5)]
+#rA$best <- apply(rA[,c(2,3,4)],1,min)
+#rA$Gene <- sub(",.*","",rA$ChickenSeqID,perl=TRUE)
+#rasub <- subset(rA, select=c(6,7))
+#rasub <- rasub[order(rasub$Gene,rasub$best),]
+#ragene <- rasub[!duplicated(rasub$Gene),]
+#table(ragene$best)
+
+
+best.out<-""
+file.names <- dir(path, pattern =".txt")
+for(i in 1:length(file.names)){
+  file <- read.delim(file.names[i])[,c(1,5)]
+  file$Gene <- sub(",.*","",file$ChickenSeqID,perl=TRUE)
+  filesub <- subset(file, select=c(3,2))
+  filesub <- filesub[order(filesub[,1],filesub[,2]),]
   gene <- filesub[!duplicated(filesub$Gene),]
   best.out <- Reduce(function(x, y) merge(x, y, all=TRUE), list(best.out,gene))
 }
