@@ -26,7 +26,9 @@ for record in SeqIO.parse(phile,"fasta"):
     recordgrab = re.search('ChickenGeneID\:([0-9]*.*Genbank\:[A-Za-z0-9/./_]*)',record.description)
     frames = [orfs,orfs2,orfs3]
     orfs4 = min(frames)
-    fout.write(str(recordgrab.group(1))+"\t"+str(orfs)+"\t"+str(orfs2)+"\t"+str(orfs3)+"\t"+str(orfs4)+"\n")    
     fout2.write(">frame1 "+str(record.description)+"\n"+str(trans)+"\n"+">frame2 "+str(record.description)+"\n"+str(trans2)+"\n"+">frame3 "+str(record.description)+"\n"+str(trans3)+"\n")
+    if str(record.seq) == len(record.seq) * 'N':
+        orfs4 = -1        
+    fout.write(str(recordgrab.group(1))+"\t"+str(orfs)+"\t"+str(orfs2)+"\t"+str(orfs3)+"\t"+str(orfs4)+"\n")
 fout.close()
 fout2.close()
