@@ -24,13 +24,13 @@ ntindex <-c("anaPla_best","aptFor_best","balReg_best","calAnn_best","chaPel_best
 rest <-c("anoCar_best","allMis_best","allSin_best","cheMyd_best","chrPic_best","gavGan_best")
 
 #this was the old way, but was not versatile
-#ratite.lowfruit <- subset(best.out, best.out$rheAme > 1 & best.out$rhePen > 1 & best.out$casCas > 1 & best.out$droNov > 1 & best.out$strCam > 1 & best.out$aptHaa > 1 & best.out$aptOwe > 1 & best.out$aptRow > 1 & best.out$eudEle <= 1 & best.out$cryCin <= 1 & best.out$notPer <= 1 & best.out$melUnd <= 1 & best.out$pseHum <= 1 & best.out$colLiv <= 1 & best.out$falPer <= 1 & best.out$anaPla <= 1 & best.out$fulGla <= 1 & best.out$lepDis <= 1 & best.out$corBra <= 1 & best.out$mesUni <= 1 & best.out$picPub <= 1 & best.out$calAnn <= 1 & best.out$pygAde <= 1 & best.out$aptFor <= 1 & best.out$chaVoc <= 1 & best.out$nipNip <= 1 & best.out$cucCan <= 1 & best.out$balReg <= 1 & best.out$halLeu <= 1 & best.out$chaPel & best.out$tinGut <= 1)
+ratite.lowfruit <- subset(best.out, best.out$rheAme > 1 & best.out$rhePen > 1 & best.out$casCas > 1 & best.out$droNov > 1 & best.out$strCam > 1 & best.out$aptHaa > 1 & best.out$aptOwe > 1 & best.out$aptRow > 1 & best.out$eudEle <= 1 & best.out$cryCin <= 1 & best.out$notPer <= 1 & best.out$melUnd <= 1 & best.out$pseHum <= 1 & best.out$colLiv <= 1 & best.out$falPer <= 1 & best.out$anaPla <= 1 & best.out$fulGla <= 1 & best.out$lepDis <= 1 & best.out$corBra <= 1 & best.out$mesUni <= 1 & best.out$picPub <= 1 & best.out$calAnn <= 1 & best.out$pygAde <= 1 & best.out$aptFor <= 1 & best.out$chaVoc <= 1 & best.out$nipNip <= 1 & best.out$cucCan <= 1 & best.out$balReg <= 1 & best.out$halLeu <= 1 & best.out$chaPel & best.out$tinGut <= 1)
 
 best.out$badRatites <- apply(best.out[,rindex], 1, function(x) sum(x > 1)/length(x)) #create a new column called badRatites that contains the proportion of ratites with more than 1 stop for each gene
 best.out$goodFliers <- apply(best.out[,ntindex], 1, function(x) sum(x <= 1)/length(x)) #create a new column called goodFliers that contains the proportion of ntindex birds with 1 or 0 stops for each gene
-
+best.out$genePresent <- apply(best.out[,ntindex], 1, function(x) sum(x > 0)/length(x)) 
 ratite.lowfruit <- subset(best.out, best.out$badRatites>0.8 & best.out$goodFliers>0.99) #example of how to filter and subset data using these - much cleaner and more versatile than above subsetting
-ratite.lowfruit2 <- subset(best.out, best.out$badRatites>=0.8 & best.out$goodFliers>0.9) #example of how to filter and subset data using these - much cleaner and more versatile than above subsetting
+ratite.lowfruit2 <- subset(best.out, best.out$badRatites>=0.8 & best.out$goodFliers>0.9 & best.out$genePresent>0.5) #example of how to filter and subset data using these - much cleaner and more versatile than above subsetting
 
 
 #below is the code for the first lowfruit
