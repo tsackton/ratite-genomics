@@ -1,3 +1,5 @@
+#will grab the concatenated mRNA transcript from every .fa file in a given directory.  Input is chickenID recordgrab.group(1).  entire genebank ID to ###.#
+
 from Bio import SeqIO
 import re
 import sys

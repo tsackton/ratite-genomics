@@ -1,3 +1,5 @@
+#will grab every concatenated transcript present for a given gene from every .fa file in a given directory.  Input is just the gene ID number from chicken.
+
 from Bio import SeqIO
 import re
 import sys
