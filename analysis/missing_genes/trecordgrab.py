@@ -1,3 +1,5 @@
+#will grab the translated concatenated mRNA transcript from every .fa file in a given directory.  Input is just chickenID number
+
 from Bio import SeqIO
 import re
 import sys
