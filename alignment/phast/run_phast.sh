@@ -321,8 +321,43 @@ do
 done
 
 #Next -- run final predictions using fixed values for rho, coverage, length in all reference species, but also outputting per base estimates
-#Do this for all three versions of the tree
-#Estimate rho with all parts
+#use iterate_phastCons.sh code
+#note that jobs that fail to finish in 2 days will time out and be ignored in the rho calculation	
+
+#going back to get MAFs for all the small bits -- same code as above but with NW instead of NC
+#second step -- filter with mafDuplicateFilter
+for MAF in $(ls galGal.NW*.maf);
+do
+	../keep_ref_only.pl $MAF &
+done
+
+for MAF in $(ls galGal_ref_NW*.temp.maf);
+do
+	mafDuplicateFilter --maf ${MAF%.temp.maf}.temp.maf > ${MAF%.maf}.pruned.maf &
+done
+
+
+#the output MAFs from mafDuplicateFilter do not guarantee correct strand or order, particularly for galGal specific duplications
+#the following code updates / fixes that, first by correcting strand and then order
+for MAF in $(ls galGal_ref_NW*.temp.pruned.maf);
+do
+	mafStrander --maf $MAF --seq galGal --strand + > ${MAF%.pruned.maf}.strand.maf &
+done
+
+#finally, we sort the MAF
+for FILE in $(ls galGal_ref_NW*.temp.strand.maf);
+do
+	CHR1=${FILE#galGal_ref_}
+	CHR=${CHR1%.temp.strand.maf}
+	echo "Processing $CHR"
+	mafSorter --maf $FILE --seq galGal.$CHR > $CHR.final.maf &
+done
+
+#get rid of temp mafs
+rm *.temp*.maf
+
+for FILE in $(ls -1 ../small/*.final.maf); do SAMP1=${FILE%.final.maf}; SAMP=${SAMP1##*/}; echo $SAMP; phastCons --expected-length=$ESTLEN --target-coverage=$TARGETCOV --most-conserved ELEMENTS/$SAMP.bed --score --msa-format MAF $FILE ave.cons.mod,ave.noncons.mod 1> ./SCORES/$SAMP.wig 2> ./final_logs/$SAMP.log; done
+
 
 
 ## TESTS FOR RATITE-SPECIFIC ACCELERATION, ETC ##
