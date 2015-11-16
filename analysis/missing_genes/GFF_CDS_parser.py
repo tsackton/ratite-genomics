@@ -10,9 +10,9 @@ import sys
 import os
 
 phile = str(sys.argv[1])
-fout = open(os.getcwd()+phile.split('.')[0]+".bed", 'w')
+fout = open(os.getcwd()+"/"+phile.split('.')[0]+".bed", 'w')
 
-with open(os.getcwd()+phile, 'rU') as handle: #opens gff in universal mode
+with open(os.getcwd()+"/"+phile, 'rU') as handle: #opens gff in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader:
         if len(strLine)==9: #only the lines in proper gff format (length of 9) should be examined
