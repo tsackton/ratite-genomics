@@ -12,13 +12,13 @@ egrGar,Egretta garzetta,little egret,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Egre
 falPer,Falco peregrinus,peregrine falcon,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Falco_peregrinus/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_F_peregrinus_v1.0_top_level.gff3.gz
 ficAlb,Ficedula albicollis,collared flycatcher,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Ficedula_albicollis/GFF/ref_FicAlb1.5_top_level.gff3.gz
 galGal,Gallus gallus,chicken,102,ftp://ftp.ncbi.nlm.nih.gov/genomes/Gallus_gallus/GFF/ref_Gallus_gallus-4.0_top_level.gff3.gz
-geoFor,Geospiza fortis,medium ground-finch,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Geospiza_fortis/GFF/ref_GeoFor_1.0_top_level.gff3.gz
+geoFor,Geospiza fortis,medium ground-finch,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Geospiza_fortis/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_GeoFor_1.0_top_level.gff3.gz
 halLeu,Haliaeetus leucocephalus,bald eagle,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Haliaeetus_leucocephalus/GFF/ref_Haliaeetus_leucocephalus-4.0_top_level.gff3.gz
 melGal,Meleagris gallopavo,turkey,101,ftp://ftp.ncbi.nlm.nih.gov/genomes/Meleagris_gallopavo/GFF/ref_Turkey_5.0_top_level.gff3.gz
 melUnd,Melopsittacus undulatus,budgerigar,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Melopsittacus_undulatus/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_Melopsittacus_undulatus_6.3_top_level.gff3.gz
 nipNip,Nipponia nippon,crested ibis,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Nipponia_nippon/GFF/ref_ASM70822v1_top_level.gff3.gz
 picPub,Picoides pubescens,downy woodpecker,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Picoides_pubescens/GFF/ref_ASM69900v1_top_level.gff3.gz
-pseHum,Pseudopodoces humilis,Tibetan ground-tit,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Pseudopodoces_humilis/GFF/ref_PseHum1.0_top_level.gff3.gz
+pseHum,Pseudopodoces humilis,Tibetan ground-tit,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Pseudopodoces_humilis/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_PseHum1.0_top_level.gff3.gz
 pygAde,Pygoscelis adeliae,Adelie penguin,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Pygoscelis_adeliae/GFF/ref_ASM69910v1_top_level.gff3.gz
 serCan,Serinus canaria,common canary,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Serinus_canaria/GFF/ref_SCA1_top_level.gff3.gz
 strCam,Struthio camelus australis,ostrich,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Struthio_camelus_australis/GFF/ref_ASM69896v1_top_level.gff3.gz
@@ -32,7 +32,7 @@ mesUni,,,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Mesitornis_unicolor/GFF/ref_ASM6
 ,,,,
 Outgroups:,,,,
 ,,,,
-allMis,,,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Alligator_mississippiensis/GFF/ref_allMis0.2_top_level.gff3.gz
+allMis,,,100,ftp://ftp.ncbi.nih.gov/genomes/Alligator_mississippiensis/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_allMis0.2_top_level.gff3.gz
 anoCar,,,101,ftp://ftp.ncbi.nlm.nih.gov/genomes/Anolis_carolinensis/GFF/ref_AnoCar2.0_top_level.gff3.gz
 chrPic,,,101,ftp://ftp.ncbi.nlm.nih.gov/genomes/Chrysemys_picta/GFF/ref_Chrysemys_picta_bellii-3.0.3_top_level.gff3.gz
 ,,,,

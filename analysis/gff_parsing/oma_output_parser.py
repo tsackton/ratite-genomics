@@ -1,104 +1,96 @@
-# takes input like: python hogget_working1.py [directory of HOGs] [protein list]
+#!/usr/bin/env python
 
-import sys, re, os, string, exceptions, itertools, pprint, os.path
-from collections import OrderedDict
-from itertools import groupby
-from operator import itemgetter
+import sys, re, os, string, exceptions, os.path, argparse
+from collections import defaultdict
 
-# species name
-# species6 = sys.argv[1]
-# input directory
-input = sys.argv[1]
-# input source list of proteins
-proteinlist = sys.argv[2]
+#better option processing
+parser = argparse.ArgumentParser(description="Read a directory of OMA output and a directory of parsed GFF files and extract missing proteins.")
+parser.add_argument('hog', help='HOG Directory', action='store')
+parser.add_argument('gff', help="GFF table output directory", action='store')
+parser.add_argument('-v', '--verbose', help='Display status messages', action='store_true') 
+parser.add_argument('-p', '--prefix', help="Prefix to use for output files (prefix.assigned and prefix.unassigned)", action='store', default="oma_parse")
+parser.add_argument('-g', '--gff_ext', help="Extension of the table files in the GFF dir, defaults to tab", action="store", default="tab")
+parser.add_argument('-f', '--fasta_ext', help="Extension of the fasta files in the HOG dir, defaults to fa", action="store", default="fa")
+args=parser.parse_args()
 
-species6 = proteinlist[:6]
+input_dir = args.hog
+gff_dir = args.gff
 
-HOGassigned = species6 + '.assigned'
-noHOG = species6 + '.unassigned'
+###PROCESS GFF TABLES####
 
-hogs = os.listdir(input)
-hogassigned = []
+#dict with prot to gene
+prot_to_gene={}
+#dict with gene to species
+gene_to_sp={} 
 
-class Prot(object):
-	def __init__(self, geneID, proteinID, star):
-		self.geneID = geneID
-		self.proteinID = proteinID
-		self.star = star
-
-	def __hash__(self):
-		return hash((self.geneID, self.proteinID, self.star))
-
-	def __eq__(self, other):
-		return (self.geneID, self.proteinID, self.star) == (other.geneID, other.proteinID, other.star)
-
-for hog in hogs:
-	path = input + '/' + hog
-	with open (path) as f:
-		lines = f.read().splitlines()
-		for line in lines:
-			if species6 in line:
-				if not re.findall('([a-zA-Z]+P_\d+).', line):
-					print 'PROT ' + line
+for tab in os.listdir(gff_dir):
+	if tab.endswith(args.gff_ext):
+		gff_to_open = gff_dir + '/' + tab
+		with open (gff_to_open) as f:
+			for line in f:
+				line = line.rstrip('\n')
+		
+				#skip comment lines
+				if line.startswith("#"):
 					continue
-				else:
-					protein = re.findall('([a-zA-Z]+P_\d+).', line)[0]
-                
-				if not re.findall('\|(\d+)\|', line):
-					print 'GENE ' + line
-					geneID = ''
-				else:
-					geneID = re.findall('\|(\d+)\|', line)[0]
-                   
-				hogassigned.append(Prot(geneID, [protein, hog], ''))
+			
+				fields=line.split("\t")
+			
+				if fields[4] == "protein_coding":
+					#this is all we care about
+					#need to strip versions from protein id because of HOG defline issues
+					try:
+						prot_id = re.findall('(\w+\-*\w*)\.*\d*', fields[9])[0]
+						prot_to_gene[prot_id] = fields[2]
+					except:
+						sys.stderr.write ("Problem getting protein id for " + line + "  in " + gff_to_open + "\n")
+					
+					gene_to_sp[fields[2]] = fields[0]				
 
-filetowrite = []
-proteinsWithHOG = []
-listofproteins = []
-listofgenes = []
+###############
 
-with open (proteinlist) as f:
-	for line in f:
-		if not line.startswith(species6):
-			continue
-		if not re.findall('protein_id=(\S+_\d+).', line):
-			print 'PROT 1 ' + line
-			continue
+assigned = args.prefix + '.assigned'
+unassigned = args.prefix + '.unassigned'
+
+#input dir to process
+
+#this is a dict that will store everything that is assigned (geneIDs) and get a count of the number of transcripts
+hogassigned = defaultdict(list)
+
+for hog in os.listdir(input_dir):
+	if hog.endswith(args.fasta_ext):
+		hog_to_open = input_dir + '/' + hog
+
+		#all we care about are parsing deflines, so don't bother with the overhead of biopython
+
+		with open (hog_to_open) as f:
+			for line in f:
+				if line.startswith(">"):
+					#fasta defline, parse
+					#there are two possible patterns
+					#one is >sp|gene|prot [sp]
+					#other is >prot.ver [sp]
+					
+					try:
+						#see if we can get a prot id with the simpler thing
+						cur_prot=re.findall('>(\w+)\.\d+\s+.*', line)[0]
+					except:
+						try:
+							cur_prot=re.findall('>\w+[|]+\w*[|]+(\w+\-*\w*)\s+.*', line)[0]
+						except:
+							sys.stderr.write ("Problem getting accession for " + hog_to_open + " at " + line)
+							continue
+					
+					try:
+						cur_gene = prot_to_gene[cur_prot]
+						hogassigned[cur_gene].append(cur_prot)
+					except:
+						sys.stderr.write ("Problem getting gene for " + cur_prot + " at " + hog_to_open + " line: " + line)
+					
+with open(assigned, 'w') as asg, open(unassigned, 'w') as un:
+	for gene in gene_to_sp:
+		if gene in hogassigned:
+			asg.write(gene + "\t" + gene_to_sp[gene] + "\t" + ",".join(hogassigned[gene]) + "\n")
 		else:
-			proteinToMatch = re.findall('protein_id=(\S+_\d+).', line)[0]
-			geneToMatch = re.findall('GeneID:(\d+)', line)[0]
-			if not '*' in line:
-				thingToMatch = Prot(geneToMatch, proteinToMatch, '')
-			else:
-				thingToMatch = Prot(geneToMatch, proteinToMatch, '*')
-		if thingToMatch.geneID in listofgenes:
-#			print thingToMatch.geneID
-			continue
-		else:
-			listofgenes.append(thingToMatch.geneID)
-			listofproteins.append(thingToMatch)
-		for hog in hogassigned:
-			if hog.proteinID[0] == thingToMatch.proteinID:
-				proteinsWithHOG.append(thingToMatch)
-				line = line.replace("\n","")
-				line += '\t' + hog.proteinID[1]
-				filetowrite.append(line)
-      #          print hog.geneID
-       #         print thingToMatch.geneID
-			elif hog.geneID == thingToMatch.geneID:
-				proteinsWithHOG.append(thingToMatch)
-				line = line.replace("\n","")
-				line += '\t' + hog.proteinID[1] + ' *'
-				filetowrite.append(line)
+			un.write(gene + "\t" + gene_to_sp[gene] + "\t<NA>" + "\n")
 
-unassigned = list(set(listofproteins)-set(proteinsWithHOG))
-
-with open(noHOG, 'w') as f:
-	for protein in unassigned:
-		f.write(protein.geneID + '\t' + protein.proteinID + '\t' + protein.star)
-		f.write('\n')
-
-with open(HOGassigned, 'w') as f:
-	for line in filetowrite:
-		f.write(line)
-		f.write('\n')
