@@ -10,7 +10,7 @@ import sys
 import os
 
 phile = str(sys.argv[1])
-fout = open(os.getcwd()+"/"+phile.split('.')[0]+".bed", 'w')
+fout = open(os.getcwd()+"/out/"+phile.split('.')[0]+".gff", 'w')
 
 with open(os.getcwd()+"/"+phile, 'rU') as handle: #opens gff in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters

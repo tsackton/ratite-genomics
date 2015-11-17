@@ -14,8 +14,8 @@ import sys
 
 phile = str(sys.argv[1])
 
-fout = open(os.getcwd()+phile.split('.')[0]+".bed", 'w')
-with open(os.getcwd()+phile, 'rU') as handle: #opens bed in universal mode
+fout = open(os.getcwd()+"/out/"+phile.split('.')[0]+".bed", 'w')
+with open(os.getcwd()+"/"+phile, 'rU') as handle: #opens bed in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader:
         Scaffold = strLine[0]
@@ -25,7 +25,10 @@ with open(os.getcwd()+phile, 'rU') as handle: #opens bed in universal mode
         Zero = 0
         Strand = strLine[6]
         IDsearch = re.search('Dbxref\=([a-zA-Z0-9\.\,\_\:\/\-]*)',MetaD)
-        MetaData= IDsearch.group(1)+",Start:"+str(Start)+",Stop:"+str(Stop)+",Strand:"+Strand
+        try:
+            MetaData = IDsearch.group(1)+",Start:"+str(Start)+",Stop:"+str(Stop)+",Strand:"+Strand
+        except:
+            MetaData = str(MetaD)+"Start:"+str(Start)+",Stop:"+str(Stop)+",Strand:"+Strand
         outStr = "%s\t%s\t%s\t%s\t%s\t%s" % (Scaffold,Start,Stop,MetaData,Zero,Strand)
         fout.write(outStr + '\n') #and write that string out
 fout.close()
