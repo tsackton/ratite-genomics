@@ -41,6 +41,7 @@ for tab in os.listdir(gff_dir):
 					#need to strip versions from protein id because of HOG defline issues
 					try:
 						prot_id = re.findall('(\w+\-*\w*)\.*\d*', fields[9])[0]
+						#does not check for key existence so protein ids with 2 gene ids will get clobbered
 						prot_to_gene[prot_id] = fields[2]
 					except:
 						sys.stderr.write ("Problem getting protein id for " + line + "  in " + gff_to_open + "\n")
