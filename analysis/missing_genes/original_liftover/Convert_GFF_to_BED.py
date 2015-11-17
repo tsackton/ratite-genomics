@@ -2,20 +2,17 @@
 """
 Created on Fri Sep 11 14:35:27 2015
 
-NCBI formatted gff to bed converter.  Takes a file with each exon on separate line and produces bed with each exon on separate line.
+NCBI formatted gff to bed converter.  Takes a file with each exon on separate line and produces bed with each exon in separate line.
 
 @author: phil-grayson
 """
 
 import csv
 import re
-import os
-import sys
 
-phile = str(sys.argv[1])
-
-fout = open(os.getcwd()+phile.split('.')[0]+".bed", 'w')
-with open(os.getcwd()+phile, 'rU') as handle: #opens bed in universal mode
+file_out = '/Users/Phil/Desktop/PseudoSearch/Chicken_CDS_HLO.bed'
+fout = open(file_out, 'w')
+with open('/Users/Phil/Desktop/PseudoSearch/Chicken_CDS.gff', 'rU') as handle: #opens bed in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader:
         Scaffold = strLine[0]

@@ -27,7 +27,7 @@ wget -O balReg.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Balearica_regulorum_gib
 wget -O fulGla.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Fulmarus_glacialis/GFF/ref_ASM69083v1_top_level.gff3.gz
 wget -O lepDis.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Leptosomus_discolor/GFF/ref_ASM69178v1_top_level.gff3.gz
 wget -O mesUni.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Mesitornis_unicolor/GFF/ref_ASM69576v1_top_level.gff3.gz
-wget -O allMis.gff.gz ftp://ftp.ncbi.nih.gov/genomes/Alligator_mississippiensis/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_allMis0.2_top_level.gff3.gz
+wget -O allMis.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Alligator_mississippiensis/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_allMis0.2_top_level.gff3.gz
 wget -O anoCar.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Anolis_carolinensis/GFF/ref_AnoCar2.0_top_level.gff3.gz
 wget -O chrPic.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Chrysemys_picta/GFF/ref_Chrysemys_picta_bellii-3.0.3_top_level.gff3.gz
 
