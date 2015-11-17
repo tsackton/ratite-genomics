@@ -1,0 +1,5 @@
+1. Downloaded GFF files from NCBI and used GFF files from Maker run for our 10 genomes.
+2. Ran GFF_CDS_parser.py on each GFF file on an interactive node with srun -p interact -pty --mem 2000 -t 0-1:00:00 /bin/bash
+3. Ran Convert_GFF_to_BED.py on each file to convert them.
+4. Ran for FILE in $(ls *.bed); do wc $FILE -l; done on each group of files (gff from GFF_CDS_parser.py and bed from Convert_GFF_to_BED.py) to see if line number were consistent. 
+
