@@ -17,7 +17,7 @@ wget -O melGal.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Meleagris_gallopavo/GFF
 wget -O melUnd.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Melopsittacus_undulatus/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_Melopsittacus_undulatus_6.3_top_level.gff3.gz
 wget -O nipNip.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Nipponia_nippon/GFF/ref_ASM70822v1_top_level.gff3.gz
 wget -O picPub.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Picoides_pubescens/GFF/ref_ASM69900v1_top_level.gff3.gz
-wget -O pseHum.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Pseudopodoces_humilis/GFF/ref_PseHum1.0_top_level.gff3.gz
+wget -O pseHum.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Pseudopodoces_humilis/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_PseHum1.0_top_level.gff3.gz
 wget -O pygAde.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Pygoscelis_adeliae/GFF/ref_ASM69910v1_top_level.gff3.gz
 wget -O serCan.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Serinus_canaria/GFF/ref_SCA1_top_level.gff3.gz
 wget -O strCam.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Struthio_camelus_australis/GFF/ref_ASM69896v1_top_level.gff3.gz
