@@ -11,7 +11,7 @@ wget -O egrGar.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Egretta_garzetta/GFF/re
 wget -O falPer.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Falco_peregrinus/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_F_peregrinus_v1.0_top_level.gff3.gz
 wget -O ficAlb.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Ficedula_albicollis/GFF/ref_FicAlb1.5_top_level.gff3.gz
 wget -O galGal.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Gallus_gallus/GFF/ref_Gallus_gallus-4.0_top_level.gff3.gz
-wget -O geoFor.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Geospiza_fortis/GFF/ref_GeoFor_1.0_top_level.gff3.gz
+wget -O geoFor.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Geospiza_fortis/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_GeoFor_1.0_top_level.gff3.gz
 wget -O halLeu.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Haliaeetus_leucocephalus/GFF/ref_Haliaeetus_leucocephalus-4.0_top_level.gff3.gz
 wget -O melGal.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Meleagris_gallopavo/GFF/ref_Turkey_5.0_top_level.gff3.gz
 wget -O melUnd.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/Melopsittacus_undulatus/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_Melopsittacus_undulatus_6.3_top_level.gff3.gz
