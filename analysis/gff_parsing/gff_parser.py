@@ -196,15 +196,18 @@ with open (input_file, 'r') as f, open (error_file, 'w') as e:
 					genes[parent_id].update_trans(feature_id, "acc", feature_id)
 			
 			#now set gene biotype of parent if we can figure it out (i.e., if it is none and the gff_fields[2] is not mRNA
-			if genes[parent_id].biotype is None:
-				if gff_fields[2] == "mRNA":
-					genes[parent_id].biotype = "protein_coding"
-				elif gff_fields[2] == "ncRNA":
-					genes[parent_id].biotype = "misc_RNA"
-				elif gff_fields[2] == "tRNA":
-					genes[parent_id].biotype = "tRNA"
-				elif gff_fields[2] == "rRNA":
-					genes[parent_id].biotype = "rRNA"
+			if (genes[parent_id].biotype is None) or (genes[parent_id].biotype == "other"):
+				try:
+					genes[parent_id].biotype = gff_features['gbkey']
+				except:
+					if gff_fields[2] == "mRNA":
+						genes[parent_id].biotype = "protein_coding"
+					elif gff_fields[2] == "ncRNA":
+						genes[parent_id].biotype = "misc_RNA"
+					elif gff_fields[2] == "tRNA":
+						genes[parent_id].biotype = "tRNA"
+					elif gff_fields[2] == "rRNA":
+						genes[parent_id].biotype = "rRNA"
 
 		if gff_fields[2] in ("CDS", "exon"):
 			#now we've arrived at the base level feature

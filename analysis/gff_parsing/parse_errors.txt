@@ -1,0 +1,1 @@
+Problem getting gene for YP_007890942 at HOGFasta/HOG1.fa line: >pygAde|NA|YP_007890942 [pygAde]
