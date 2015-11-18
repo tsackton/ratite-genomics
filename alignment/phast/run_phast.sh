@@ -1,5 +1,5 @@
 #CODE TO RUN PHAST AND RELATED ANALYSIS
-#MOSTLY RUN INTERACTIVELY ON A LARGE MEMORY MACHINE, SO FEW SLURM SCRIPT
+#MOSTLY RUN INTERACTIVELY ON A LARGE MEMORY MACHINE, SO FEW SLURM SCRIPTS
 
 ### GETTING NEUTRAL MODELS ###
 
@@ -118,6 +118,7 @@ do
 	tree_doctor --name-ancestors neut_ver${MOD}_corrected.mod > neut_ver${MOD}_final.named.mod 
 done
 
+### END GET NETURAL MODELS ###
 
 ### RUN PHYLOP ##
 #run halPhyloPMP.py with 12 processors per on each neutral version
@@ -147,13 +148,15 @@ do
 	cd ..
 done
 
-##RUN CODE (SEPARATE SCRIPT, R & BASH) TO VERIFY THAT THERE IS NO EFFECTIVE DIFFERENCE BETWEEN THE THREE RHEA PLACEMENTS IN PHYLOP SCORES
+## END RUN PHYLOP -- NOTE THESE RESULTS NEED TO BE CHECKED ###
 
 ### RUNNING PHASTCONS ###
 #to run phastCons, we need to take a slightly different approach as there is no direct interface with hal
 #so the first step is to export the MAFs that we want, in this case starting with two: chicken, ostrich
 #for each MAF, we then run phastCons
 #sources: https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=cons100way and http://compgen.cshl.edu/phast/phastCons-HOWTO.html
+
+#Step 1: Get MAFS
 for TARGET in galGal strCam
 do
 	mkdir -p $TARGET
@@ -162,6 +165,7 @@ do
 	cd ..
 done
 
+#Step 2. Preprocess MAFS
 #fix MAFs
 for MAF in $(ls galGal_ref*.maf);
 do
@@ -180,7 +184,6 @@ for MAF in $(ls galGal_ref_NC*.temp.maf);
 do
 	mafDuplicateFilter --maf ${MAF%.temp.maf}.temp.maf > ${MAF%.maf}.pruned.maf &
 done
-
 
 #the output MAFs from mafDuplicateFilter do not guarantee correct strand or order, particularly for galGal specific duplications
 #the following code updates / fixes that, first by correcting strand and then order
@@ -217,7 +220,7 @@ do
 	msa_split $FILE --in-format MAF --refseq $CHR.fa --windows 1000000,0 --out-root chunks/$CHR --out-format SS --min-informative 1000 --between-blocks 5000 2> $CHR.split.log &
 done
 
-#Next -- estimate rho for (a subset of) alignments
+#Step 3. Estimate rho for chunks and do preliminary phastCons runs
 #This will be done with slurm, processing batches of 10 alignments each
 
 #set up job array input
@@ -271,7 +274,7 @@ grep "^NC" galGal.chromsizes | awk '{sum+=$2}END{print sum}'
 
 #implies ~8.2% conserved -- slightly higher than in the feather paper, but probably not surprising given the bird bias in our alignment
 
-#Next -- iterate until things look good
+#Step 4. Parameter tuning and sensitivity analysis
 #going to do this by sampling a subset of mafs to calculate rho, averaging the models, and computing with the averaged models
 
 #ite1 is targetcoverage = 0.3, length = 45
@@ -320,10 +323,9 @@ do
 	bedtools intersect -a lowe_cnees.bed -b cons_ite${i}.bed -c > ite${i}.lowe_cnee.count
 done
 
-#Next -- run final predictions using fixed values for rho, coverage, length in all reference species, but also outputting per base estimates
-#use iterate_phastCons.sh code
-#note that jobs that fail to finish in 2 days will time out and be ignored in the rho calculation	
+#Step 5. FINAL PHASTCONS RUNS#
 
+#First need to reprocess the MAFs
 #going back to get MAFs for all the small bits -- same code as above but with NW instead of NC
 #second step -- filter with mafDuplicateFilter
 for MAF in $(ls galGal.NW*.maf);
@@ -335,7 +337,6 @@ for MAF in $(ls galGal_ref_NW*.temp.maf);
 do
 	mafDuplicateFilter --maf ${MAF%.temp.maf}.temp.maf > ${MAF%.maf}.pruned.maf &
 done
-
 
 #the output MAFs from mafDuplicateFilter do not guarantee correct strand or order, particularly for galGal specific duplications
 #the following code updates / fixes that, first by correcting strand and then order
@@ -356,8 +357,49 @@ done
 #get rid of temp mafs
 rm *.temp*.maf
 
-for FILE in $(ls -1 ../small/*.final.maf); do SAMP1=${FILE%.final.maf}; SAMP=${SAMP1##*/}; echo $SAMP; phastCons --expected-length=$ESTLEN --target-coverage=$TARGETCOV --most-conserved ELEMENTS/$SAMP.bed --score --msa-format MAF $FILE ave.cons.mod,ave.noncons.mod 1> ./SCORES/$SAMP.wig 2> ./final_logs/$SAMP.log; done
+#all mafs are now in final_mafs directory
+#need to split the larger chromosomes since phastCons seems to die on chromosomes bigger than ~50 MB
+#going to use overlapping 40 MB windows to guarantee no conserved elements fall in breakpoints of windows
+#get chrs again, this time including the small bits
+#split reference into separate files for each chr with samtools
+cd final_mafs
+cp ../galGal.fa .
+cp ../galGal.fa.fai .
+for FILE in *.final.maf
+do
+	CHR=${FILE%.final.maf}
+	samtools faidx galGal.fa $CHR > $CHR.fa
+done
+rm galGal.fa
+rm galGal.fa.fai
 
+#split
+mkdir -p split
+for FILE in *.final.maf
+do
+	CHR=${FILE%.final.maf}
+	msa_split $FILE --in-format MAF --refseq $CHR.fa --windows 40000000,5000000 --out-root ./split/$CHR --out-format SS --between-blocks 500000 2> $CHR.split.log &
+done
+
+#estimate rho using same chunks as before, but this time on the whole data set
+sbatch est_rho.sh 1
+sbatch est_rho.sh 2
+
+#give runtime of 2 days -- anything not finished will be killed and ignored in the averaging below
+ 
+for VER in 1 2
+do
+	cd rho_${VER}
+	ls mods/*.cons.mod > cons.txt
+	phyloBoot --read-mods '*cons.txt' --output-average ave.cons.mod 
+	ls mods/*.noncons.mod > noncons.txt
+	phyloBoot --read-mods '*noncons.txt' --output-average ave.noncons.mod 
+	cd ..
+done
+
+#finally, run phastCons with the estimated rho models on the final mafs
+./run_phastCons_local.sh 1
+./run_phastCons_local.sh 2
 
 
 ## TESTS FOR RATITE-SPECIFIC ACCELERATION, ETC ##

@@ -22,6 +22,9 @@ gff_dir = args.gff
 prot_to_gene={}
 #dict with gene to species
 gene_to_sp={} 
+#dict with longest protein for each gene
+#if there is more than one the choice is random(-ish), based on the first one we encounter in the field
+gene_to_longest={}
 
 for tab in os.listdir(gff_dir):
 	if tab.endswith(args.gff_ext):
@@ -35,6 +38,11 @@ for tab in os.listdir(gff_dir):
 					continue
 			
 				fields=line.split("\t")
+				#fields[2] is gene id
+				#fields[4] is biotype
+				#fields[8] is cds_len
+				#fields[9] is protein id
+				#fields[10] is is_longest
 			
 				if fields[4] == "protein_coding":
 					#this is all we care about
@@ -46,7 +54,12 @@ for tab in os.listdir(gff_dir):
 					except:
 						sys.stderr.write ("Problem getting protein id for " + line + "  in " + gff_to_open + "\n")
 					
-					gene_to_sp[fields[2]] = fields[0]				
+					gene_to_sp[fields[2]] = fields[0]		
+					
+					#fill in gene to longest dict
+					if (fields[10] == "Y") and (not fields[2] in gene_to_longest):
+						#longest protein and key doesn't already exist
+						gene_to_longest[fields[2]]=fields[9]							
 
 ###############
 
@@ -57,6 +70,9 @@ unassigned = args.prefix + '.unassigned'
 
 #this is a dict that will store everything that is assigned (geneIDs) and get a count of the number of transcripts
 hogassigned = defaultdict(list)
+
+#this dict stores prot -> hog information so that we can keep track of whether isoforms are assigned to different HOGs
+prot_to_hog={}
 
 for hog in os.listdir(input_dir):
 	if hog.endswith(args.fasta_ext):
@@ -82,10 +98,21 @@ for hog in os.listdir(input_dir):
 							sys.stderr.write ("Problem getting accession for " + hog_to_open + " at " + line)
 							continue
 					
-					try:
+					prot_to_hog[cur_prot]=hog
+
+					try:					
 						cur_gene = prot_to_gene[cur_prot]
 						hogassigned[cur_gene].append(cur_prot)
-					except:
+						if len(hogassigned[cur_gene]) > 1:
+							#if there is more than one protein from a gene
+							hogcheck=defaultdict(int)
+							for prot_to_check in hogassigned[cur_gene]:
+								prot_hog_val = prot_to_hog[prot_to_check]
+								hogcheck[prot_hog_val] += 1
+							if len(hogcheck) > 1:
+								sys.stderr.write (cur_gene + " has multiple isoforms in different HOGS: " + "\t".join(hogcheck.keys()) + "\n")
+						
+					except KeyError:
 						sys.stderr.write ("Problem getting gene for " + cur_prot + " at " + hog_to_open + " line: " + line)
 					
 with open(assigned, 'w') as asg, open(unassigned, 'w') as un:
@@ -93,5 +120,5 @@ with open(assigned, 'w') as asg, open(unassigned, 'w') as un:
 		if gene in hogassigned:
 			asg.write(gene + "\t" + gene_to_sp[gene] + "\t" + ",".join(hogassigned[gene]) + "\n")
 		else:
-			un.write(gene + "\t" + gene_to_sp[gene] + "\t<NA>" + "\n")
+			un.write(gene + "\t" + gene_to_sp[gene] + "\t" + gene_to_longest[gene] + "\n")
 
