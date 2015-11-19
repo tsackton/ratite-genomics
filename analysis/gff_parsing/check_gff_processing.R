@@ -1,6 +1,6 @@
 #read in all_info.tab
 
-all<-read.table("all_info.summary", header=T, comment.char="", sep="\t", stringsAsFactors=F)
+all<-read.table("gffs/all_info.summary", header=T, comment.char="", sep="\t", stringsAsFactors=F)
 names(all)[1]="species"
 all=subset(all, species != "#species")
 table(all$species, all$biotype, useNA="ifany")
