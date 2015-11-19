@@ -416,6 +416,9 @@ awk 'BEGIN {FS="\t"; OFS="\t"} {$4="ce"NR; print}' most_conserved_tree2.bed > mo
 #get lowe et al CNEEs in galGal4, NCBI style coordinates
 #step one is liftover, then replace chrs using replace chrs script; info in galGalAnnot directory
 
+#get galGal exons using Phil's GFF_CDS script and GFF_BED script, then sort and merge:
+sort -k1,1 -k2,2n -k3,3n galGal_exons.bed | bedtools merge -i - > chicken_exons.bed
+
 ## TESTS FOR RATITE-SPECIFIC ACCELERATION, ETC ##
 #this is a preliminary test based on phyloP and the galGal3->galGal4 CNEEs from the feather paper
 #the idea is to test whether the 'named branches' in this case the ratites are accelerated or conserved relative to background

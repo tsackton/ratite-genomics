@@ -11,11 +11,22 @@ import csv
 import re
 import os
 import sys
+import argparse
 
-phile = str(sys.argv[1])
+#better option processing
+parser = argparse.ArgumentParser(description="Read a GFF file and export lines with a specified type.")
+parser.add_argument('gff', help='GFF file to process', action='store')
+parser.add_argument('-o', '--out', help='File to write to', action='store')
+args=parser.parse_args()
 
-fout = open(os.getcwd()+"/out/"+phile.split('.')[0]+".bed", 'w')
-with open(os.getcwd()+"/"+phile, 'rU') as handle: #opens bed in universal mode
+#outfile
+try:
+	outputFile = args.out
+except:
+	outputFile = args.gff +"/out/" + args.gff.split('.')[0]+ ".bed"
+	
+fout = open(outputFile, 'w')
+with open(os.getcwd()+"/"+args.gff, 'rU') as handle: #opens bed in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader:
         Scaffold = strLine[0]
