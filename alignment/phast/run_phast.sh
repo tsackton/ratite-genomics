@@ -401,6 +401,20 @@ done
 ./run_phastCons_local.sh 1
 ./run_phastCons_local.sh 2
 
+#merge bed files and remove duplicate lines sort -k1,1 -k2,2n -k3,3n -k6,6 -u 
+cat final_run_ver2/ELEMENTS/*.bed | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > most_conserved_tree2.bed
+#verify no overlapping intervals
+bedtools merge -i most_conserved_tree2.bed | grep -c ","
+
+cat final_run_ver1/ELEMENTS/*.bed | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > most_conserved_tree1.bed
+bedtools merge -i most_conserved_tree1.bed | grep -c "," 
+
+#rename / renumber
+awk 'BEGIN {FS="\t"; OFS="\t"} {$4="ce"NR; print}' most_conserved_tree1.bed > most_conserved_final.tree1.bed
+awk 'BEGIN {FS="\t"; OFS="\t"} {$4="ce"NR; print}' most_conserved_tree2.bed > most_conserved_final.tree2.bed
+
+#get lowe et al CNEEs in galGal4, NCBI style coordinates
+#step one is liftover using the 
 
 ## TESTS FOR RATITE-SPECIFIC ACCELERATION, ETC ##
 #this is a preliminary test based on phyloP and the galGal3->galGal4 CNEEs from the feather paper
@@ -409,7 +423,6 @@ done
 #do this as a job array using the same framework as est_rho.sh
 
 #need to convert chr coordinates in LoweCNEEs.galGal4.bed to NCBI accessions
-./replace_chrs.pl LoweCNEEs.galGal4.bed
 sbatch est_accel.sh
 
 #clean up 
