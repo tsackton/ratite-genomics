@@ -401,6 +401,8 @@ done
 ./run_phastCons_local.sh 1
 ./run_phastCons_local.sh 2
 
+##PROCESSING FINAL CONSERVED ELEMENT BEDS###
+
 #merge bed files and remove duplicate lines sort -k1,1 -k2,2n -k3,3n -k6,6 -u 
 cat final_run_ver2/ELEMENTS/*.bed | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > most_conserved_tree2.bed
 #verify no overlapping intervals
@@ -417,9 +419,42 @@ awk 'BEGIN {FS="\t"; OFS="\t"} {$4="ce"NR; print}' most_conserved_tree2.bed > mo
 #step one is liftover, then replace chrs using replace chrs script; info in galGalAnnot directory
 
 #get galGal exons using Phil's GFF_CDS script and GFF_BED script, then sort and merge:
-sort -k1,1 -k2,2n -k3,3n galGal_exons.bed | bedtools merge -i - > chicken_exons.bed
+python ../../../analysis/missing_genes/GFF_CDS_parser.py galGal.gff -o galGal_exons.gff -t exon
+python ../../../analysis/missing_genes/GFF_CDS_parser.py galGal.gff -o galGal_cds.gff -t CDS
+python ../../../analysis/missing_genes/GFF_CDS_parser.py galGal.gff -o galGal_gene.gff -t gene
+python ../../../analysis/missing_genes/Convert_GFF_to_BED.py galGal_exons.gff -o galGal_exons.bed
+python ../../../analysis/missing_genes/Convert_GFF_to_BED.py galGal_CDS.gff -o galGal_CDS.bed
+python ../../../analysis/missing_genes/Convert_GFF_to_BED.py galGal_gene.gff -o galGal_gene.bed
 
+sort -k1,1 -k2,2n -k3,3n -u galGal_exons.bed | bedtools merge -i - -s -d -1 -c 4 -o distinct > chicken_exons.bed
+sort -k1,1 -k2,2n -k3,3n -u galGal_CDS.bed | bedtools merge -i - -s -d -1 -c 4 -o distinct > chicken_CDS.bed
+bedtools subtract -s -a chicken_exons.bed -b chicken_CDS.bed > chicken_nonCDS.bed
 
+#check for coverage in CDS, non-CDS, cnees
+bedtools coverage -b chicken_CDS.bed -a most_conserved_final.tree2.bed > CDS.coverage.tree2
+awk '{olen += $6; sum+=$3-$2}END{print olen/sum}' CDS.coverage.tree2
+bedtools coverage -b chicken_nonCDS.bed -a most_conserved_final.tree2.bed > nonCDS.coverage.tree2
+awk '{olen += $6; sum+=$3-$2}END{print olen/sum}' nonCDS.coverage.tree2
+bedtools coverage -b lowe_cnees.bed -a most_conserved_final.tree2.bed > cnee.coverage.tree2
+awk '{olen += $6; sum+=$3-$2}END{print olen/sum}' cnee.coverage.tree2
+
+bedtools intersect -a chicken_CDS.bed -b most_conserved_final.tree2.bed  -c > tree2.CDS.count
+bedtools intersect -a lowe_cnees.bed -b most_conserved_final.tree2.bed -c > tree2.lowe_cnee.count
+bedtools intersect -a chicken_nonCDS.bed -b most_conserved_final.tree2.bed -c > tree2.nonCDS.count
+
+#make a "intersection" file that is just the consistent conserved elements between tree1 and tree2 for phylogenetic analysis:
+bedtools intersect -a most_conserved_final.tree2.bed -b most_conserved_final.tree1.bed -f .0.50 -r -u > most_conserved_final.intersection.bed
+
+#get counts for each feature
+bedtools intersect -a most_conserved_final.tree2.bed -b chicken_CDS.bed -c > CDS.annot
+bedtools intersect -a most_conserved_final.tree2.bed -b chicken_exons.bed -c > exon.annot
+bedtools intersect -a most_conserved_final.tree2.bed -b galGal_gene.bed -c > gene.annot
+
+#get closest gene
+bedtools closest -a most_conserved_final.tree2.bed -b galGal_gene.bed -D "b" -t "all" > tree2.closest_genes.out
+
+#get lowe cnee overlap id
+bedtools intersect -a most_conserved_final.tree2.bed -b lowe_cnees.bed -loj > lowe.annot
 
 ## TESTS FOR RATITE-SPECIFIC ACCELERATION, ETC ##
 #this is a preliminary test based on phyloP and the galGal3->galGal4 CNEEs from the feather paper
