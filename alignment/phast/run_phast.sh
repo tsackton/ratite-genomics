@@ -414,7 +414,7 @@ awk 'BEGIN {FS="\t"; OFS="\t"} {$4="ce"NR; print}' most_conserved_tree1.bed > mo
 awk 'BEGIN {FS="\t"; OFS="\t"} {$4="ce"NR; print}' most_conserved_tree2.bed > most_conserved_final.tree2.bed
 
 #get lowe et al CNEEs in galGal4, NCBI style coordinates
-#step one is liftover using the 
+#step one is liftover, then replace chrs using replace chrs script; info in galGalAnnot directory
 
 ## TESTS FOR RATITE-SPECIFIC ACCELERATION, ETC ##
 #this is a preliminary test based on phyloP and the galGal3->galGal4 CNEEs from the feather paper
