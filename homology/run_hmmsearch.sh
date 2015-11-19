@@ -13,10 +13,13 @@ for SAMP in $(cat hmmpart.$INDEX)
 do	
 	if [ ! -e output/$SAMP.out ]
 	then
+		hmmsearch -E 1e-10 --cpu 8 -Z 19153963251 --tblout output/$SAMP.out --noali hmms/$SAMP.hmm seqs_for_hmm.fa > /dev/null	
+	else
 		STATUS=$(tail -n 1 output/$SAMP.out)
-		if [[ $STATUS == *"ok"* ]]
+                if [[ $STATUS != *"ok"* ]]
 		then
-			hmmsearch -E 1e-10 --cpu 8 -Z 19153963251 --tblout output/$SAMP.out --noali hmms/$SAMP.hmm seqs_for_hmm.fa > /dev/null	
+			hmmsearch -E 1e-10 --cpu 8 -Z 19153963251 --tblout output/$SAMP.out --noali hmms/$SAMP.hmm seqs_for_hmm.fa > /dev/null
+
 		fi
 	fi
 done
