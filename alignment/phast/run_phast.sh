@@ -457,22 +457,39 @@ bedtools closest -a most_conserved_final.tree2.bed -b galGal_gene.bed -D "b" -t 
 bedtools intersect -a most_conserved_final.tree2.bed -b lowe_cnees.bed -loj > lowe.annot
 
 ## TESTS FOR RATITE-SPECIFIC ACCELERATION, ETC ##
-#this is a preliminary test based on phyloP and the galGal3->galGal4 CNEEs from the feather paper
-#the idea is to test whether the 'named branches' in this case the ratites are accelerated or conserved relative to background
-#as a null, run the same test on the tinamou clade
-#do this as a job array using the same framework as est_rho.sh
 
-sbatch est_accel.sh
-
-#clean up 
-#phyloP has a bug / issue with bed files with multiple chromosomes in them, it does not do any kind of sensible filtering
-#so for each file, need to parse only the lines that match file name
-#note also that because this was run on split data, there are a few CNEEs that fall into multiple MAFs and are thus duplicated
-for CHR in $(tail -n +2 galGal4.chr2acc | cut -f2,2)
+#start by generating a new set of conserved elements with same parameters as above but with alignments
+#filtered to remove ratite branches
+for FILE in $(ls *.ss)
 do
-	cat ratite/$CHR* | grep "^$CHR" >> ratite_accel.final.out
-	cat tinamou/$CHR* | grep "^$CHR" >> tinamou_accel.final.out
+	SAMP=${FILE%%.ss}
+	msa_view $FILE --seqs rhePen,rheAme,strCam,aptHaa,aptRow,aptOwe,casCas,droNov --exclude --out-format SS > ../../final_nor_mafs/$SAMP.nor.ss
 done
+
+
+#prune models
+tree_doctor --prune rheAme,rhePen,strCam,droNov,casCas,aptHaa,aptOwe,aptRow ../final.ver2.noncons.mod > noncons.mod
+tree_doctor --prune rheAme,rhePen,strCam,droNov,casCas,aptHaa,aptOwe,aptRow ../final.ver2.cons.mod > cons.mod
+#run phastCons
+./run_phastCons_noRatite.sh 
+cat ELEMENTS/*.bed | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > noratite_ces.bed
+#verify no overlapping intervals
+bedtools merge -i noratite_ces.bed | grep -c ","
+
+#for each chicken-ratite pair, get the alignability including duplicates for that pair (should be 0, 1, 2+)
+for $SP in droNov casCas aptHaa aptOwe aptRow rheAme rhePen strCam
+do
+	halAlignmentDepth --inMemory --countDupes --noAncestors --targetGenomes $SP ~/ratite_scratch/wga/ratite_final_20150627/ratiteAlign.hal galGal > galGal-$SP.align.wig &
+done
+
+./est_accel.sh
+
+#things still to do: calculate conservation in ratite-only alignments
+#merge up everything
+#null models and tinamou tests
+#specific ratite branches
+
+##OLD CODE BELOW
 
 #replace 0s in pval column with 1e-05 or -1e-05
 perl -p -i -e 's/0.00000$/0.00001/' ratite_accel.final.out
