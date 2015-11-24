@@ -1,0 +1,2 @@
+1. Used liftover.sh to lift over CNEEs generated in chicken to all other genomes.
+
