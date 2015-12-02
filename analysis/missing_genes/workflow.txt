@@ -7,3 +7,14 @@
 	for FILE in $(ls); do bedtools intersect -a "../a/${FILE%%.*}psl.bed" -b $FILE -c -s > ../bedtools_out/${FILE%%.*}.txt #${FILE%%.*} splits on period and retains what came before the period.
 7. Ran bd_analyzer.py on local computer using: for FILE in $(ls *.txt); do python bd_analyzer.py $FILE; done
 8. Running R.
+
+
+edit
+
+for FILE in $(ls *.psl); do cut -f1,1 --complement $FILE > ${FILE%%.*}.standard.psl; done &
+
+for FILE in $(ls); do ~tsackton/sw/bin/pslToBed $FILE ${FILE%%.*}.pls.bed; done &
+
+for FILE in $(ls); do awk 'FNR==NR{a[NR]=$1;next}{$4=a[FNR]}1' ../../${FILE%%.*}.psl $FILE > ${FILE%%.*}.modified_psl.bed; done &
+
+for FILE in $(ls *.bed); do bedtools intersect -a "../a_2/${FILE%%.*}.modified_psl.bed" -b $FILE -c -s > ../bedtools_out/${FILE%%.*}_modified.txt; done &
