@@ -17,4 +17,6 @@ for FILE in $(ls); do ~tsackton/sw/bin/pslToBed $FILE ${FILE%%.*}.pls.bed; done 
 
 for FILE in $(ls); do awk 'FNR==NR{a[NR]=$1;next}{$4=a[FNR]}1' ../../${FILE%%.*}.psl $FILE > ${FILE%%.*}.modified_psl.bed; done &
 
-for FILE in $(ls *.bed); do bedtools intersect -a "../a_2/${FILE%%.*}.modified_psl.bed" -b $FILE -c -s > ../bedtools_out/${FILE%%.*}_modified.txt; done &
+for FILE in $(ls *.bed); do awk -v OFS="\t" '$1=$1' $FILE > ../$FILE; done &
+
+for FILE in $(ls *.bed); do bedtools intersect -split -a "../a_2/${FILE%%.*}.modified_psl.bed" -b $FILE -c -s > ../bedtools_out/${FILE%%.*}_modified.txt; done &
