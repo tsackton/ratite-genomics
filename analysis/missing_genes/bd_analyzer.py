@@ -22,7 +22,7 @@ with open('/Users/Phil/Desktop/maker/'+phile, 'rU') as handle: #infile
     fout.write('GeneID'+'\t'+species+'_Lift'+'\t'+species+'_Inter'+'\n') #write the top line of outfile    
     for strLine in reader: 
         metaData = strLine[3] #metaData contains info from chicken - gene ID, genebank ID, start and stop of exon
-        intersectCount = strLine[6] #intersectCount is the number of intersections between the pslbed and the RNAbed files
+        intersectCount = strLine[12] #intersectCount is the number of intersections between the pslbed and the RNAbed files
         GeneID = metaData.split(',')[0] #GeneID pops just the gene ID out of the metaData
         if GeneID not in cdic: #if the GeneID is not in cdic 
             cdic[GeneID][metaData]=intersectCount #add the ID, the metaData and the count
