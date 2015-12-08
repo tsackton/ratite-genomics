@@ -18,7 +18,7 @@ with open(os.getcwd()+"/"+phile, 'rU') as handle: #opens bed in universal mode
     reader=csv.reader(handle,delimiter='\t') #reads file with tabs as delimiters
     for strLine in reader:
         Scaffold = strLine[14]
-        Start = int(strLine[16])-1 #BED is 0 based start and PSL is 1 based
+        Start = int(strLine[16])
         Stop = strLine[17]
         MetaD = strLine[0]
         Zero = 0
