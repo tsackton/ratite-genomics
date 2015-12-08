@@ -2,32 +2,9 @@
 2. Ran GFF_CDS_parser.py on each GFF file on an interactive node with srun -p interact -pty --mem 2000 -t 0-1:00:00 /bin/bash
 3. Ran Convert_GFF_to_BED.py on each file to convert them.
 4. Ran for FILE in $(ls *.bed); do wc $FILE -l; done on each group of files (gff from GFF_CDS_parser.py and bed from Convert_GFF_to_BED.py) to see if line number were consistent. 
-5. Ran an interactive job with  srun -p interact --pty --mem 1000 -t 0-1:00:00 /bin/bash.  For FILE in $(ls *.psl); do python Convert_PSL_to_BED.py $FILE; done to convert the chicken hal liftover PSL coordinates for each genome to a BED file.
-6. Ran bedtools2 (module load bedtools2) on an interactive node with 1000 mem.  Placed chicken liftover beds (genSpepsl.bed) into folder a, placed RNAseq/maker beds (genSpe.bed) into folder b and ran this script from b:
-	for FILE in $(ls); do bedtools intersect -a "../a/${FILE%%.*}psl.bed" -b $FILE -c -s > ../bedtools_out/${FILE%%.*}.txt #${FILE%%.*} splits on period and retains what came before the period.
-7. Ran bd_analyzer.py on local computer using: for FILE in $(ls *.txt); do python bd_analyzer.py $FILE; done
-8. Running R.
-
-
-modified_weirdpsl edit
-
-for FILE in $(ls *.psl); do cut -f1,1 --complement $FILE > ${FILE%%.*}.standard.psl; done &
-
-for FILE in $(ls); do ~tsackton/sw/bin/pslToBed $FILE ${FILE%%.*}.pls.bed; done &
-
-for FILE in $(ls); do awk 'FNR==NR{a[NR]=$1;next}{$4=a[FNR]}1' ../../${FILE%%.*}.psl $FILE > ${FILE%%.*}.modified_psl.bed; done &
-
-for FILE in $(ls *.bed); do awk -v OFS="\t" '$1=$1' $FILE > ../$FILE; done &
-
-for FILE in $(ls *.bed); do bedtools intersect -split -a "../a_2/${FILE%%.*}.modified_psl.bed" -b $FILE -c -s > ../bedtools_out/${FILE%%.*}_modified.txt; done &
-
-
-
-bed12 edit
-
-for FILE in $(ls HLO_psl/*.psl); do FILE=${FILE#HLO_psl/}; sbatch bedliftover.sh ${FILE%.psl}; done
-
-from folder b:
-for FILE in $(ls *.bed); do bedtools intersect -split -a ../a3/${FILE} -b $FILE -c -s > ../bedtools_out/${FILE%%.*}_bed12.txt; done &
-
+5. Ran an interactive job with  srun -p interact --pty --mem 1000 -t 0-1:00:00 /bin/bash.  Ran bedtools2 (module load bedtools2)
+        Placed chicken liftover beds (genSpe.bed) into folder a3, placed RNAseq/maker beds (genSpe.bed) into folder b and ran this script from b:
+	for FILE in $(ls *.bed); do bedtools intersect -split -a ../a3/${FILE} -b $FILE -c -s > ../bedtools_out/${FILE%%.*}_bed12.txt; done &
+6. Ran bd_analyzer.py on local computer using: for FILE in $(ls *.txt); do python bd_analyzer.py $FILE; done #this provides the number of exons lifted over and the number of lifted over exons that intercept a gene model
+7. Running R.
 
