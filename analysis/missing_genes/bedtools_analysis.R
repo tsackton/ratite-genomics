@@ -12,15 +12,22 @@ for(i in 1:length(file.names)){
 drops <- c("x") #create a list of the columns that will be uninformative soon and we'd like to drop (just the extra x)
 nbest.out <- best.out[,!(names(best.out) %in% drops)]
 
+#some sanity checks
+all(nbest.out$galGal_bed12_Lift==nbest.out$galGal_bed12_Inter)
+all_animals <- c("chrPic_bed12_Inter","chrPic_bed12_Lift","allMis_bed12_Inter","allMis_bed12_Lift","anoCar_bed12_Inter","anoCar_bed12_Lift","aptHaa_bed12_Inter","aptOwe_bed12_Inter","aptRow_bed12_Inter","casCas_bed12_Inter","droNov_bed12_Inter","rheAme_bed12_Inter","rhePen_bed12_Inter","strCam_bed12_Inter","aptHaa_bed12_Lift","aptOwe_bed12_Lift","aptRow_bed12_Lift","casCas_bed12_Lift","droNov_bed12_Lift","rheAme_bed12_Lift","rhePen_bed12_Lift","strCam_bed12_Lift","galGal_bed12_Inter","anaPla_bed12_Inter","aptFor_bed12_Inter","balReg_bed12_Inter","calAnn_bed12_Inter","chaPel_bed12_Inter","chaVoc_bed12_Inter","colLiv_bed12_Inter","corBra_bed12_Inter","cryCin_bed12_Inter","cucCan_bed12_Inter","eudEle_bed12_Inter","falPer_bed12_Inter","ficAlb_bed12_Inter","fulGla_bed12_Inter","halLeu_bed12_Inter","lepDis_bed12_Inter","melGal_bed12_Inter","melUnd_bed12_Inter","mesUni_bed12_Inter","nipNip_bed12_Inter","notPer_bed12_Inter","picPub_bed12_Inter","pseHum_bed12_Inter","pygAde_bed12_Inter","taeGut_bed12_Inter","tinGut_bed12_Inter","galGal_bed12_Lift","anaPla_bed12_Lift","aptFor_bed12_Lift","balReg_bed12_Lift","calAnn_bed12_Lift","chaPel_bed12_Lift","chaVoc_bed12_Lift","colLiv_bed12_Lift","corBra_bed12_Lift","cryCin_bed12_Lift","cucCan_bed12_Lift","eudEle_bed12_Lift","falPer_bed12_Lift","ficAlb_bed12_Lift","fulGla_bed12_Lift","halLeu_bed12_Lift","lepDis_bed12_Lift","melGal_bed12_Lift","melUnd_bed12_Lift","mesUni_bed12_Lift","nipNip_bed12_Lift","notPer_bed12_Lift","picPub_bed12_Lift","pseHum_bed12_Lift","pygAde_bed12_Lift","taeGut_bed12_Lift","tinGut_bed12_Lift")
+nbest.out$max_test <- apply(nbest.out[,all_animals], 1, function(x) max(x, na.rm=T))
+all(nbest.out$galGal_bed12_Lift==nbest.out$max_test)
+
+
 #tim and phil first pass
-ratite_inter <- c("aptHaa_Inter","aptOwe_Inter","aptRow_Inter","casCas_Inter","droNov_Inter","rheAme_Inter","rhePen_Inter","strCam_BGI_coords_Inter")
-ratite_lift <- c("aptHaa_Lift","aptOwe_Lift","aptRow_Lift","casCas_Lift","droNov_Lift","rheAme_Lift","rhePen_Lift","strCam_BGI_coords_Lift")
-flying_inter <-c("galGal_Inter","anaPla_Inter","aptFor_Inter","balReg_Inter","calAnn_Inter","chaPel_Inter","chaVoc_Inter","colLiv_Inter","corBra_Inter","cryCin_Inter","cucCan_Inter","eudEle_Inter","falPer_Inter","ficAlb_Inter","fulGla_Inter","halLeu_Inter","lepDis_Inter","melGal_Inter","melUnd_Inter","mesUni_Inter","nipNip_Inter","notPer_Inter","picPub_Inter","pseHum_Inter","pygAde_Inter","taeGut_Inter","tinGut_Inter")
-flying_lift <-c("galGal_Lift","anaPla_Lift","aptFor_Lift","balReg_Lift","calAnn_Lift","chaPel_Lift","chaVoc_Lift","colLiv_Lift","corBra_Lift","cryCin_Lift","cucCan_Lift","eudEle_Lift","falPer_Lift","ficAlb_Lift","fulGla_Lift","halLeu_Lift","lepDis_Lift","melGal_Lift","melUnd_Lift","mesUni_Lift","nipNip_Lift","notPer_Lift","picPub_Lift","pseHum_Lift","pygAde_Lift","taeGut_Lift","tinGut_Lift")
-tinamou_inter <- c("cryCin_Inter","eudEle_Inter","notPer_Inter","tinGut_Inter")
-tinamou_lift <- c("cryCin_Lift","eudEle_Lift","notPer_Lift","tinGut_Lift")
+ratite_inter <- c("aptHaa_bed12_Inter","aptOwe_bed12_Inter","aptRow_bed12_Inter","casCas_bed12_Inter","droNov_bed12_Inter","rheAme_bed12_Inter","rhePen_bed12_Inter","strCam_bed12_Inter")
+ratite_lift <- c("aptHaa_bed12_Lift","aptOwe_bed12_Lift","aptRow_bed12_Lift","casCas_bed12_Lift","droNov_bed12_Lift","rheAme_bed12_Lift","rhePen_bed12_Lift","strCam_bed12_Lift")
+flying_inter <-c("galGal_bed12_Inter","anaPla_bed12_Inter","aptFor_bed12_Inter","balReg_bed12_Inter","calAnn_bed12_Inter","chaPel_bed12_Inter","chaVoc_bed12_Inter","colLiv_bed12_Inter","corBra_bed12_Inter","cryCin_bed12_Inter","cucCan_bed12_Inter","eudEle_bed12_Inter","falPer_bed12_Inter","ficAlb_bed12_Inter","fulGla_bed12_Inter","halLeu_bed12_Inter","lepDis_bed12_Inter","melGal_bed12_Inter","melUnd_bed12_Inter","mesUni_bed12_Inter","nipNip_bed12_Inter","notPer_bed12_Inter","picPub_bed12_Inter","pseHum_bed12_Inter","pygAde_bed12_Inter","taeGut_bed12_Inter","tinGut_bed12_Inter")
+flying_lift <-c("galGal_bed12_Lift","anaPla_bed12_Lift","aptFor_bed12_Lift","balReg_bed12_Lift","calAnn_bed12_Lift","chaPel_bed12_Lift","chaVoc_bed12_Lift","colLiv_bed12_Lift","corBra_bed12_Lift","cryCin_bed12_Lift","cucCan_bed12_Lift","eudEle_bed12_Lift","falPer_bed12_Lift","ficAlb_bed12_Lift","fulGla_bed12_Lift","halLeu_bed12_Lift","lepDis_bed12_Lift","melGal_bed12_Lift","melUnd_bed12_Lift","mesUni_bed12_Lift","nipNip_bed12_Lift","notPer_bed12_Lift","picPub_bed12_Lift","pseHum_bed12_Lift","pygAde_bed12_Lift","taeGut_bed12_Lift","tinGut_bed12_Lift")
+tinamou_inter <- c("cryCin_bed12_Inter","eudEle_bed12_Inter","notPer_bed12_Inter","tinGut_bed12_Inter")
+tinamou_lift <- c("cryCin_bed12_Lift","eudEle_bed12_Lift","notPer_bed12_Lift","tinGut_bed12_Lift")
 
-
+#MAKE NOTE 
 #don't worry about errors.  they crop up for ratites and tinamous if all species have NA at specific gene ID.
 nbest.out$r_lowLift <- apply(nbest.out[,ratite_lift], 1, function(x) min(x, na.rm=T))
 nbest.out$f_lowLift <- apply(nbest.out[,flying_lift], 1, function(x) min(x, na.rm=T))
