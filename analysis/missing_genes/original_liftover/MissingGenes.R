@@ -49,6 +49,24 @@ ratite.nlowfruit7 <- subset(nbest.out, nbest.out$goodFliers==1 & nbest.out$sumRa
 
 paleo.nfirstlook2 <- subset(nbest.out,nbest.out$badRatites==1 & nbest.out$goodTinamous == 1 & nbest.out$present_palaeo!=1 & nbest.out$present_palaeo>0.8)
 
+write.table(nbest.out, file = "bestframetable.txt",sep="\t")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #before adding binned chicken is below
@@ -172,4 +190,3 @@ str(ldf[[1]])
 #All_things <- rA
 #All_things$croPor <- cP$croPor
 #listy <- list.files(path = ".")
-
