@@ -14,6 +14,7 @@ drops <- c("x") #create a list of the columns that will be uninformative soon an
 cnee.out <- cnee.out[,!(names(cnee.out) %in% drops)]
 
 write.csv(cnee.out, "liftover_cnee_lengths.csv", row.names = FALSE)
+cnee.out <- read.csv("liftover_cnee_lengths.csv")
 #this is too big, so subsetting.
 cnee.out$random <- sample(1:6,nrow(cnee.out))
 
@@ -37,6 +38,35 @@ write.csv(cnee.out6, "liftover_cnee_lengths6.csv", row.names = FALSE)
 #allanimals <- c('allMis','anoCar','casCas','galGal')
 allanimals<-c('allMis','allSin','anaPla','anoCar','aptFor','aptHaa','aptOwe','aptRow','balReg','calAnn','casCas','chaPel','chaVoc','cheMyd','chrPic','colLiv','corBra','croPor','cryCin','cucCan','droNov','eudEle','falPer','ficAlb','fulGla','galGal','gavGan','halLeu','lepDis','melGal','melUnd','mesUni','nipNip','notPer','picPub','pseHum','pygAde','rheAme','rhePen','strCam','taeGut','tinGut')
 cnee.out$max_test <- apply(cnee.out[,allanimals], 1, function(x) max(x, na.rm=T))
-all(cnee.out$galGal==cnee.out$max_test)
+all(cnee.out$galGal==cnee.out$max_test) #TRUE
 
-allanimals<-c('allMis','allSin','anaPla','anoCar','aptFor','aptHaa','aptOwe','aptRow','balReg','calAnn','casCas','chaPel','chaVoc','cheMyd','chrPic','colLiv','corBra','croPor','cryCin','cucCan','droNov','eudEle','falPer','ficAlb','fulGla','galGal','gavGan','halLeu','lepDis','melGal','melUnd','mesUni','nipNip','notPer','picPub','pseHum','pygAde','rheAme','rhePen','strCam','taeGut','tinGut')
+colnames(cnee.out)
+ratite <- c("aptHaa","aptOwe","aptRow","casCas","droNov","rheAme","rhePen","strCam")
+flying <-c("galGal","anaPla","aptFor","balReg","calAnn","chaPel","chaVoc","colLiv","corBra","cryCin","cucCan","eudEle","falPer","ficAlb","fulGla","halLeu","lepDis","melGal","melUnd","mesUni","nipNip","notPer","picPub","pseHum","pygAde","taeGut","tinGut")
+herps <- c("allMis","allSin","cheMyd","anoCar","chrPic","gavGan","croPor")
+tinamou <- c("cryCin","eudEle","notPer","tinGut")
+
+cnee.out$r_low <- apply(cnee.out[,ratite], 1, function(x) min(x, na.rm=T))
+cnee.out$r_high <- apply(cnee.out[,ratite], 1, function(x) max(x, na.rm=T))
+cnee.out$f_low <- apply(cnee.out[,flying], 1, function(x) min(x, na.rm=T))
+cnee.out$t_low <- apply(cnee.out[,tinamou], 1, function(x) min(x, na.rm=T))
+cnee.out$h_high <- apply(cnee.out[,herps], 1, function(x) max(x, na.rm=T))
+cnee.out$h_low <- apply(cnee.out[,herps], 1, function(x) min(x, na.rm=F))
+
+cnee.out$r_present <- (cnee.out$r_high/cnee.out$galGal)
+cnee.out$f_present <- (cnee.out$f_low/cnee.out$galGal)
+cnee.out$t_present <- (cnee.out$t_low/cnee.out$galGal)
+
+ratite.lowfruit <- subset(cnee.out, cnee.out$r_present < 0.5 & cnee.out$r_present > -Inf & cnee.out$t_present > 0.95 & cnee.out$t_present < Inf & cnee.out$f_present > 0.95 & cnee.out$f_present < Inf)
+
+na.lowfruit <- subset(cnee.out, cnee.out$h_high == -Inf & cnee.out$r_present < 0.5 & cnee.out$r_present > -Inf & cnee.out$t_present > 0.95 & cnee.out$t_present < Inf & cnee.out$f_present > 0.95 & cnee.out$f_present < Inf)
+
+na.lowfruit <- subset(cnee.out, is.na(cnee.out$allMis) & is.na(cnee.out$allSin) & is.na(cnee.out$cheMyd) & is.na(cnee.out$anoCar) & is.na(cnee.out$chrPic) & is.na(cnee.out$gavGan) & is.na(cnee.out$croPor))
+
+""allSin","cheMyd","anoCar","chrPic","gavGan","croPor")
+
+is.na(cnee.out$h_high)
+drops <- c("r_perc_loss") #create a list of the columns that will be uninformative soon and we'd like to drop (just the extra x)
+cnee.out <- cnee.out[,!(names(cnee.out) %in% drops)]
+
+hist(cnee.out$r_perc_loss)
