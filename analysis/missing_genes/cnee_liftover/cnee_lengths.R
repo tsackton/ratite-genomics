@@ -181,6 +181,21 @@ p.ct <- ggplot(logplot.ct.master, aes(x=N.y, y= N.x, label=annot))
 p.ct + geom_point(position='jitter',alpha=0.6,size=1, color=ifelse(logplot.ct.master$percent>=0.2,"magenta","white")) + coord_trans(y = "log10") + theme(panel.background = element_rect(fill = "black"), plot.title = element_text(size=10)) + ylab("Log Number of CNEEs associated with gene") + xlab("Number of CNEEs accelerated in ratites for gene (fdr corrected p value > -0.01)") + labs(title = "Each gene's number of associated CNEEs versus the number accelerated in ratite lineages. Pink points have > 0.2 total CNEEs accelerated in ratites", size=2)
 
 
+NKX25 <- subset(true.CNEEs, true.CNEEs$annot =="CGNC:2083,GeneID:396073")
+sigNXK <- subset(NKX25, fdr_accel < 0 & fdr_accel > -1e-02)
+loNKX <- subset(NKX25, NKX25$r_present < 0.5 & NKX25$r_present > -Inf & NKX25$t_present > 0.95 & NKX25$t_present < Inf & NKX25$f_present > 0.95 & NKX25$f_present < Inf)
+loNKX <- subset(NKX25, NKX25$r_low < 0.5*NKX25$galGal & NKX25$r_present > -Inf & NKX25$t_present > 0.95 & NKX25$t_present < Inf & NKX25$f_present > 0.95 & NKX25$f_present < Inf)
+
+
+SHOX2 <- true.CNEEs[grep("GeneID:777244", true.CNEEs$annot), ]
+sigSHOX2 <- subset(SHOX2, fdr_accel < 0 & fdr_accel > -1e-02)
+loSHOX2 <- subset(SHOX2, SHOX2$r_present < 0.5 & SHOX2$r_present > -Inf & SHOX2$t_present > 0.95 & SHOX2$t_present < Inf & SHOX2$f_present > 0.95 & SHOX2$f_present < Inf)
+loSHOX2 <- subset(SHOX2, SHOX2$r_low < 0.5*SHOX2$galGal & SHOX2$r_present > -Inf & SHOX2$t_present > 0.95 & SHOX2$t_present < Inf & SHOX2$f_present > 0.95 & SHOX2$f_present < Inf)
+
+unbiased.both.sets <- subset(true.CNEEs, true.CNEEs$r_present < 0.5 & true.CNEEs$r_present > -Inf & true.CNEEs$t_present > 0.95 & true.CNEEs$t_present < Inf & true.CNEEs$f_present > 0.95 & true.CNEEs$f_present < Inf & true.CNEEs$fdr_accel < 0 & true.CNEEs$fdr_accel > -1e-02)
+
+write.csv(true.CNEEs, "phil_cnee_table.csv", row.names = FALSE)
+
 # ggplot()+aes(or.cnee.out$galGal)+geom_histogram(colour="lightblue", fill="black", binwidth=25)
 # ggplot()+aes(or.cnee.out$galGal)+geom_histogram(colour="lightblue", fill="black", binwidth=1)+ xlim(0,50)
 # ggplot()+aes(or.cnee.out$galGal)+geom_histogram(colour="lightblue", fill="black", binwidth=125)+ xlim(1000,3000)
