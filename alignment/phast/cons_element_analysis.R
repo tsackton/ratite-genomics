@@ -86,3 +86,88 @@ ce.annot<-merge(ce.annot, lowe.overlap.clean, by="id", all.x=T)
 
 #write table
 write.table(ce.annot, file="ce_annotation.tsv", row.names=F, sep="\t", quote=F)
+
+#update with emu info, and merge ratite acceleration
+ce.annot<-read.table("~/Dropbox/Public/ce_annotation.tsv.gz", header=T)
+ratite.accel<-read.table("~/Dropbox/Public/ratite_accel.tsv.gz", header=F)
+names(ratite.accel)=c("id", "ratite.pval")
+emu.accel<-read.table("final_beds/emu_accel_sorted.out", header=F)
+emu.accel=emu.accel[,c("V4", "V9")]
+names(emu.accel)=c("id", "emu.pval")
+
+ce.merge<-merge(ce.annot, ratite.accel, by.x="id", by.y="id")
+ce.merge<-merge(ce.merge, emu.accel, by="id")
+
+ce.merge$ratite.sign = sign(ce.merge$ratite.pval)
+ce.merge$emu.sign = sign(ce.merge$emu.pval)
+ce.merge$ratite.q = p.adjust(abs(ce.merge$ratite.pval), method="fdr")
+ce.merge$emu.q = p.adjust(abs(ce.merge$emu.pval), method="fdr")
+ce.merge$emu.sig = as.numeric(ce.merge$emu.q < 0.05) * ce.merge$emu.sign
+ce.merge$ratite.sig = as.numeric(ce.merge$ratite.q < 0.05) * ce.merge$ratite.sign
+
+head(ce.merge)
+
+#now keep track at the individual element level
+ce.merge$element.key = "none"
+ce.merge$element.key[ce.merge$emu.sig < 0 & ce.merge$ratite.sig < 0]="e_and_r"
+ce.merge$element.key[ce.merge$emu.sig < 0 & ce.merge$ratite.sig >= 0]="e_only"
+ce.merge$element.key[ce.merge$emu.sig >= 0 & ce.merge$ratite.sig < 0]="r_only"
+
+cnee <- subset(ce.merge, (class == "genic_non_exonic" | class == "intergenic") & length > 50)
+
+sig.table<-table(cnee$gene, cnee$element.key)
+sig.df<-as.data.frame.matrix(sig.table)
+sig.df$total=sig.df$e_and_r+sig.df$e_only+sig.df$r_only+sig.df$none
+
+ncbi.to.ens<-read.table("~/Downloads/CGNC_Gallus_gallus_20151214.txt", header=F, sep="\t", quote="", comment.char="")
+names(ncbi.to.ens)=c("cgnc", "ncbi", "ncbi.ver", "ens", "sym", "name", "specie")
+ncbi.to.ens=subset(ncbi.to.ens, select=c("cgnc", "ncbi", "ens", "sym"))
+
+sig.df$cgnc=sub(".*CGNC:(\\d+).*", "\\1", rownames(sig.df), perl=T)
+sig.df$ncbi=sub(".*GeneID:(\\d+).*", "\\1", rownames(sig.df), perl=T)
+
+sig.df$cgnc[grepl("GeneID", sig.df$cgnc)]=NA
+sig.df$ncbi[grepl("CGNC", sig.df$ncbi)]=NA
+
+sig.df=sig.df[-1,]
+
+#add ens and symbol
+sig.df=merge(sig.df, ncbi.to.ens, by="ncbi", all.x=T, all.y=F)
+sig.df$ens[sig.df$ens==""]=NA
+sig.df$cgnc=sig.df$cgnc.y
+sig.df=sig.df[,c(1:6,9,10,11)]
+head(sig.df)
+
+#duplicate rows happen because of the parsing of the 'ties'
+#just sum them
+#do this by aggregating by ncbi ID then merging
+annotation<-sig.df[,c("ncbi", "ens", "sym", "cgnc")]
+annotation<-unique(annotation)
+data<-sig.df[,c("ncbi", "e_and_r", "e_only", "r_only", "none", "total")]
+library(plyr)
+merged.data<-ddply(data, "ncbi", numcolwise(sum))
+
+final.data<-merge(merged.data, annotation, by.x="ncbi", by.y="ncbi", all.x=T, all.y=F)
+
+#a few duplicates remain due to som disagreements about sym/cgnc id
+#remove by hand even though it is ugly
+final.data[final.data$ncbi %in% final.data$ncbi[duplicated(final.data$ncbi)],]
+final.data=final.data[-16187,]
+final.data=final.data[-14171,]
+final.data=final.data[-4825,]
+final.data=final.data[-853,]
+final.data=final.data[-637,]
+
+#check
+final.data[final.data$ncbi %in% final.data$ncbi[duplicated(final.data$ncbi)],]
+
+#now add expression
+exp<-read.table("~/Downloads/limb_expression.txt", header=T)
+head(exp)
+final.data.exp<-merge(final.data, exp, by="ens", all.x=T, all.y=F)
+final.data.exp$total.accel=final.data.exp$e_and_r+final.data.exp$e_only+final.data.exp$r_only
+final.data.exp$avg.exp = apply(final.data.exp[,c("HH18_WT", "HH20_WT", "HH22_WT")], 1, mean, na.rm=T)
+
+table(is.finite(final.data.exp$avg.exp), final.data.exp$total.accel)
+
+write.table(file="ratite_data_ver1.tsv", final.data.exp, row.names=F, quote=F, sep="\t")
