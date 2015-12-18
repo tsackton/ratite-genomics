@@ -484,6 +484,16 @@ done
 
 ./est_accel.sh
 
+#concatenate output
+for CHR in $(cat chr.list)
+do
+	cat emu_out/${CHR}* | grep "^$CHR" >> emu_accel_prelim.out
+done
+
+#sort
+sort -k1,1 -k2,2n -k3,3n -k4,4 -u emu_accel_prelim.out > emu_accel_sorted.out
+
+
 #things still to do: calculate conservation in ratite-only alignments
 #merge up everything
 #null models and tinamou tests
