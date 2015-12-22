@@ -9,7 +9,7 @@ cnee$ratite_accel = cnee$e_and_r + cnee$r_only
 cnee$emu_accel = cnee$e_and_r + cnee$e_only
 
 #get fractions
-cnee$total_frac = cnee$total_accel / cnee$total
+cnee$total_frac = cnee$total.accel / cnee$total
 cnee$ratite_frac = cnee$ratite_accel / cnee$total
 cnee$emu_frac = cnee$emu_accel / cnee$total
 

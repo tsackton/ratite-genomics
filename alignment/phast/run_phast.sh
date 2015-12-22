@@ -397,130 +397,42 @@ do
 	cd ..
 done
 
-#finally, run phastCons with the estimated rho models on the final mafs
-./run_phastCons_local.sh 1
-./run_phastCons_local.sh 2
-
-##PROCESSING FINAL CONSERVED ELEMENT BEDS###
-
-#merge bed files and remove duplicate lines sort -k1,1 -k2,2n -k3,3n -k6,6 -u 
-cat final_run_ver2/ELEMENTS/*.bed | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > most_conserved_tree2.bed
-#verify no overlapping intervals
-bedtools merge -i most_conserved_tree2.bed | grep -c ","
-
-cat final_run_ver1/ELEMENTS/*.bed | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > most_conserved_tree1.bed
-bedtools merge -i most_conserved_tree1.bed | grep -c "," 
-
-#rename / renumber
-awk 'BEGIN {FS="\t"; OFS="\t"} {$4="ce"NR; print}' most_conserved_tree1.bed > most_conserved_final.tree1.bed
-awk 'BEGIN {FS="\t"; OFS="\t"} {$4="ce"NR; print}' most_conserved_tree2.bed > most_conserved_final.tree2.bed
-
-#get lowe et al CNEEs in galGal4, NCBI style coordinates
-#step one is liftover, then replace chrs using replace chrs script; info in galGalAnnot directory
-
-#get galGal exons using Phil's GFF_CDS script and GFF_BED script, then sort and merge:
-python ../../../analysis/missing_genes/GFF_CDS_parser.py galGal.gff -o galGal_exons.gff -t exon
-python ../../../analysis/missing_genes/GFF_CDS_parser.py galGal.gff -o galGal_cds.gff -t CDS
-python ../../../analysis/missing_genes/GFF_CDS_parser.py galGal.gff -o galGal_gene.gff -t gene
-python ../../../analysis/missing_genes/Convert_GFF_to_BED.py galGal_exons.gff -o galGal_exons.bed
-python ../../../analysis/missing_genes/Convert_GFF_to_BED.py galGal_CDS.gff -o galGal_CDS.bed
-python ../../../analysis/missing_genes/Convert_GFF_to_BED.py galGal_gene.gff -o galGal_gene.bed
-
-sort -k1,1 -k2,2n -k3,3n -u galGal_exons.bed | bedtools merge -i - -s -d -1 -c 4 -o distinct > chicken_exons.bed
-sort -k1,1 -k2,2n -k3,3n -u galGal_CDS.bed | bedtools merge -i - -s -d -1 -c 4 -o distinct > chicken_CDS.bed
-bedtools subtract -s -a chicken_exons.bed -b chicken_CDS.bed > chicken_nonCDS.bed
-
-#check for coverage in CDS, non-CDS, cnees
-bedtools coverage -b chicken_CDS.bed -a most_conserved_final.tree2.bed > CDS.coverage.tree2
-awk '{olen += $6; sum+=$3-$2}END{print olen/sum}' CDS.coverage.tree2
-bedtools coverage -b chicken_nonCDS.bed -a most_conserved_final.tree2.bed > nonCDS.coverage.tree2
-awk '{olen += $6; sum+=$3-$2}END{print olen/sum}' nonCDS.coverage.tree2
-bedtools coverage -b lowe_cnees.bed -a most_conserved_final.tree2.bed > cnee.coverage.tree2
-awk '{olen += $6; sum+=$3-$2}END{print olen/sum}' cnee.coverage.tree2
-
-bedtools intersect -a chicken_CDS.bed -b most_conserved_final.tree2.bed  -c > tree2.CDS.count
-bedtools intersect -a lowe_cnees.bed -b most_conserved_final.tree2.bed -c > tree2.lowe_cnee.count
-bedtools intersect -a chicken_nonCDS.bed -b most_conserved_final.tree2.bed -c > tree2.nonCDS.count
-
-#make a "intersection" file that is just the consistent conserved elements between tree1 and tree2 for phylogenetic analysis:
-bedtools intersect -a most_conserved_final.tree2.bed -b most_conserved_final.tree1.bed -f .0.50 -r -u > most_conserved_final.intersection.bed
-
-#get counts for each feature
-bedtools intersect -a most_conserved_final.tree2.bed -b chicken_CDS.bed -c > CDS.annot
-bedtools intersect -a most_conserved_final.tree2.bed -b chicken_exons.bed -c > exon.annot
-bedtools intersect -a most_conserved_final.tree2.bed -b galGal_gene.bed -c > gene.annot
-
-#get closest gene
-bedtools closest -a most_conserved_final.tree2.bed -b galGal_gene.bed -D "b" -t "all" > tree2.closest_genes.out
-
-#get lowe cnee overlap id
-bedtools intersect -a most_conserved_final.tree2.bed -b lowe_cnees.bed -loj > lowe.annot
-
-## TESTS FOR RATITE-SPECIFIC ACCELERATION, ETC ##
-
-#start by generating a new set of conserved elements with same parameters as above but with alignments
-#filtered to remove ratite branches
+#make ratite-removed alignments
 for FILE in $(ls *.ss)
 do
 	SAMP=${FILE%%.ss}
 	msa_view $FILE --seqs rhePen,rheAme,strCam,aptHaa,aptRow,aptOwe,casCas,droNov --exclude --out-format SS > ../../final_nor_mafs/$SAMP.nor.ss
 done
 
-
-#prune models
+#prune models for ratite-removed analysis
 tree_doctor --prune rheAme,rhePen,strCam,droNov,casCas,aptHaa,aptOwe,aptRow ../final.ver2.noncons.mod > noncons.mod
 tree_doctor --prune rheAme,rhePen,strCam,droNov,casCas,aptHaa,aptOwe,aptRow ../final.ver2.cons.mod > cons.mod
-#run phastCons
-./run_phastCons_noRatite.sh 
-cat ELEMENTS/*.bed | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > noratite_ces.bed
+
+#finally, run phastCons with the estimated rho models on the final mafs
+./run_phastCons_local.sh 1
+./run_phastCons_local.sh 2
+./run_phastCons_noRatite.sh 2
+
+##PROCESSING FINAL CONSERVED ELEMENT BEDS###
+
+#merge bed files and remove duplicate lines sort -k1,1 -k2,2n -k3,3n -k6,6 -u 
+cat final_run_ver2/ELEMENTS/*.bed | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > most_conserved_tree2.bed
 #verify no overlapping intervals
-bedtools merge -i noratite_ces.bed | grep -c ","
+bedtools merge -i most_conserved_tree2.bed -c 4 -o collapse -delim "," | grep -c ","
 
-#for each chicken-ratite pair, get the alignability including duplicates for that pair (should be 0, 1, 2+)
-for $SP in droNov casCas aptHaa aptOwe aptRow rheAme rhePen strCam
-do
-	halAlignmentDepth --inMemory --countDupes --noAncestors --targetGenomes $SP ~/ratite_scratch/wga/ratite_final_20150627/ratiteAlign.hal galGal > galGal-$SP.align.wig &
-done
+cat final_run_ver1/ELEMENTS/*.bed | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > most_conserved_tree1.bed
+bedtools merge -i most_conserved_tree1.bed -c 4 -o collapse -delim "," | grep -c "," 
 
-./est_accel.sh
+#need to fix the chromosomes in the no-ratite version because of the source files
+cat final_run_ver2_noratite/ELEMENTS/*.bed | perl -pe 's/^(\w+\.\d)\.\S+/$1/' | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > most_conserved_noratite_tree2.bed
+bedtools merge -i most_conserved_noratite_tree2.bed -c 4 -o collapse -delim "," | grep -c ","
 
-#concatenate output
-for CHR in $(cat chr.list)
-do
-	cat emu_out/${CHR}* | grep "^$CHR" >> emu_accel_prelim.out
-done
+#rename / renumber
+awk 'BEGIN {FS="\t"; OFS="\t"} {$4="ce"NR; print}' most_conserved_tree1.bed > most_conserved_final.tree1.bed
+awk 'BEGIN {FS="\t"; OFS="\t"} {$4="ce"NR; print}' most_conserved_tree2.bed > most_conserved_final.tree2.bed
+awk 'BEGIN {FS="\t"; OFS="\t"} {$4="nrce"NR; print}' most_conserved_noratite_tree2.bed > most_conserved_noratite_final.tree2.bed
 
-#sort
-sort -k1,1 -k2,2n -k3,3n -k4,4 -u emu_accel_prelim.out > emu_accel_sorted.out
+##DONE##
 
-
-#things still to do: calculate conservation in ratite-only alignments
-#merge up everything
-#null models and tinamou tests
-#specific ratite branches
-
-##OLD CODE BELOW
-
-#replace 0s in pval column with 1e-05 or -1e-05
-perl -p -i -e 's/0.00000$/0.00001/' ratite_accel.final.out
-perl -p -i -e 's/0.00000$/0.00001/' tinamou_accel.final.out
-
-##generate a null model with 10 random samples of lineages
-for i in 1 2 3 4 5 6 7 8 9 10
-do
-	brinput=$(nw_labels named_tree.nh | grep -v "anoCar" | chooseLines -k 13 - | tr '\n' ',')
-	echo $brinput > rand$i.branches
-	sbatch est_accel_rand.sh $i $brinput
-done
-
-#concatenate output
-for CHR in $(tail -n +2 galGal4.chr2acc | cut -f2,2)
-do
-	for i in 1 2 3 4 5 6 7 8 9 10
-	do
-		cat rand$i/$CHR* | grep "^$CHR" >> rand${i}_accel.final.out
-	done
-done
-
-#replace 0s
-for FILE in $(ls rand*.out); do perl -p -i -e 's/0.00000$/0.00001/' $FILE; done
+##most_conserved_final.tree1.bed and most_conserved_final.tree2.bed contain the final bed elements
+##now we'll post-process them with new code
