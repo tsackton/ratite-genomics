@@ -27,7 +27,9 @@ gunzip *.bed.gz
 #3) run phyloP with SPH option to estimate posterior distribution of sites?
 
 #0: filter beds
-
+#use alignability to make sure element is present in half of species
+#use coverage to make sure element is not duplicated in any ratites
+#use coverage to make sure element is present in at least 50% of ratites
 
 #0b: set up random sampled branches
 ##generate a null model with 10 random samples of lineages
