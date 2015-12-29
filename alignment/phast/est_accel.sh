@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -t 1-00:00
-#SBATCH --mem 400
+#SBATCH --mem 4000
 #SBATCH -p serial_requeue
 #SBATCH -n 1
 #SBATCH -N 1
@@ -23,3 +23,13 @@ phyloP --method LRT --features $CHR.temp.bed --mode ACC --branch rheAme,rhePen,r
 phyloP --method LRT --features $CHR.temp.bed --mode ACC --branch casCas,droNov,casCas-droNov $NEUTMOD $ALIGN > clades/$CHR.Casuar.out
 phyloP --method LRT --features $CHR.temp.bed --mode ACC --branch aptHaa-casCas,aptHaa-aptOwe,aptRow,aptHaa,aptOwe,aptHaa-aptRow $NEUTMOD $ALIGN > clades/$CHR.Kiwi.out
 phyloP --method LRT --features $CHR.temp.bed --mode ACC --branch cryCin,tinGut,cryCin-tinGut,eudEle,notPer,eudEle-notPer,cryCin-eudEle $NEUTMOD $ALIGN > tinamou/$CHR.Tinamou.out		
+
+
+RANDNUM=$1
+BRST=$2
+mkdir -p rand$RANDNUM
+INDEX=$(printf "%03d" ${SLURM_ARRAY_TASK_ID})
+for FILE in $(cat part.$INDEX)
+do
+	SAMP=${FILE%.ss}
+	phyloP --method LRT --features LoweCNEEs.galGal4.bed.fixed --mode CONACC --branch ${BRST%?} $HOME/ratite_scratch/phast/neutMods/neut_ver1_final.named.mod $HOME/ratite_scratch/phast/phastCons/chunks/$SAMP.ss > ./rand$RANDNUM/$SAMP.features.out

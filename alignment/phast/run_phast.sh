@@ -373,14 +373,6 @@ done
 rm galGal.fa
 rm galGal.fa.fai
 
-#split
-mkdir -p split
-for FILE in *.final.maf
-do
-	CHR=${FILE%.final.maf}
-	msa_split $FILE --in-format MAF --refseq $CHR.fa --windows 40000000,5000000 --out-root ./split/$CHR --out-format SS --between-blocks 500000 2> $CHR.split.log &
-done
-
 #estimate rho using same chunks as before, but this time on the whole data set
 sbatch est_rho.sh 1
 sbatch est_rho.sh 2
@@ -397,16 +389,31 @@ do
 	cd ..
 done
 
-#make ratite-removed alignments
-for FILE in $(ls *.ss)
+#MAKE FINAL SS ALIGNMENTS FOR PHASTCONS
+
+#split and make ratite-specific alignments
+mkdir -p split_all
+mkdir -p split_nr
+for FILE in *.final.maf
 do
-	SAMP=${FILE%%.ss}
-	msa_view $FILE --seqs rhePen,rheAme,strCam,aptHaa,aptRow,aptOwe,casCas,droNov --exclude --out-format SS > ../../final_nor_mafs/$SAMP.nor.ss
+	CHR=${FILE%.final.maf}
+	./make_inputs.sh $CHR $FILE &
 done
 
-#prune models for ratite-removed analysis
-tree_doctor --prune rheAme,rhePen,strCam,droNov,casCas,aptHaa,aptOwe,aptRow ../final.ver2.noncons.mod > noncons.mod
-tree_doctor --prune rheAme,rhePen,strCam,droNov,casCas,aptHaa,aptOwe,aptRow ../final.ver2.cons.mod > cons.mod
+##make_inputs.sh file:
+#!/bin/bash
+FILE=$2
+CHR=$1
+#make chr SS
+msa_view $FILE --out-format SS --refseq $CHR.fa --unmask 1> $CHR.ss 2> $CHR.convert.log
+#split chr SS
+msa_split $CHR.ss --in-format SS --refseq $CHR.fa --windows 40000000,5000000 --out-root ./split_all/$CHR --out-format SS --between-blocks 500000 2> $CHR.split.log
+#extract ratite-only alignment
+for ALLF in $(ls split_all/$CHR*)
+do
+	SAMP=${ALLF##*/}
+	msa_view $ALLF --in-format SS --seqs rhePen,rheAme,strCam,aptHaa,aptRow,aptOwe,casCas,droNov --exclude --out-format SS 1> ./split_nr/$SAMP 2> $CHR.remove.log
+done
 
 #finally, run phastCons with the estimated rho models on the final mafs
 ./run_phastCons_local.sh 1
@@ -416,11 +423,11 @@ tree_doctor --prune rheAme,rhePen,strCam,droNov,casCas,aptHaa,aptOwe,aptRow ../f
 ##PROCESSING FINAL CONSERVED ELEMENT BEDS###
 
 #merge bed files and remove duplicate lines sort -k1,1 -k2,2n -k3,3n -k6,6 -u 
-cat final_run_ver2/ELEMENTS/*.bed | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > most_conserved_tree2.bed
+cat final_run_ver2/ELEMENTS/*.bed | perl -pe 's/^(\w+\.\d)\.\S+/$1/' | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > most_conserved_tree2.bed
 #verify no overlapping intervals
 bedtools merge -i most_conserved_tree2.bed -c 4 -o collapse -delim "," | grep -c ","
 
-cat final_run_ver1/ELEMENTS/*.bed | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > most_conserved_tree1.bed
+cat final_run_ver1/ELEMENTS/*.bed | perl -pe 's/^(\w+\.\d)\.\S+/$1/' | sort -k1,1 -k2,2n -k3,3n -k6,6 -u > most_conserved_tree1.bed
 bedtools merge -i most_conserved_tree1.bed -c 4 -o collapse -delim "," | grep -c "," 
 
 #need to fix the chromosomes in the no-ratite version because of the source files
