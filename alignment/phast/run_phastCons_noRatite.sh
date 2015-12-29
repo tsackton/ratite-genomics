@@ -6,6 +6,11 @@ EXPLEN=45
 TARCOV=0.30
 
 #set up
+mkdir -p final_run_ver${VER}_noratite
+cd final_run_ver${VER}_noratite
+#prune models for ratite-removed analysis
+tree_doctor --prune rheAme,rhePen,strCam,droNov,casCas,aptHaa,aptOwe,aptRow ../final.ver${VER}.noncons.mod > noncons.mod
+tree_doctor --prune rheAme,rhePen,strCam,droNov,casCas,aptHaa,aptOwe,aptRow ../final.ver${VER}.cons.mod > cons.mod
 mkdir -p logs
 mkdir -p ELEMENTS SCORES
 for INPUT in $(ls /n/regal/edwards_lab/ratites/phast/final_nor_mafs/*.ss)
