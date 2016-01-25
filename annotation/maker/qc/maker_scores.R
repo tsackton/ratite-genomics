@@ -3,7 +3,7 @@ species=c("aptHaa", "aptRow", "aptOwe", "droNov", "casCas", "rheAme", "rhePen", 
 maker.scores<-list()
 
 for (sp in species) {
-  aed.in<-read.table(paste0("~/Projects/birds/ratites/ratite-genomics/annotation/maker/qc/", sp, ".transcripts"), sep=" ");
+  aed.in<-read.table(paste0("~/Projects/birds/ratite_compgen/ratite-genomics/annotation/maker/qc/", sp, ".transcripts"), sep=" ");
   aed.fix<-sub("AED:", "", aed.in$V4)
   maker.scores[[sp]]=data.frame(AED=sort(as.numeric(as.character((aed.fix)))), cum.frac=seq(1,length(aed.fix))/length(aed.fix), stringsAsFactors=F)
 }

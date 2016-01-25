@@ -9,6 +9,7 @@ divide() {
 #step one is liftover, then replace chrs using replace chrs script; info in galGalAnnot directory
 cp ~/ratite_store/ratite-genomics/annotation/galGalAnnot/LoweCNEE/lowe_cnees.bed .
 cp ../phastCons/most_conserved_*.bed .
+cp ../replace_chrs.pl .
 
 #get galGal exons using Phil's GFF_CDS script and GFF_BED script, then sort and merge:
 python ~/ratite_store/ratite-genomics/analysis/missing_genes/rna_intersect/GFF_CDS_parser.py ../GCF_000002315.3_Gallus_gallus-4.0_genomic.gff -o galGal_exons.gff -t exon
