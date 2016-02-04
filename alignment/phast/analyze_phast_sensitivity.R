@@ -1,3 +1,6 @@
+##This is code used to test the sensitivity of different phast parameters##
+##Not used to analyze final dataset##
+
 #make target coverage / expected length data frame for each iteration
 
 meta<-data.frame(iteration=seq(1,9,1), targetcov=c(0.3,0.4,0.4,0.4,0.2,0.2,0.2,0.3,0.3), explen=c(45,20,45,70,20,45,70,70,20))
