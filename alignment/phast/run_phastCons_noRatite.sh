@@ -13,7 +13,7 @@ tree_doctor --prune rheAme,rhePen,strCam,droNov,casCas,aptHaa,aptOwe,aptRow ../f
 tree_doctor --prune rheAme,rhePen,strCam,droNov,casCas,aptHaa,aptOwe,aptRow ../final.ver${VER}.cons.mod > cons.mod
 mkdir -p logs
 mkdir -p ELEMENTS SCORES
-for INPUT in $(ls /n/regal/edwards_lab/ratites/phast/final_nor_mafs/*.ss)
+for INPUT in $(ls /n/regal/edwards_lab/ratites/wga/phast/final_mafs/split_nr/*.ss)
 do
 	BASE=${INPUT##*/}
 	SAMP=${BASE%%.ss}
