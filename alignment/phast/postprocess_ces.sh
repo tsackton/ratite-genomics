@@ -123,7 +123,14 @@ do
 	bedtools closest -a $BED -b galGal_ens.sorted.bed -D "b" -t "all" > $BED.annot.closest_genes_ens
 done
 
+#get closest genes defined by approximate TSS
+./get_approx_TSS.sh galGal_ens.sorted.bed > galGal_ens_approxTSS.bed
+./get_approx_TSS.sh galGal_ncbi.sorted.bed > galGal_ncbi_approxTSS.bed
 
-
+for BED in final_ces*.tree?.bed
+do
+	bedtools closest -a $BED -b galGal_ncbi_approxTSS.bed -D "b" -t "all" > $BED.annot.closest_TSS_ncbi	
+	bedtools closest -a $BED -b galGal_ens_approxTSS.bed -D "b" -t "all" > $BED.annot.closest_TSS_ens
+done
 
 
