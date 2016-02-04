@@ -12,7 +12,7 @@ cp ../final.ver${VER}.cons.mod cons.mod
 cp ../final.ver${VER}.noncons.mod noncons.mod
 mkdir -p logs
 mkdir -p ELEMENTS SCORES
-for INPUT in $(ls /n/regal/edwards_lab/ratites/phast/phastCons/final_mafs/split_all/*.ss)
+for INPUT in $(ls /n/regal/edwards_lab/ratites/wga/phast/final_mafs/split_all/*.ss)
 do
 	BASE=${INPUT##*/}
 	SAMP=${BASE%%.ss}
