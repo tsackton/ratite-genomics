@@ -20,21 +20,11 @@ accel.sub<-subset(accel.all, select=c("name", "qval", "group"))
 library(tidyr)
 accel.wide<-spread(accel.sub, group, qval)
 
-#make tinamou filter
-accel.wide$tin.filt = 0
-accel.wide$tin.filt[accel.wide$tinamou <= 0.1] = 1
-
-#get ratite species count
-accel.wide$sp.count = apply(accel.wide[,c("aptHaa", "aptOwe", "aptRow", "casCas", "droNov", "strCam", "rheAme", "rhePen")], 1, function(x) sum(x < 0.05))
-
 #merge with ce.annot
 ce.merge<-merge(ce.annot, accel.wide, by.x="id", by.y="name")
 
 #subset to remove exonic
 cnee<-subset(ce.merge, class == "intergenic" | class == "genic_non_exonic")
-
-cnee$clade.ct = apply(cnee[,c("Rhea", "Casuar", "Kiwi", "strCam")], 1, function(x) sum(x < 0.05))
-cnee$total.accel =apply(cnee[,c("aptHaa", "aptOwe", "aptRow", "casCas", "droNov", "strCam", "rheAme", "rhePen", "Rhea", "Casuar", "Kiwi", "ratite")], 1, function(x) sum(x < 0.05))
 
 #length subset
 cnee.long = subset(cnee, length > 50)
