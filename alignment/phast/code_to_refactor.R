@@ -1,169 +1,11 @@
-#Analyze conserved elements
-
-ce1<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree1.bed.gz", header=F)
-ce2<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.gz", header=F)
-ceR<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces_noratite.tree2.bed.gz", header=F)
-lowe<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/lowe_cnees.bed.gz", header=F)
-
-#add lengths to each
-ce1$length<-ce1$V3-ce1$V2
-ce2$length<-ce2$V3-ce2$V2
-ceR$length<-ceR$V3-ceR$V2
-lowe$length<-lowe$V3-lowe$V2
-
-#plot length distributions
-plot(density(ce2$length[ce2$length<1000]), xlim=c(0,300), col="red", lwd=2, main="Conserved element length distribution", xlab="Length", bty="n")
-lines(density(lowe$length[lowe$length<1000]), lwd=2, lty="dashed")
-legend("topright", legend=c("Sackton et al", "Lowe et al"), lty=c("solid", "dashed"), col=c("red", "black"), lwd=2, bty="n")
-abline(v=median(ce2$length), col="red", lty="dotted", lwd=2)
-abline(v=median(lowe$length), col="black", lty="dotted", lwd=2)
-
-#length distibutions of elements > 75 bp
-plot(density(ce2$length[ce2$length<2000 & ce2$length > 50]), xlim=c(0,500), col="red", lwd=2, main="Conserved element length distribution (50bp cutoff)", xlab="Length", bty="n")
-lines(density(lowe$length[lowe$length<2000 & lowe$length > 50]), lwd=2, lty="dashed")
-legend("topright", legend=c("Sackton et al", "Lowe et al"), lty=c("solid", "dashed"), col=c("red", "black"), lwd=2, bty="n")
-abline(v=median(ce2$length[ce2$length<2000 & ce2$length > 50]), col="red", lty="dotted", lwd=2)
-abline(v=median(lowe$length[lowe$length<2000 & lowe$length > 50]), col="black", lty="dotted", lwd=2)
-
-cds.ct<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.ct.CDS.gz", header=F, sep="\t")
-cnee.ct<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.ct.lowe.gz", header=F, sep="")
-noncds.ct<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.ct.exon.gz", header=F, sep="\t")
-
-prop.table(table(cds.ct$V5 > 0))
-prop.table(table(cnee.ct$V5 > 0))
-prop.table(table(noncds.ct$V5 > 0))
-
-#load counts and produce annotation
-cds.annot<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.CDS.gz", header=F, sep="\t")
-exon.annot<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.exon.gz", header=F, sep="\t")
-gene.annot<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.gene.gz", header=F, sep="\t")
-
-intersect<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.intersection.bed.gz", header=F, sep="\t")
-intersect$in.intersection=T
-
-#clean up tables
-names(gene.annot)[c(4,5)]=c("id", "in.gene")
-names(cds.annot)[c(4,5)]=c("id", "in.cds")
-names(exon.annot)[c(4,5)]=c("id", "in.exon")
-
-#merge
-ce.annot<-merge(cds.annot[,c(4,5)], exon.annot[,c(4,5)], by="id")
-ce.annot<-merge(ce.annot, gene.annot[,c(4,5)], by="id")
-ce.annot<-merge(ce.annot, ce2[,c("V4", "length")], by.y="V4", by.x="id")
-ce.annot<-merge(ce.annot, intersect[,c("V4", "in.intersection")], all.x=T, by.x="id", by.y="V4")
-ce.annot$in.intersection[is.na(ce.annot$in.intersection)]=F
-ce.annot$class="intergenic"
-ce.annot$class[ce.annot$in.gene>0]="genic_non_exonic"
-ce.annot$class[ce.annot$in.exon>0]="exonic_non_CDS"
-ce.annot$class[ce.annot$in.cds>0]="CDS"
-
-#get closest genes -- will need to collapse duplicate lines
-closest.gene.ncbi <- read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.closest_genes_ncbi.gz", header=F, sep="\t", stringsAsFactors=F)
-closest.gene.ens <- read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.closest_genes_ens.gz", header=F, sep="\t", stringsAsFactors=F)
-
-#run with NCBI
-closest.gene<-closest.gene.ncbi[,c("V4", "V8", "V11")]
-names(closest.gene)<-c("id", "gene", "dist")
-#collapse duplicates
-closest.clean<-aggregate(gene ~ id, data=closest.gene, paste0, collapse="|")
-closest.clean<-merge(closest.clean, closest.gene[,c("id", "dist")], all.x=T, by="id")
-#some duplicates are equidistant from one gene upstream and one gene downstream,
-closest.clean$dist[duplicated(closest.clean$id)]=-1*closest.clean$dist[duplicated(closest.clean$id)]
-closest.clean.ncbi=unique(closest.clean)
-
-#run with ens
-closest.gene<-closest.gene.ens[,c("V4", "V8", "V11")]
-names(closest.gene)<-c("id", "gene", "dist")
-#collapse duplicates
-closest.clean<-aggregate(gene ~ id, data=closest.gene, paste0, collapse="|")
-closest.clean<-merge(closest.clean, closest.gene[,c("id", "dist")], all.x=T, by="id")
-#some duplicates are equidistant from one gene upstream and one gene downstream,
-closest.clean$dist[duplicated(closest.clean$id)]=-1*closest.clean$dist[duplicated(closest.clean$id)]
-closest.clean.ens=unique(closest.clean)
-
-#merge
-names(closest.clean.ens)=c("id", "ens", "ens.dist")
-names(closest.clean.ncbi)=c("id", "ncbi", "ncbi.dist")
-closest.gene.final<-merge(closest.clean.ens, closest.clean.ncbi, by="id", all=T)
-
-#add closest gene and dist to ce.annot
-ce.annot<-merge(ce.annot, closest.gene.final, by="id", all.x=T)
-
-#get lowe et al cnee overlap, if any
-lowe.overlap <- read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.lowe.gz", stringsAsFactors=F)
-
-#clean up lowe et al overlap
-lowe.overlap=lowe.overlap[,c("V4", "V8")]
-names(lowe.overlap)=c("id", "cnee")
-lowe.overlap$cnee[lowe.overlap$cnee == "."] = "none"
-lowe.overlap.clean<-aggregate(cnee ~ id, data=lowe.overlap, paste0, collapse="|")
-
-ce.annot<-merge(ce.annot, lowe.overlap.clean, by="id", all.x=T)
-
-#write table
-write.table(ce.annot, file="./final_beds/ce_annotation.tsv", row.names=F, sep="\t", quote=F)
-
-#process acceleration results
-
-#load info
-accel.classes<-c("Casuar", "Rhea", "Kiwi", "tinamou", "ratite", "aptOwe", "aptHaa", "aptRow", "casCas", "droNov", "rheAme", "rhePen", "strCam")
-accel.res<-list()
-for (group in accel.classes) {
-  accel.res[[group]]<-read.table(paste0("final_accel/all_", group, ".out", sep=""), header=T, sep="\t", comment.char="")
-}
-
-for (group in accel.classes) {
-  accel.res[[group]]$qval = p.adjust(accel.res[[group]]$pval, method="fdr")
-  accel.res[[group]]$group = group
-}
-
-accel.all<-do.call("rbind", accel.res)
-accel.sub<-subset(accel.all, select=c("name", "qval", "group"))
-library(tidyr)
-accel.wide<-spread(accel.sub, group, qval)
-
-#make tinamou filter
-accel.wide$tin.filt = 0
-accel.wide$tin.filt[accel.wide$tinamou <= 0.1] = 1
-
-#get ratite species count
-accel.wide$sp.count = apply(accel.wide[,c("aptHaa", "aptOwe", "aptRow", "casCas", "droNov", "strCam", "rheAme", "rhePen")], 1, function(x) sum(x < 0.05))
-
-#merge with ce.annot
-ce.merge<-merge(ce.annot, accel.wide, by.x="id", by.y="name")
-
-#subset to remove exonic
-cnee<-subset(ce.merge, class == "intergenic" | class == "genic_non_exonic")
-
-cnee$clade.ct = apply(cnee[,c("Rhea", "Casuar", "Kiwi", "strCam")], 1, function(x) sum(x < 0.05))
-cnee$total.accel =apply(cnee[,c("aptHaa", "aptOwe", "aptRow", "casCas", "droNov", "strCam", "rheAme", "rhePen", "Rhea", "Casuar", "Kiwi", "ratite")], 1, function(x) sum(x < 0.05))
-cnee$ratite.broad = 0
-cnee$ratite.narrow = 0
-cnee$ratite.broad[cnee$total.accel > 0 & cnee$tin.filt == 0] = 1
-cnee$ratite.narrow[cnee$ratite < 0.05 & cnee$tin.filt == 0] = 1
-
-#length subset
-cnee.long = subset(cnee, length > 50)
-
-#get elements present in each species of palaeognath
-psp <- c("strCam", "droNov", "aptHaa", "aptOwe", "aptRow", "casCas", "rheAme", "rhePen", "tinGut", "cryCin", "eudEle", "notPer")
-cnee.pres<-list()
-for (group in psp) {
-  cnee.pres[[group]]<-read.table(paste0("final_accel/", group, ".bed", sep=""), header=F, sep="\t", comment.char="")
-  cnee.pres[[group]]$sp = group
-}
-
-cnee.long$tinGutPres = cnee.long$id %in% cnee.pres$tinGut$V4
-cnee.long$eudElePres = cnee.long$id %in% cnee.pres$eudEle$V4
-cnee.long$notPerPres = cnee.long$id %in% cnee.pres$notPer$V4
-cnee.long$cryCinPres = cnee.long$id %in% cnee.pres$cryCin$V4
-cnee.long$tinPres = apply(cnee.long[,c("tinGutPres", "eudElePres", "notPerPres", "cryCinPres")], 1, sum)
+#OLD CODE BELOW##
 
 #top candidates
 cnee.long[cnee.long$clade.ct > 2 & cnee.long$ratite.broad == 1 & cnee.long$tinPres > 0,c("id", "ens", "clade.ct", "length")]
 
 cnee.long$ratite.broad.strict = cnee.long$ratite.broad
 cnee.long$ratite.broad.strict[cnee.long$tinPres == 0] = 0
+ls
 
 #pool across genes -- using ensembl for now
 sig.table<-table(cnee.long$ens, cnee.long$ratite.broad.strict)
@@ -285,9 +127,9 @@ genes.cov.real.ct.2=gene.conv.ct
 genes.sig<-data.frame(ens=rownames(sig.df), obs=sig.df$accel, total=sig.df$total, pval=1)
 for (gene.to.test in genes.sig$ens) {
   obs.ct=genes.sig[genes.sig$ens==gene.to.test, "obs"]
-#  pval1=sum(gene.res[,gene.to.test]>=obs.ct)/length(gene.res[,gene.to.test])
+  #  pval1=sum(gene.res[,gene.to.test]>=obs.ct)/length(gene.res[,gene.to.test])
   pval2=sum(gene.res.2[,gene.to.test]>=obs.ct)/length(gene.res.2[,gene.to.test])
-#  genes.sig$pval1[genes.sig$ens==gene.to.test]=pval1
+  #  genes.sig$pval1[genes.sig$ens==gene.to.test]=pval1
   genes.sig$pval[genes.sig$ens==gene.to.test]=pval2
 }
 
@@ -295,9 +137,9 @@ for (gene.to.test in genes.sig$ens) {
 genes.cov.sig<-data.frame(ens=names(genes.cov.real.ct), obs=genes.cov.real.ct, pval=1)
 for (gene.to.test in genes.cov.sig$ens) {
   obs.ct=genes.cov.sig[genes.cov.sig$ens==gene.to.test, "obs"]
-#  pval1=sum(genecov.res[,gene.to.test]>=obs.ct)/length(genecov.res[,gene.to.test])
+  #  pval1=sum(genecov.res[,gene.to.test]>=obs.ct)/length(genecov.res[,gene.to.test])
   pval2=sum(genecov.res.2[,gene.to.test]>=obs.ct)/length(genecov.res.2[,gene.to.test])
-#  genes.cov.sig$pval1[genes.cov.sig$ens==gene.to.test]=pval1
+  #  genes.cov.sig$pval1[genes.cov.sig$ens==gene.to.test]=pval1
   genes.cov.sig$pval[genes.cov.sig$ens==gene.to.test]=pval2
 }
 
@@ -321,7 +163,7 @@ arrows(x0=sum(clades.real.ct[c(5)]),y0=200,x1=sum(clades.real.ct[c(5)]),y1=0, co
 
 #interesting genes
 hist(genes.sig$pval[genes.sig$obs>0], breaks=seq(0,1,0.01), col="gray", freq=F, las=1, cex.axis=1.5, cex.lab=1.5, xlab="P-value", main="", ylim=c(0,6))
- abline(h=1, col="red", lty="dashed", lwd=3)
+abline(h=1, col="red", lty="dashed", lwd=3)
 
 #TBX5
 hist(gene.res.2[,"ENSGALG00000008253"], xlim=c(0,30), col="red", las=1, xlab="TBX accelerated CNEEs", cex.lab=1.5, cex.axis=1.5, main="")
