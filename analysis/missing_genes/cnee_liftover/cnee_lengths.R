@@ -192,10 +192,13 @@ sigSHOX2 <- subset(SHOX2, fdr_accel < 0 & fdr_accel > -1e-02)
 loSHOX2 <- subset(SHOX2, SHOX2$r_present < 0.5 & SHOX2$r_present > -Inf & SHOX2$t_present > 0.95 & SHOX2$t_present < Inf & SHOX2$f_present > 0.95 & SHOX2$f_present < Inf)
 loSHOX2 <- subset(SHOX2, SHOX2$r_low < 0.5*SHOX2$galGal & SHOX2$r_present > -Inf & SHOX2$t_present > 0.95 & SHOX2$t_present < Inf & SHOX2$f_present > 0.95 & SHOX2$f_present < Inf)
 
-unbiased.both.sets <- subset(true.CNEEs, true.CNEEs$r_present < 0.5 & true.CNEEs$r_present > -Inf & true.CNEEs$t_present > 0.95 & true.CNEEs$t_present < Inf & true.CNEEs$f_present > 0.95 & true.CNEEs$f_present < Inf & true.CNEEs$fdr_accel < 0 & true.CNEEs$fdr_accel > -1e-02)
+unbiased.both.sets <- subset(true.CNEEs, true.CNEEs$r_present < 0.5 & true.CNEEs$r_present > -Inf & true.CNEEs$t_present > 0.95 & true.CNEEs$t_present < Inf & true.CNEEs$f_present > 0.95 & true.CNEEs$f_present < Inf & true.CNEEs$fdr_accel < 0.01 & true.CNEEs$accel < 0)
+
+true.CNEEs$abs_fdr <- p.adjust(abs(true.CNEEs$accel), method = "fdr",n=length(true.CNEEs$accel))
 
 write.csv(true.CNEEs, "phil_cnee_table.csv", row.names = FALSE)
-
+sample <- true.CNEEs[sample(rownames(true.CNEEs),n=5000),]
+plot(sample$abs_fdr,sample$fdr_accel)
 # ggplot()+aes(or.cnee.out$galGal)+geom_histogram(colour="lightblue", fill="black", binwidth=25)
 # ggplot()+aes(or.cnee.out$galGal)+geom_histogram(colour="lightblue", fill="black", binwidth=1)+ xlim(0,50)
 # ggplot()+aes(or.cnee.out$galGal)+geom_histogram(colour="lightblue", fill="black", binwidth=125)+ xlim(1000,3000)
@@ -207,3 +210,7 @@ write.csv(true.CNEEs, "phil_cnee_table.csv", row.names = FALSE)
 # cnee.out <- cnee.out[,!(names(cnee.out) %in% drops)]
 # 
 # hist(cnee.out$r_perc_loss)
+
+or.cnee.out <- read.csv("phil_cnee_table.csv")
+
+
