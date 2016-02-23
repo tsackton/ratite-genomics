@@ -38,8 +38,8 @@ nw_topology ${HOG}_75coll.orig.nwk > $HOG.final_gt.nwk
 #make species key
 grep "^>" $INPUT | perl -p -e 's/>([A-Za-z]*)(_.*)/$1$2\t$1/' > $HOG.sp.key
 
-#first need to rename sequences in alignment if there are no duplications
-if [[ $MAXSP > 1 ]] 
+#make tree files -- complicated bit
+if [[ $MAXSP -gt 1 ]] 
 then
 	#this means we have duplications and so will need to just use the gene tree
 	cp $INPUT $HOG.fa
@@ -52,10 +52,60 @@ else
 	nw_prune -v $WORKDIR/oma_tree.nh $SPLIST > $HOG.final_spt.nwk
 fi
 
-#have two tree files for single-copy genes, one for duplicated genes
+#clade models 
+for TREETYPE in spt gt
+do
+	if [[ $TREETYPE == "spt" && $MAXSP -gt 1 ]]
+	then
+		continue;
+	fi
+	
+	cp $HOG.final_$TREETYPE.nwk $HOG.final_clade_$TREETYPE.nwk
+	for SPTOFIX in droNov casCas aptHaa aptRow aptOwe strCam rheAme rhePen
+	do
+		perl -p -i -e "s/(${SPTOFIX}\S*?)([,()])/"'$1 #1$2/' $HOG.final_clade_$TREETYPE.nwk;
+	done		
+	for SPTOFIX in droNov casCas aptHaa aptRow aptOwe strCam rheAme rhePen
+	do
+		perl -p -e "s/(${SPTOFIX}\S*?)([,()])/"'$1 #1$2/' $HOG.final_$TREETYPE.nwk >> $HOG.final_clade_$TREETYPE.nwk;
+	done	
+	#clade trees
+	cp $HOG.final_$TREETYPE.nwk tinamou.temp
+	cp $HOG.final_$TREETYPE.nwk rhea.temp
+	cp $HOG.final_$TREETYPE.nwk kiwi.temp
+	cp $HOG.final_$TREETYPE.nwk emucas.temp
+	
+	for SPTOFIX in notPer eudEle tinGut cryCin
+	do
+		perl -p -i -e "s/(${SPTOFIX}\S*?)([,()])/"'$1 #1$2/' tinamou.temp
+	done
+	for SPTOFIX in rheAme rhePen
+	do
+		perl -p -i -e "s/(${SPTOFIX}\S*?)([,()])/"'$1 #1$2/' rhea.temp
+	done
+	for SPTOFIX in aptHaa aptOwe aptRow
+	do
+		perl -p -i -e "s/(${SPTOFIX}\S*?)([,()])/"'$1 #1$2/' kiwi.temp
+	done
+	for SPTOFIX in droNov casCas
+	do
+		perl -p -i -e "s/(${SPTOFIX}\S*?)([,()])/"'$1 #1$2/' emucas.temp
+	done
+	
+	cat *.temp >> $HOG.final_clade_$TREETYPE.nwk;
+	rm *.temp
+	
+done
+
+#concatenate final trees
+cat $HOG.final_spt.nwk $HOG.final_gt.nwk > $HOG.final.nwk
+cat $HOG.final_clade_spt.nwk $HOG.final_clade_gt.nwk > $HOG.finalclade.nwk
+
+
 #make phylip
 #trim
 trimal -in $HOG.fa -out $HOG.phy -phylip_paml -gt $GAPTHRESH
+
 
 #all inputs present
 echo "All inputs created."
@@ -69,23 +119,7 @@ echo "$CURTIME: Starting PAML setup."
 #codeml.branchclade.ctl --> testing different rates on different clades
 #codeml.site.ctl --> basic site test
 
-
-#now make branch model tree with two rates (ratites vs others)
-#just use flightless tips - this is conservative as some fraction of internal nodes likely represent flightless phenotypes
-cp $HOG.nwk $HOG.clade.nwk
-for SPTOFIX in droNov casCas aptHaa strCam rheAme rhePen
-do
-	sed -i "s/$SPTOFIX/$SPTOFIX #1/" $HOG.clade.nwk
-done
-
-#codeml files:
-#codeml.site.ctl <- NOT RUN
-#codeml.ancrec.ctl <- ancestral reconstruction with M0
-#codeml.branch.ctl <- branch model
-#codeml.branchsite.ctl <- branch/site model
-#codeml.branchclade.ctl <- clade model
-
-
+#set up paml runs -- TO DO##
 
 for BASECTL in $(ls $WORKDIR/codeml.*.ctl)
 do
@@ -94,11 +128,14 @@ do
 	MODEL=${CTL##codeml.}
 	sed -i "s/SEQINPUT/$HOG.phy/" $HOG.$CTL
 	if [[ $CTL == *"branch"* ]] 
-	then sed -i "s/TREEINPUT/$HOG.clade.nwk/" $HOG.$CTL;
-	else sed -i "s/TREEINPUT/$HOG.nwk/" $HOG.$CTL;
+	then sed -i "s/TREEINPUT/$HOG.finalclade.nwk/" $HOG.$CTL;
+	else sed -i "s/TREEINPUT/$HOG.final.nwk/" $HOG.$CTL;
 	fi
 	sed -i "s/OUTPUT/${MODEL%%.ctl}.out/" $HOG.$CTL
 done
+
+CURTIME=$(date)
+echo "$CURTIME: Starting PAML runs."
 
 for RUN in $(ls *.ctl)
 do
