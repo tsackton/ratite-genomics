@@ -33,7 +33,7 @@ echo "Found max of $MAXSP sequences per species."
 #first copy gene tree and process with TreeCollapseCL4
 cp $GENETREE $HOG.orig.nwk
 java -jar /n/home12/tsackton/sw/bin/TreeCollapseCL4.jar -f $HOG.orig.nwk -b 75 -t O -nbs
-nw_topology ${HOG}_75coll.orig.nwk > $HOG.final_gt.nwk
+nw_topology ${HOG}_nbs.orig.nwk > $HOG.final_gt.nwk
 
 #make species key
 grep "^>" $INPUT | perl -p -e 's/>([A-Za-z]*)(_.*)/$1$2\t$1/' > $HOG.sp.key
@@ -43,6 +43,7 @@ if [[ $MAXSP -gt 1 ]]
 then
 	#this means we have duplications and so will need to just use the gene tree
 	cp $INPUT $HOG.fa
+	tree_doctor -n -a $HOG.final_gt.nwk > $HOG.final_gt_named.nwk
 else
 	#this means we first rename species 
 	perl -p -e 's/>([A-Za-z]*)_.*/>$1/' $INPUT > $HOG.fa
@@ -50,47 +51,39 @@ else
 	mv $HOG.final_gt.renamed.nwk $HOG.final_gt.nwk
 	SPLIST=$(cut -f2,2 $HOG.sp.key)
 	nw_prune -v $WORKDIR/oma_tree.nh $SPLIST > $HOG.final_spt.nwk
+	tree_doctor -n -a $HOG.final_spt.nwk > $HOG.final_spt_named.nwk
+	mv $HOG.final_spt.nwk $HOG.spt_nonames.nwk
+	mv $HOG.final_spt_named.nwk $HOG.final_spt.nwk
+	
 fi
 
 #clade models 
 for TREETYPE in spt gt
 do
-	if [[ $TREETYPE == "spt" && $MAXSP -gt 1 ]]
+	if [[ $TREETYPE == "spt" ]]
 	then
-		continue;
+		if [[ $MAXSP -gt 1 ]]
+		then
+			continue;
+		else		
+			#named clades
+			RHEA=$(comm -12 <(echo -e "rheAme\nrhePen\nrheAme-rhePen\nrhePen-rheAme" | sort) <(nw_labels $HOG.final_$TREETYPE.nwk | sort))
+			KIWI=$(comm -12 <(echo -e "aptHaa\naptRow\naptOwe\naptHaa-aptRow\naptHaa-aptOwe\naptRow-aptOwe\naptRow-aptHaa\naptOwe-aptRow\naptOwe-aptHaa" | sort) <(nw_labels $HOG.final_$TREETYPE.nwk | sort))
+			ECAS=$(comm -12 <(echo -e "droNov\ncasCas\ndroNov-casCas\ncasCas-droNov\n" | sort) <(nw_labels $HOG.final_$TREETYPE.nwk | sort))
+		fi
+	else
+		RHEA=$(grep 'rheAme\|rhePen' $HOG.sp.key | cut -f1,1)
+		ECAS=$(grep 'droNov\|casCas' $HOG.sp.key | cut -f1,1)
+		KIWI=$(grep 'aptHaa\|aptRow\|aptOwe' $HOG.sp.key | cut -f1,1)
 	fi
 	
-	cp $HOG.final_$TREETYPE.nwk $HOG.final_clade_$TREETYPE.nwk
-	for SPTOFIX in droNov casCas aptHaa aptRow aptOwe strCam rheAme rhePen
-	do
-		perl -p -i -e "s/(${SPTOFIX}\S*?)([,()])/"'$1 #1$2/' $HOG.final_clade_$TREETYPE.nwk;
-	done		
-	for SPTOFIX in droNov casCas aptHaa aptRow aptOwe strCam rheAme rhePen
-	do
-		perl -p -e "s/(${SPTOFIX}\S*?)([,()])/"'$1 #1$2/' $HOG.final_$TREETYPE.nwk >> $HOG.final_clade_$TREETYPE.nwk;
-	done	
-	#clade trees
-	cp $HOG.final_$TREETYPE.nwk tinamou.temp
-	cp $HOG.final_$TREETYPE.nwk rhea.temp
-	cp $HOG.final_$TREETYPE.nwk kiwi.temp
-	cp $HOG.final_$TREETYPE.nwk emucas.temp
+	RATITE="$RHEA $KIWI $ECAS"	
 	
-	for SPTOFIX in notPer eudEle tinGut cryCin
-	do
-		perl -p -i -e "s/(${SPTOFIX}\S*?)([,()])/"'$1 #1$2/' tinamou.temp
-	done
-	for SPTOFIX in rheAme rhePen
-	do
-		perl -p -i -e "s/(${SPTOFIX}\S*?)([,()])/"'$1 #1$2/' rhea.temp
-	done
-	for SPTOFIX in aptHaa aptOwe aptRow
-	do
-		perl -p -i -e "s/(${SPTOFIX}\S*?)([,()])/"'$1 #1$2/' kiwi.temp
-	done
-	for SPTOFIX in droNov casCas
-	do
-		perl -p -i -e "s/(${SPTOFIX}\S*?)([,()])/"'$1 #1$2/' emucas.temp
-	done
+	#label branches with tree_doctor
+	tree_doctor -n -N -l $(echo $RHEA | awk -v OFS="," '$1=$1'):1 $HOG.final_$TREETYPE.nwk > rhea.temp
+	tree_doctor -n -N -l ${RATITE//+( )/,}:1 $HOG.final_$TREETYPE.nwk > ratite.temp
+	tree_doctor -n -N -l ${KIWI//+( )/,}:1 $HOG.final_$TREETYPE.nwk > kiwi.temp
+	tree_doctor -n -N -l ${ECAS//+( )/,}:1 $HOG.final_$TREETYPE.nwk > ecas.temp
 	
 	cat *.temp >> $HOG.final_clade_$TREETYPE.nwk;
 	rm *.temp
@@ -141,6 +134,11 @@ echo "$CURTIME: Starting PAML runs."
 for RUN in $(ls *.ctl)
 do
 	mkdir -p $RUN.out
+	if [[ -e $RUN.out/DONE ]]
+	then
+		echo "NOTE: Skipping completed run $RUN"
+		continue
+	fi
 	mv $RUN $RUN.out/
 	cp $HOG.phy $RUN.out
 	cp $HOG*.nwk $RUN.out
