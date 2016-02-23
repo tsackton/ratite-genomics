@@ -65,6 +65,9 @@ done
 #merge MAFs and make SS file
 SPECIES=$(nw_labels ratiteTree.nh | sort | tr '\n' ',')
 MSAFILES=$(ls extract_maf/*.maf)
+
+#NOTE: this step removes soft-masked 4d sites##
+
 msa_view --aggregate ${SPECIES%?} --in-format MAF --out-format SS --unordered-ss $MSAFILES > neut4d_input.ss
 
 #neut4d_input.ss is now an SS-format alignment of all 4d sites in the original alignment
