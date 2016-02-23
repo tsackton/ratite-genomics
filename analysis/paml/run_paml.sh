@@ -139,7 +139,7 @@ echo "$CURTIME: Starting PAML runs."
 
 for RUN in $(ls *.ctl)
 do
-	mkdir $RUN.out
+	mkdir -p $RUN.out
 	mv $RUN $RUN.out/
 	cp $HOG.phy $RUN.out
 	cp $HOG*.nwk $RUN.out
