@@ -10,6 +10,9 @@ SPECIES=$(nw_labels ratiteTree_withMoa.ver1.nh | sort | tr '\n' ',')
 #get alignment
 MSAFILES=allspecies_4d_concatenated.fasta
 #convert to SS
+
+#Note: this includes soft-masked sites since they were converted to uppercase when extracting from MAF
+
 msa_view --aggregate ${SPECIES%?} --in-format FASTA --out-format SS --unordered-ss $MSAFILES > neut4d_input_withMoa.ss
 
 #neut4d_input_withMoa.ss is now an SS-format alignment of all 4d sites in the original alignment
