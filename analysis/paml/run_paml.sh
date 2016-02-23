@@ -98,9 +98,10 @@ do
 done
 
 #concatenate final trees
-cat $HOG.final_spt.nwk $HOG.final_gt.nwk > $HOG.final.nwk
-cat $HOG.final_clade_spt.nwk $HOG.final_clade_gt.nwk > $HOG.finalclade.nwk
-
+TREECT1=$(cat $HOG.final_spt.nwk $HOG.final_gt.nwk | wc -l)
+TREECT2=$(cat $HOG.final_clade_spt.nwk $HOG.final_clade_gt.nwk | wc -l)
+cat "$TREECT1\n" $HOG.final_spt.nwk $HOG.final_gt.nwk > $HOG.final.nwk
+cat "$TREECT2\n" $HOG.final_clade_spt.nwk $HOG.final_clade_gt.nwk > $HOG.finalclade.nwk
 
 #make phylip
 #trim
