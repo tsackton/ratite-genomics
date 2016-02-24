@@ -41,9 +41,7 @@ grep "^>" $INPUT | perl -p -e 's/>([A-Za-z]*)(_.*)/$1$2\t$1/' > $HOG.sp.key
 #make tree files -- complicated bit
 if [[ $MAXSP -gt 1 ]] 
 then
-	#this means we have duplications and so will need to just use the gene tree
 	cp $INPUT $HOG.fa
-	tree_doctor -n -a $HOG.final_gt.nwk > $HOG.final_gt_named.nwk
 else
 	#this means we first rename species 
 	perl -p -e 's/>([A-Za-z]*)_.*/>$1/' $INPUT > $HOG.fa
@@ -53,8 +51,7 @@ else
 	nw_prune -v $WORKDIR/oma_tree.nh $SPLIST > $HOG.final_spt.nwk
 	tree_doctor -n -a $HOG.final_spt.nwk > $HOG.final_spt_named.nwk
 	mv $HOG.final_spt.nwk $HOG.spt_nonames.nwk
-	mv $HOG.final_spt_named.nwk $HOG.final_spt.nwk
-	
+	mv $HOG.final_spt_named.nwk $HOG.final_spt.nwk	
 fi
 
 #clade models 
@@ -72,18 +69,25 @@ do
 			ECAS=$(comm -12 <(echo -e "droNov\ncasCas\ndroNov-casCas\ncasCas-droNov\n" | sort) <(nw_labels $HOG.final_$TREETYPE.nwk | sort))
 		fi
 	else
-		RHEA=$(grep 'rheAme\|rhePen' $HOG.sp.key | cut -f1,1)
-		ECAS=$(grep 'droNov\|casCas' $HOG.sp.key | cut -f1,1)
-		KIWI=$(grep 'aptHaa\|aptRow\|aptOwe' $HOG.sp.key | cut -f1,1)
+		if [[ $MAXSP -gt 1 ]]
+		then
+			RHEA=$(grep 'rheAme\|rhePen' $HOG.sp.key | cut -f1,1)
+			ECAS=$(grep 'droNov\|casCas' $HOG.sp.key | cut -f1,1)
+			KIWI=$(grep 'aptHaa\|aptRow\|aptOwe' $HOG.sp.key | cut -f1,1)
+		else
+                        RHEA=$(grep 'rheAme\|rhePen' $HOG.sp.key | cut -f2,2)
+                        ECAS=$(grep 'droNov\|casCas' $HOG.sp.key | cut -f2,2)
+                        KIWI=$(grep 'aptHaa\|aptRow\|aptOwe' $HOG.sp.key | cut -f2,2)
+		fi	
 	fi
 	
 	RATITE="$RHEA $KIWI $ECAS"	
 	
 	#label branches with tree_doctor
 	tree_doctor -n -N -l $(echo $RHEA | awk -v OFS="," '$1=$1'):1 $HOG.final_$TREETYPE.nwk > rhea.temp
-	tree_doctor -n -N -l ${RATITE//+( )/,}:1 $HOG.final_$TREETYPE.nwk > ratite.temp
-	tree_doctor -n -N -l ${KIWI//+( )/,}:1 $HOG.final_$TREETYPE.nwk > kiwi.temp
-	tree_doctor -n -N -l ${ECAS//+( )/,}:1 $HOG.final_$TREETYPE.nwk > ecas.temp
+	tree_doctor -n -N -l $(echo $RATITE | awk -v OFS="," '$1=$1'):1 $HOG.final_$TREETYPE.nwk > ratite.temp
+	tree_doctor -n -N -l $(echo $KIWI | awk -v OFS="," '$1=$1'):1 $HOG.final_$TREETYPE.nwk > kiwi.temp
+	tree_doctor -n -N -l $(echo $ECAS | awk -v OFS="," '$1=$1'):1 $HOG.final_$TREETYPE.nwk > ecas.temp
 	
 	cat *.temp >> $HOG.final_clade_$TREETYPE.nwk;
 	rm *.temp
@@ -91,6 +95,9 @@ do
 done
 
 #concatenate final trees
+perl -p -i -e 's/\w+-\w+//g' $HOG.final_spt.nwk
+perl -p	-i -e 's/\w+-\w+//g' $HOG.final_clade_spt.nwk
+
 cat $HOG.final_spt.nwk $HOG.final_gt.nwk | wc -l > $HOG.final.nwk
 cat $HOG.final_clade_spt.nwk $HOG.final_clade_gt.nwk | wc -l > $HOG.finalclade.nwk
 cat $HOG.final_spt.nwk $HOG.final_gt.nwk >> $HOG.final.nwk
@@ -146,5 +153,6 @@ do
 	codeml $RUN
 	CURTIME=$(date)
 	echo "$CURTIME: Finished $RUN"
+	touch DONE
 	cd ..
 done
