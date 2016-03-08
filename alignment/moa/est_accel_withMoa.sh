@@ -18,5 +18,6 @@ phyloP --method LRT --features $INPUT.gff --mode ACC --branch rheAme,rhePen,rheA
 phyloP --method LRT --features $INPUT.gff --mode ACC --branch casCas,droNov,casCas-droNov $NEUTMOD $INPUT.fa > $NEUTVER/Casuar.out &
 phyloP --method LRT --features $INPUT.gff --mode ACC --branch aptHaa-casCas,aptHaa-aptOwe,aptRow,aptHaa,aptOwe,aptHaa-aptRow $NEUTMOD $INPUT.fa > $NEUTVER/Kiwi.out &
 phyloP --method LRT --features $INPUT.gff --mode ACC --branch cryCin,tinGut,cryCin-tinGut,eudEle,notPer,eudEle-notPer,cryCin-eudEle $NEUTMOD $INPUT.fa > $NEUTVER/Tinamou.out &
+phyloP --method LRT --features $INPUT.gff --mode ACC --branch aptHaa-strCam $NEUTMOD $INPUT.fa > $NEUTVER/basalPaleo.out &
 
 
