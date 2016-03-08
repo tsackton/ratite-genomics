@@ -1,9 +1,12 @@
 #This is code to load the conserved elements into R and process the associated bed files
-#The output is a file with annotations associated for each CE
+#Takes a path and a bed file and then processes associated files to produce an annotation file
 #We focus on the Mitchell et al tree (ce2)
 
-ce2<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.gz", header=F)
-lowe<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/lowe_cnees.bed.gz", header=F)
+bedfile<-"final_ces_noratite.tree2.bed"
+filepath<-"/Volumes/LaCie/Projects/Current/ratites/final/ce_final/"
+
+ce2<-read.table(file=paste0(filepath, bedfile, ".gz", collapse=""), header=F)
+lowe<-read.table(file=paste0(filepath, "lowe_cnees.bed.gz", collapse=""), header=F)
 
 #add lengths to each
 ce2$length<-ce2$V3-ce2$V2
@@ -23,9 +26,9 @@ legend("topright", legend=c("Sackton et al", "Lowe et al"), lty=c("solid", "dash
 abline(v=median(ce2$length[ce2$length<2000 & ce2$length > 50]), col="red", lty="dotted", lwd=2)
 abline(v=median(lowe$length[lowe$length<2000 & lowe$length > 50]), col="black", lty="dotted", lwd=2)
 
-cds.ct<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.ct.CDS.gz", header=F, sep="\t")
-cnee.ct<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.ct.lowe.gz", header=F, sep="")
-noncds.ct<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.ct.exon.gz", header=F, sep="\t")
+cds.ct<-read.table(file=paste0(filepath, bedfile, ".ct.CDS.gz", collapse=""), header=F, sep="\t")
+cnee.ct<-read.table(file=paste0(filepath, bedfile, ".ct.lowe.gz", collapse=""), header=F, sep="")
+noncds.ct<-read.table(file=paste0(filepath, bedfile, ".ct.exon.gz", collapse=""), header=F, sep="\t")
 
 #estimate fraction overlapping different categories
 prop.table(table(cds.ct$V5 > 0))
@@ -33,11 +36,11 @@ prop.table(table(cnee.ct$V5 > 0))
 prop.table(table(noncds.ct$V5 > 0))
 
 #load counts and produce annotation
-cds.annot<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.CDS.gz", header=F, sep="\t")
-exon.annot<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.exon.gz", header=F, sep="\t")
-gene.annot<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.gene.gz", header=F, sep="\t")
+cds.annot<-read.table(file=paste0(filepath, bedfile, ".annot.CDS.gz", collapse=""), header=F, sep="\t")
+exon.annot<-read.table(file=paste0(filepath, bedfile, ".annot.exon.gz", collapse=""), header=F, sep="\t")
+gene.annot<-read.table(file=paste0(filepath, bedfile, ".annot.gene.gz", collapse=""), header=F, sep="\t")
 
-intersect<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.intersection.bed.gz", header=F, sep="\t")
+intersect<-read.table(file=paste0(filepath, "final_ces.intersection.bed.gz", collapse=""), header=F, sep="\t")
 intersect$in.intersection=T
 
 #clean up tables
@@ -49,7 +52,7 @@ names(exon.annot)[c(4,5)]=c("id", "in.exon")
 ce.annot<-merge(cds.annot[,c(4,5)], exon.annot[,c(4,5)], by="id")
 ce.annot<-merge(ce.annot, gene.annot[,c(4,5)], by="id")
 ce.annot<-merge(ce.annot, ce2[,c("V4", "length")], by.y="V4", by.x="id")
-ce.annot<-merge(ce.annot, intersect[,c("V4", "in.intersection")], all.x=T, by.x="id", by.y="V4")
+ce.annot<-merge(ce.annot, intersect[,c("V4", "in.intersection")], all.x=T, all.y=F, by.x="id", by.y="V4")
 ce.annot$in.intersection[is.na(ce.annot$in.intersection)]=F
 ce.annot$class="intergenic"
 ce.annot$class[ce.annot$in.gene>0]="genic_non_exonic"
@@ -58,10 +61,10 @@ ce.annot$class[ce.annot$in.cds>0]="CDS"
 
 #get closest genes -- will need to collapse duplicate lines
 #each CE has four closest genes (ens + ncbi, whole gene vs TSS)
-closest.gene.ncbi <- read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.closest_genes_ncbi.gz", header=F, sep="\t", stringsAsFactors=F)
-closest.gene.ens <- read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.closest_genes_ens.gz", header=F, sep="\t", stringsAsFactors=F)
-closest.tss.ncbi <- read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.closest_TSS_ncbi.gz", header=F, sep="\t", stringsAsFactors=F)
-closest.tss.ens <- read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.closest_TSS_ens.gz", header=F, sep="\t", stringsAsFactors=F)
+closest.gene.ncbi <- read.table(file=paste0(filepath, bedfile, ".annot.closest_genes_ncbi.gz", collapse=""), header=F, sep="\t", stringsAsFactors=F)
+closest.gene.ens <- read.table(file=paste0(filepath, bedfile, ".annot.closest_genes_ens.gz", collapse=""), header=F, sep="\t", stringsAsFactors=F)
+closest.tss.ncbi <- read.table(file=paste0(filepath, bedfile, ".annot.closest_TSS_ncbi.gz", collapse=""), header=F, sep="\t", stringsAsFactors=F)
+closest.tss.ens <- read.table(file=paste0(filepath, bedfile, ".annot.closest_TSS_ens.gz", collapse=""), header=F, sep="\t", stringsAsFactors=F)
 
 #deal with duplicates
 #basic rule: prefer upstream (negative) to downstream
@@ -99,7 +102,7 @@ ce.annot$gene_ens[ce.annot$tgene_ens=="."]="none"
 ce.annot$gene_ncbi[ce.annot$gene_ncbi=="."]="none"
 
 #get lowe et al cnee overlap, if any
-lowe.overlap <- read.table("~/Projects/birds/ratite_compgen/ratite-genomics/alignment/phast/final_beds/final_ces.tree2.bed.annot.lowe.gz", stringsAsFactors=F)
+lowe.overlap <- read.table(file=paste0(filepath, bedfile, ".annot.lowe.gz", collapse=""), stringsAsFactors=F)
 
 #clean up lowe et al overlap
 lowe.overlap=lowe.overlap[,c("V4", "V8")]
@@ -116,4 +119,4 @@ ce.annot$best_ens = ce.annot$gene_ens
 ce.annot$best_ens[ce.annot$class=="intergenic"]=ce.annot$tss_ens[ce.annot$class=="intergenic"]
 
 #write table
-write.table(ce.annot, file="./final_beds/ce_annotation.tsv", row.names=F, sep="\t", quote=F)
+write.table(ce.annot, file=paste0(filepath, bedfile, ".final_annotation.tsv", collapse=""), row.names=F, sep="\t", quote=F)
