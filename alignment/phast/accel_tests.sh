@@ -35,25 +35,14 @@ do
 done
 cd ..
 
+#aslo run: rr_only subset, no ratite alignments basal Paleo only subset 
+#need to add code for these from subdirs
+
 ##NOTE for CHR = NW_003764425.1 the following command was used since notPer is missing from alignment
 phyloP --method LRT --features $CHR.temp.bed --mode ACC --branch cryCin,tinGut,cryCin-tinGut,eudEle,cryCin-eudEle $NEUTMOD $ALIGN > tinamou/$CHR.Tinamou.out
+#and for basal palaeognath, no ratite test
+phyloP --method LRT --features $CHR.temp.bed --mode ACC --branch aptHaa-strCam $NEUTMOD $ALIGN > tinamou/$CHR.basalPaleo.out
 
-#1b: running with ratite-removed bed
-mkdir ratite_removed
-cd ratite_removed
-mkdir -p ratite tips clades tinamou
-NEUTMOD="$HOME/ratite_scratch/wga/phast/neutMods/neut_ver2_final.named.mod"
-BED="../final_ces_noratite.tree2.bed"
-for CHR in $(cat ../chr.list)
-do
-	ALIGN="$HOME/ratite_scratch/wga/phast/final_mafs/$CHR.ss"
-	if [[ -f $ALIGN ]]
-	then
-		echo "...working on $CHR."
-		grep "^$CHR" $BED > $CHR.temp.bed
-		sbatch ../est_accel.sh $NEUTMOD $CHR $ALIGN
-	fi
-done
 
 #clean up
 #make headers
@@ -70,6 +59,7 @@ head -n 1 ratite/NC_006088.3.Ratite.out > all_rhePen.out
 head -n 1 ratite/NC_006088.3.Ratite.out > all_aptHaa.out
 head -n 1 ratite/NC_006088.3.Ratite.out > all_aptOwe.out
 head -n 1 ratite/NC_006088.3.Ratite.out > all_aptRow.out
+head -n 1 ratite/NC_006088.3.Ratite.out > all_basalPaleo.out
 
 for FILE in $(ls ratite/*.Ratite.out)
 do
@@ -79,6 +69,11 @@ done
 for FILE in $(ls tinamou/*.Tinamou.out)
 do
 	tail -n +2 $FILE >> all_tinamou.out
+done
+
+for FILE in $(ls tinamou/*.basalPaleo.out)
+do
+	tail -n +2 $FILE >> all_basalPaleo.out
 done
 
 for CLADE in Rhea Casuar Kiwi
