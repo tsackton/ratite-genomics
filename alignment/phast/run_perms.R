@@ -21,8 +21,8 @@ for (iter in 1:nreps) {
   #sample
   cnee.perm<-as.data.frame(apply(input, 2, sample), stringsAsFactors=F)
   #get clade counts
-  clade.ct.br=apply(cnee.perm[,c("rhea.br", "casuar.br", "kiwi.br", "strcam.br")], 1, function(x) sum(x > 0))
-  clade.ct.na=apply(cnee.perm[,c("rhea.na", "casuar.na", "kiwi.na", "strcam.na")], 1, function(x) sum(x > 0))
+  clade.ct.br=as.numeric(cnee.perm$rhea.br) + as.numeric(cnee.perm$casuar.br) + as.numeric(cnee.perm$kiwi.br) + as.numeric(cnee.perm$strcam.br)
+  clade.ct.na=as.numeric(cnee.perm$rhea.na) + as.numeric(cnee.perm$casuar.na) + as.numeric(cnee.perm$kiwi.na) + as.numeric(cnee.perm$strcam.na)
   clades<-data.frame(x0=sum(clade.ct.na==0), x1=sum(clade.ct.na==1), x2=sum(clade.ct.na==2), x3=sum(clade.ct.na==3), x4=sum(clade.ct.na==4), b0=sum(clade.ct.br==0), b1=sum(clade.ct.br==1), b2=sum(clade.ct.br==2), b3=sum(clade.ct.br==3), b4=sum(clade.ct.br==4))
   clades=as.matrix(clades)
   #get gene counts
