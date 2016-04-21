@@ -26,7 +26,6 @@ colnames(pairwise.res)=c("RK", "OK", "OR", "MK", "MR", "MO", "CK", "CR", "CM", "
 cnee.perm<-input
 
 for (iter in 1:nreps) {
-  #sample
   cnee.perm[,c(2:length(cnee.perm))]<-apply(cnee.perm[,c(2:length(cnee.perm))],2,sample)
   
   #get clade counts
