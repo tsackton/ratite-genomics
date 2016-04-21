@@ -30,8 +30,6 @@ for (iter in 1:nreps) {
   
   #get clade counts
   clade.ct=rowSums(cnee.perm[,3:length(cnee.perm)], na.rm=T)
-
-  #sample
   clade.res[iter,]=c(sum(clade.ct==0), sum(clade.ct==1), sum(clade.ct==2), sum(clade.ct==3), sum(clade.ct==4), sum(clade.ct==5))
   
   #cas 3 kiwi 4 moa 5 ostr 6 rhea 7
