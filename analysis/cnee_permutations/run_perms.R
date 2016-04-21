@@ -9,7 +9,7 @@ args = commandArgs(trailingOnly=TRUE)
 
 #set number of reps
 nreps<-10000
-input<-read.table(paste0("inputs/",args[2], sep=""), sep="\t", stringsAsFactors=F, header=T, colClasses=c("character", rep("numeric", length(scan(paste0("inputs/",args[2], sep=""),sep='\t', what="character" , nlines=1))-1)))
+input<-read.table(paste0("inputs/",args[2], sep=""), sep="\t", stringsAsFactors=F, header=T, colClasses=c("character", rep("numeric", 6)))
 
 #convergence across ratites
 clade.res=matrix(nrow=nreps, ncol=6)
