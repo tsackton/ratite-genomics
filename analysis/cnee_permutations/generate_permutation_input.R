@@ -5,7 +5,8 @@
 perm.input<-accel.clade
 perm.input[,ratiteQ:=min(c(Casuar, Kiwi, Ratite, Rhea, anoDid, strCam), na.rm=T), by=1:nrow(accel.clade)]
 perm.input$ratite.acc = ifelse(perm.input$ratiteQ < 0.05 & perm.input$filtQ > 0.25, 1, 0)
-perm.input.sub<-subset(perm.input, tinPres == 4 & nonRatiteLoss == 0, select=c(name, result.type, best_ens, ratite.acc, cas.acc, kiwi.acc, moa.acc, ostrich.acc, rhea.acc, cas.acc.2, kiwi.acc.2, ostrich.acc.2, rhea.acc.2))
+perm.input$moa.acc.2 = NA
+perm.input.sub<-subset(perm.input, tinPres == 4 & nonRatiteLoss == 0, select=c(name, result.type, best_ens, ratite.acc, cas.acc, kiwi.acc, moa.acc, ostrich.acc, rhea.acc, cas.acc.2, kiwi.acc.2, moa.acc.2, ostrich.acc.2, rhea.acc.2))
 perm.input.sub[,ratite.acc.2:=max(ratite.acc, cas.acc.2, kiwi.acc.2, ostrich.acc.2, rhea.acc.2), by=1:nrow(perm.input.sub)]
 
 #clean up moa by setting to NA for type==wga
@@ -22,7 +23,7 @@ baseDir="/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/analysis/cnee_
 
 for (type in unique(perm.input.sub$result.type)) {
   write.table(perm.input.sub[result.type==type,c("best_ens", "ratite.acc", "cas.acc", "kiwi.acc", "moa.acc", "ostrich.acc", "rhea.acc"), with=F], file=paste0(baseDir, type, ".for_perm", ".1", sep=""), sep="\t", quote=F, row.names=F)
-  write.table(perm.input.sub[result.type==type,c("best_ens", "ratite.acc.2", "cas.acc.2", "kiwi.acc.2", "ostrich.acc.2", "rhea.acc.2"), with=F], file=paste0(baseDir, type, ".for_perm", ".2", sep=""), sep="\t", quote=F, row.names=F)
+  write.table(perm.input.sub[result.type==type,c("best_ens", "ratite.acc.2", "cas.acc.2", "kiwi.acc.2", "moa.acc.2", "ostrich.acc.2", "rhea.acc.2"), with=F], file=paste0(baseDir, type, ".for_perm", ".2", sep=""), sep="\t", quote=F, row.names=F)
 }
 
 
