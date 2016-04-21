@@ -9,7 +9,7 @@ args = commandArgs(trailingOnly=TRUE)
 
 #set number of reps
 nreps<-10000
-input<-read.table(paste0("inputs/",args[2], sep=""), sep="\t", stringsAsFactors=F, header=T, colClasses=c("character", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"))
+input<-read.table(paste0("inputs/",args[2], sep=""), sep="\t", stringsAsFactors=F, header=T, colClasses=c("character", rep("numeric", 6)))
 
 #convergence across ratites
 clade.res=matrix(nrow=nreps, ncol=6)
@@ -26,11 +26,12 @@ colnames(pairwise.res)=c("RK", "OK", "OR", "MK", "MR", "MO", "CK", "CR", "CM", "
 cnee.perm<-input
 
 for (iter in 1:nreps) {
-  #sample
-  cnee.perm[,c(2,3,4,5,6,7)]<-apply(cnee.perm[,c(2,3,4,5,6,7)],2,sample)
+  cnee.perm[,c(2:length(cnee.perm))]<-apply(cnee.perm[,c(2:length(cnee.perm))],2,sample)
   
   #get clade counts
-  clade.ct=rowSums(cnee.perm[,3:7], na.rm=T)
+  clade.ct=rowSums(cnee.perm[,3:length(cnee.perm)], na.rm=T)
+
+  #sample
   clade.res[iter,]=c(sum(clade.ct==0), sum(clade.ct==1), sum(clade.ct==2), sum(clade.ct==3), sum(clade.ct==4), sum(clade.ct==5))
   
   #cas 3 kiwi 4 moa 5 ostr 6 rhea 7
