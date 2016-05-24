@@ -65,7 +65,7 @@ model=sys.argv[0]
 for hog in hogs:
     toppath = '{:0>4}'.format(int(hog) % 100)
     # 0000/100/100.codeml.ancrec.ctl.out/
-    fullpath = toppath + "/" + hog + "/" + hog + ".codeml." + model ".ctl.out"
+    fullpath = toppath + "/" + hog + "/" + hog + ".codeml." + model + ".ctl.out"
     filetime=getTime(fullpath,model)
     filetrees=checkTree(fullpath,model)
     treefile=fullpath + "/" + hog + ".final.nwk"
