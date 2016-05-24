@@ -21,11 +21,11 @@ def uniqCount(filename):
     
     return lines
 
-def getTime(path):
+def getTime(path,model):
     # for a given path to an out file, checks to see if the time is given and returns that
     timepat = re.compile('^Time used:\s+(\d+:\d+:?\d*)\s*$', re.M)
     try:
-        with open(os.path.join(path, "ancrec.out")) as f:
+        with open(os.path.join(path, model + ".out")) as f:
             output = f.read()
             times=timepat.findall(output)
             totalSecs = 0
@@ -46,11 +46,11 @@ def getTime(path):
     except:
          return "FAILED"
          
-def checkTree(path):
+def checkTree(path,model):
     #for a given path to an out file, get all the trees in the outfile
     treepat = re.compile('TREE\s+#\s+\d+')
     try:
-        with open(os.path.join(path, "ancrec.out")) as f:
+        with open(os.path.join(path, model + ".out")) as f:
             output = f.read()
             trees=treepat.findall(output)
             return len(trees)
@@ -60,12 +60,14 @@ def checkTree(path):
 with open("all_hogs") as hfile:
     hogs=[line.rstrip('\n') for line in hfile]
 
+model=sys.argv[0]
+
 for hog in hogs:
     toppath = '{:0>4}'.format(int(hog) % 100)
     # 0000/100/100.codeml.ancrec.ctl.out/
-    fullpath = toppath + "/" + hog + "/" + hog + ".codeml.ancrec.ctl.out"
-    filetime=getTime(fullpath)
-    filetrees=checkTree(fullpath)
+    fullpath = toppath + "/" + hog + "/" + hog + ".codeml." + model ".ctl.out"
+    filetime=getTime(fullpath,model)
+    filetrees=checkTree(fullpath,model)
     treefile=fullpath + "/" + hog + ".final.nwk"
 #    print(treefile)
     totaltrees=int(uniqCount(treefile))-1
