@@ -60,7 +60,7 @@ def checkTree(path,model):
 with open("all_hogs") as hfile:
     hogs=[line.rstrip('\n') for line in hfile]
 
-model=sys.argv[0]
+model=sys.argv[1]
 
 for hog in hogs:
     toppath = '{:0>4}'.format(int(hog) % 100)
