@@ -102,7 +102,7 @@ def parse_hogs(hoglist,model,verbose):
     final_results = {}
     for hog in hoglist:
         if verbose:
-            print("Working on ", hog)
+            print("Working on ", hog, flush=True)
             
         toppath = '{:0>4}'.format(int(hog) % 100)
         # 0000/100/100.codeml.ancrec.ctl.out/
@@ -194,7 +194,7 @@ def main():
 
     print("Done getting files.", flush=True)                
     with open(resfile_foroutput, 'w') as ofile:
-        print("hog", "model", "treenum", "foreground_species", "species_tree", "newick_string", "lnl", "treelen", "class0_prop", "class0_fore", "class0_back", "class1_prop", "class1_fore", "class1_back", "class2a_prop", "class2a_fore", "class2a_back", "class2b_prop", "class2b_fore", "class2b_back", sep="\t", end="\n", file=ofile)
+        print("hog", "model", "treenum", "foreground_species", "species_tree", "newick_string", "lnl", "treelen", "class0_prop", "class0_fore", "class0_back", "class1_prop", "class1_fore", "class1_back", "class2a_prop", "class2a_fore", "class2a_back", "class2b_prop", "class2b_fore", "class2b_back", sep="\t", end="\n", file=ofile, flush=True)
 
         for model in ("branchsite", "branchsitenull"):
             results = parse_hogs(hogs,model,verbose)
