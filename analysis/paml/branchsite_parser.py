@@ -97,10 +97,13 @@ def parse_multitree_results (file):
         paml_results[tree_index] = parsed
     return(paml_results)
 
-def parse_hogs(hoglist,model):
+def parse_hogs(hoglist,model,verbose):
     #take list of hogs, return parsed final results dictionary
     final_results = {}
     for hog in hoglist:
+        if verbose:
+            print("Working on ", hog)
+            
         toppath = '{:0>4}'.format(int(hog) % 100)
         # 0000/100/100.codeml.ancrec.ctl.out/
         fullpath = toppath + "/" + hog + "/" + hog + ".codeml." + model + ".ctl.out"
@@ -183,6 +186,7 @@ def main():
 
     hogfile_toparse = sys.argv[1]   
     resfile_foroutput = sys.argv[2] 
+    verbose=1
     #get hog list, for now from a file
     with open(hogfile_toparse) as hfile:
         hogs=[line.rstrip('\n') for line in hfile]
@@ -191,7 +195,7 @@ def main():
         print("hog", "model", "treenum", "foreground_species", "species_tree", "newick_string", "lnl", "treelen", "class0_prop", "class0_fore", "class0_back", "class1_prop", "class1_fore", "class1_back", "class2a_prop", "class2a_fore", "class2a_back", "class2b_prop", "class2b_fore", "class2b_back", sep="\t", end="\n", file=ofile)
 
         for model in ("branchsite", "branchsitenull"):
-            results = parse_hogs(hogs,model)
+            results = parse_hogs(hogs,model,verbose)
             #print out
             print_results(results, ofile, model)
                  
