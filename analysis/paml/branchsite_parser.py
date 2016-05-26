@@ -167,20 +167,22 @@ def print_results (results, handle, model):
 #       print(tree_len, res_len)
 #       print(results[hog]['trees'].keys())
 #       print(results[hog]['results'].keys())
-        for i in range(1,tree_len+1):
-            trees = results[hog]['trees'][i]
-            res = results[hog]['results'][i]
-            print(hog, model, i, trees['foreground'], trees['is_species_tree'], trees['original'], sep="\t", end="\t", file=handle)
+        for i in range(1,res_len+1):
+            trees = results[hog]['trees'].get(i, {})
+            res = results[hog]['results'].get(i, {})
+            print(hog, model, i, trees.get('foreground'), trees.get('is_species_tree'), trees.get('original'), sep="\t", end="\t", file=handle)
             #parse results
-            res_lnl = res.get('NSsites').get(2).get('lnL')
-            res_siteclass = res.get('NSsites').get(2).get('parameters').get('site classes')
-            res_treelen = res.get('NSsites').get(2).get('tree length')
+            res_lnl = res.get('NSsites', {}).get(2, {}).get('lnL')
+            res_siteclass = res.get('NSsites', {}).get(2, {}).get('parameters', {}).get('site classes')
+            res_treelen = res.get('NSsites', {}).get(2, {}).get('tree length')
             print(res_lnl, res_treelen, sep="\t", end="\t", file=handle)
             #need to iterate over site class numbers
-            for sc in sorted(res_siteclass):
-                print(res_siteclass[sc]['proportion'], res_siteclass[sc]['branch types']['foreground'], res_siteclass[sc]['branch types']['background'], sep="\t", end="\t", file=handle)
-            
-            print(file=handle)
+            try:
+                for sc in sorted(res_siteclass):
+                    print(res_siteclass[sc]['proportion'], res_siteclass[sc]['branch types']['foreground'], res_siteclass[sc]['branch types']['background'], sep="\t", end="\t", file=handle)
+                print(file=handle)
+            except:
+                print('None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', sep="\t", end="\n", file=handle)
 
 def main():
 
