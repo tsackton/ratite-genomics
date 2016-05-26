@@ -9,11 +9,10 @@ from Bio.Phylo.Consensus import _BitString
 import io
 import re
 
-def _bitstrs(tree):
+def _bitstrs(tree,term_names):
     #function from http://biopython.org/wiki/Phylo
     # store and return all _BitStrings    
     bitstrs = set()
-    term_names = [term.name for term in tree.get_terminals()]
     term_names.sort()
     for clade in tree.get_nonterminals():
         clade_term_names = [term.name for term in clade.get_terminals()]
@@ -30,7 +29,7 @@ def compare_trees(tree1, tree2):
     if set(term_names1) != set(term_names2):
         return False
     # true if _BitStrings are the same
-    if _bitstrs(tree1) == _bitstrs(tree2):
+    if _bitstrs(tree1,term_names1) == _bitstrs(tree2,term_names2):
         return True
     else:
         return False
@@ -58,15 +57,21 @@ def parse_trees (file,speciestree):
          tree_strings = tf.readlines()
     
     paml_trees = {}
+    seen_trees = {}
     #tree strings need to get converted to trees now
     for i in range(1,len(tree_strings)):
-         cur_tree = tree_strings[i].replace(" ","")
-         processed_trees = Phylo.read(io.StringIO(cur_tree), "newick")
-         final_tree, foreground_sp = classify_tree(processed_trees)
-         sptree = compare_trees(final_tree, speciestree)
-         tree_dict = {'tree':final_tree, 'foreground':foreground_sp, 'is_species_tree':sptree, 'original':tree_strings[i].rstrip()}
-         paml_trees[i] = tree_dict
-        
+        if tree_strings[i] in seen_trees:
+            treekey = seen_trees[tree_strings[i]]
+            paml_trees[i] = paml_trees[treekey]
+        else:
+            seen_trees[tree_strings[i]] = i
+            cur_tree = tree_strings[i].replace(" ","")
+            processed_trees = Phylo.read(io.StringIO(cur_tree), "newick")
+            final_tree, foreground_sp = classify_tree(processed_trees)
+            sptree = compare_trees(final_tree, speciestree)
+            tree_dict = {'tree':final_tree, 'foreground':foreground_sp, 'is_species_tree':sptree, 'original':tree_strings[i].rstrip()}
+            paml_trees[i] = tree_dict
+    
     return(paml_trees)
 
 def parse_codeml_string (handle):
@@ -74,8 +79,8 @@ def parse_codeml_string (handle):
     lines = handle.readlines()
     (results, multi_models, multi_genes) = _parse_codeml.parse_basics(lines, results)
     results = _parse_codeml.parse_nssites(lines, results, multi_models, multi_genes) 
-    results = _parse_codeml.parse_pairwise(lines, results)
-    results = _parse_codeml.parse_distances(lines, results)
+#    results = _parse_codeml.parse_pairwise(lines, results)
+#    results = _parse_codeml.parse_distances(lines, results)
     if len(results) == 0:
         raise ValueError("Invalid results file") 
     return results 
