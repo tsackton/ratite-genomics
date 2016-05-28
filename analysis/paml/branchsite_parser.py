@@ -102,7 +102,32 @@ def parse_multitree_results (file):
         paml_results[tree_index] = parsed
     return(paml_results)
 
-def parse_hogs(hoglist,model,verbose):
+def parse_multitree_multimodel_results (file):
+     #takes a paml output file, splits on TREE #, returns list of output files to parse
+     
+    with open(file, 'r') as pf:
+        results=pf.read()
+    
+    #split results
+    models = results.split("\nModel ")
+    header = models.pop(0)
+    paml_strings = {}
+    paml_results = {}
+    for model in models:
+        pieces = model.split("\nTREE")
+        subheader = "\nModel " + pieces.pop(0)
+        for i in range(0,len(pieces)):
+            tree_index = i+1
+            try:
+                paml_strings[tree_index] += subheader + "\nTREE" + pieces[i]
+            except KeyError:
+                paml_strings[tree_index] = header + subheader + "\nTREE" + pieces[i]
+    for tree_num in paml_strings:
+        paml_results[tree_num] = parse_codeml_string(io.StringIO(paml_strings[tree_num]))
+
+    return(paml_results)
+
+def parse_hogs(hoglist,model,verbose,multisite):
     #take list of hogs, return parsed final results dictionary
     final_results = {}
     for hog in hoglist:
@@ -129,7 +154,10 @@ def parse_hogs(hoglist,model,verbose):
                 tree_file = pamldir + "/" + fullpath + "/" + cml.tree
                 #now process
                 parsed_trees = parse_trees(tree_file,species_tree)
-                parsed_results = parse_multitree_results(results_file)
+                if multisite:
+                    parsed_results = parse_multitree_multimodel_results(results_file)
+                else:
+                    parsed_results = parse_multitree_results(results_file)
                 #check that we have a result for each tree
                 if len(parsed_trees) < len(parsed_results):
                     print("Warning, too few trees for number of results for " + hog + " in " + results_file)
@@ -195,6 +223,7 @@ def main():
     hogfile_toparse = sys.argv[1]   
     resfile_foroutput = sys.argv[2] 
     verbose=1
+    multisite=False
     #get hog list, for now from a file
     with open(hogfile_toparse) as hfile:
         hogs=[line.rstrip('\n') for line in hfile]
@@ -204,7 +233,7 @@ def main():
         print("hog", "model", "treenum", "foreground_species", "species_tree", "newick_string", "lnl", "treelen", "class0_prop", "class0_fore", "class0_back", "class1_prop", "class1_fore", "class1_back", "class2a_prop", "class2a_fore", "class2a_back", "class2b_prop", "class2b_fore", "class2b_back", sep="\t", end="\n", file=ofile, flush=True)
 
         for model in ("branchsite", "branchsitenull"):
-            results = parse_hogs(hogs,model,verbose)
+            results = parse_hogs(hogs,model,verbose,multisite)
             #print out
             print_results(results, ofile, model)
                  
