@@ -107,13 +107,14 @@ def main():
     resfile_foroutput = sys.argv[2]
     mutfile_foroutput = sys.argv[3]
     verbose=1
+    multisite=False
     with open(hogfile_toparse) as hfile:
         hogs=[line.rstrip("\n") for line in hfile]
     
     print("Done getting files.")
     with open(resfile_foroutput, 'w') as ofile:
         print("hog", "model", "treenum", "species_tree", "newick_string", "lnl", "treelen", "kappa", "omega", sep="\t", end="\n", file=ofile, flush=True)
-        results = parse_hogs(hogs,"ancrec",verbose)        
+        results = parse_hogs(hogs,"ancrec",verbose,multisite)        
         print_results(results, ofile, "ancrec")
     
     print("Done parsing model output, starting on ancestral reconstructions.")
