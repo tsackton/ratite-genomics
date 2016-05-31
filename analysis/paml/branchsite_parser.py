@@ -147,7 +147,7 @@ def parse_hogs(hoglist,model,verbose=True,multisite=False):
             try:
                 species_tree = Phylo.read(sptreepath, "newick")
             except:
-#                print("Couldn't get species tree for ", hog)
+                print("Couldn't get species tree for ", hog)
                 continue
                     
             cml = codeml.Codeml()
