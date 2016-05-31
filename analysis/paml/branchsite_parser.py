@@ -153,27 +153,22 @@ def parse_hogs(hoglist,model,verbose=True,multisite=False):
                 species_tree = None
                     
             cml = codeml.Codeml()
-            try:
-                cml.read_ctl_file(control_file)
-                tree_file = pamldir + "/" + fullpath + "/" + cml.tree
-                #now process
-                parsed_trees = parse_trees(tree_file,species_tree)
-                if multisite:
-                    parsed_results = parse_multitree_multimodel_results(results_file)
-                else:
-                    parsed_results = parse_multitree_results(results_file)
-                #check that we have a result for each tree
-                if len(parsed_trees) < len(parsed_results):
-                    print("Warning, too few trees for number of results for " + hog + " in " + results_file)
-                    continue
-                elif len(parsed_trees) > len(parsed_results):
-                    #remove trees that aren't in results
-                    trimmed_trees = {x:parsed_trees[x] for x in parsed_results.keys()}
-                    parsed_trees = trimmed_trees
-                       
-            except:
-                print("Couldn't parse paml for", hog)
+            cml.read_ctl_file(control_file)
+            tree_file = pamldir + "/" + fullpath + "/" + cml.tree
+            #now process
+            parsed_trees = parse_trees(tree_file,species_tree)
+            if multisite:
+                parsed_results = parse_multitree_multimodel_results(results_file)
+            else:
+                parsed_results = parse_multitree_results(results_file)
+            #check that we have a result for each tree
+            if len(parsed_trees) < len(parsed_results):
+                print("Warning, too few trees for number of results for", hog, "in", results_file)
                 continue
+            elif len(parsed_trees) > len(parsed_results):
+                #remove trees that aren't in results
+                trimmed_trees = {x:parsed_trees[x] for x in parsed_results.keys()}
+                parsed_trees = trimmed_trees
                 
             if hog in final_results:
                 #append
