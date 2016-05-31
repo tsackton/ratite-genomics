@@ -130,7 +130,7 @@ def parse_multitree_multimodel_results (file):
 
     return(paml_results)
 
-def parse_hogs(hoglist,model,verbose=True,multisite=False):
+def parse_hogs(hoglist,model,input_dirs,verbose=True,multisite=False):
     #take list of hogs, return parsed final results dictionary
     final_results = {}
     for hog in hoglist:
@@ -140,7 +140,7 @@ def parse_hogs(hoglist,model,verbose=True,multisite=False):
         toppath = '{:0>4}'.format(int(hog) % 100)
         # 0000/100/100.codeml.ancrec.ctl.out/
         fullpath = toppath + "/" + hog + "/" + hog + ".codeml." + model + ".ctl.out"
-        for pamldir in ("paml", "paml_branch"):
+        for pamldir in input_dirs:
             results_file = pamldir + "/" + fullpath + "/" + model + ".out"
             control_file = pamldir + "/" + fullpath + "/" + hog + ".codeml." + model + ".ctl"
             #get species tree
@@ -154,7 +154,7 @@ def parse_hogs(hoglist,model,verbose=True,multisite=False):
             try:
                 cml.read_ctl_file(control_file)
             except OSError:
-                print("Couldn't parse file for", hog, "at" + pamldir + "/", fullpath)
+                print("Couldn't parse file for", hog, "at", pamldir + "/" + fullpath)
                 continue
             
             tree_file = pamldir + "/" + fullpath + "/" + cml.tree
@@ -166,7 +166,7 @@ def parse_hogs(hoglist,model,verbose=True,multisite=False):
                 else:
                     parsed_results = parse_multitree_results(results_file)
             except FileNotFoundError:
-                print("Couldn't parse file for", hog, "at", fullpath)
+                print("Couldn't parse file for", hog, "at", pamldir + "/" + fullpath)
                 continue
             
             #check that we have a result for each tree
@@ -238,7 +238,7 @@ def main():
         print("hog", "model", "treenum", "foreground_species", "species_tree", "newick_string", "lnl", "treelen", "class0_prop", "class0_fore", "class0_back", "class1_prop", "class1_fore", "class1_back", "class2a_prop", "class2a_fore", "class2a_back", "class2b_prop", "class2b_fore", "class2b_back", sep="\t", end="\n", file=ofile, flush=True)
 
         for model in ("branchsite", "branchsitenull"):
-            results = parse_hogs(hogs,model)
+            results = parse_hogs(hogs,model,list("paml", "paml_branch"))
             #print out
             print_results(results, ofile, model)
                  

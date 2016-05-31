@@ -112,7 +112,7 @@ def main():
     print("Done getting files.")
     with open(resfile_foroutput, 'w') as ofile:
         print("hog", "model", "treenum", "species_tree", "newick_string", "lnl", "treelen", "kappa", "omega", sep="\t", end="\n", file=ofile, flush=True)
-        results = parse_hogs(hogs,"ancrec")        
+        results = parse_hogs(hogs,"ancrec",list("paml"))        
         print_results(results, ofile, "ancrec")
     
     print("Done parsing model output, starting on ancestral reconstructions.")
