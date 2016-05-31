@@ -154,16 +154,21 @@ def parse_hogs(hoglist,model,verbose=True,multisite=False):
             try:
                 cml.read_ctl_file(control_file)
             except OSError:
-                print("Couldn't parse file for", hog)
+                print("Couldn't parse file for", hog, "at", fullpath)
                 continue
             
             tree_file = pamldir + "/" + fullpath + "/" + cml.tree
             #now process
             parsed_trees = parse_trees(tree_file,species_tree)
-            if multisite:
-                parsed_results = parse_multitree_multimodel_results(results_file)
-            else:
-                parsed_results = parse_multitree_results(results_file)
+            try:
+                if multisite:
+                    parsed_results = parse_multitree_multimodel_results(results_file)
+                else:
+                    parsed_results = parse_multitree_results(results_file)
+            except FileNotFoundError:
+                print("Couldn't parse file for", hog, "at", fullpath)
+                continue
+            
             #check that we have a result for each tree
             if len(parsed_trees) < len(parsed_results):
                 print("Warning, too few trees for number of results for", hog, "in", results_file)
