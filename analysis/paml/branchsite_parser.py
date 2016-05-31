@@ -238,7 +238,7 @@ def main():
         print("hog", "model", "treenum", "foreground_species", "species_tree", "newick_string", "lnl", "treelen", "class0_prop", "class0_fore", "class0_back", "class1_prop", "class1_fore", "class1_back", "class2a_prop", "class2a_fore", "class2a_back", "class2b_prop", "class2b_fore", "class2b_back", sep="\t", end="\n", file=ofile, flush=True)
 
         for model in ("branchsite", "branchsitenull"):
-            results = parse_hogs(hogs,model,list("paml", "paml_branch"))
+            results = parse_hogs(hogs,model,["paml", "paml_branch"])
             #print out
             print_results(results, ofile, model)
                  
