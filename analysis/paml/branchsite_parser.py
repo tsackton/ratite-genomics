@@ -127,7 +127,7 @@ def parse_multitree_multimodel_results (file):
 
     return(paml_results)
 
-def parse_hogs(hoglist,model,verbose,multisite):
+def parse_hogs(hoglist,model,verbose,multisite=False):
     #take list of hogs, return parsed final results dictionary
     final_results = {}
     for hog in hoglist:
