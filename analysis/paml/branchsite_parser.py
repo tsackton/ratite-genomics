@@ -154,7 +154,7 @@ def parse_hogs(hoglist,model,verbose=True,multisite=False):
             try:
                 cml.read_ctl_file(control_file)
             except OSError:
-                print("Couldn't parse file for", hog, "at", fullpath)
+                print("Couldn't parse file for", hog, "at" + pamldir + "/", fullpath)
                 continue
             
             tree_file = pamldir + "/" + fullpath + "/" + cml.tree
