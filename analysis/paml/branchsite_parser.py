@@ -127,12 +127,12 @@ def parse_multitree_multimodel_results (file):
 
     return(paml_results)
 
-def parse_hogs(hoglist,model,verbose,multisite=False):
+def parse_hogs(hoglist,model,verbose=True,multisite=False):
     #take list of hogs, return parsed final results dictionary
     final_results = {}
     for hog in hoglist:
         if verbose:
-            print("Working on ", hog, flush=True)
+            print("Working on", hog, flush=True)
             
         toppath = '{:0>4}'.format(int(hog) % 100)
         # 0000/100/100.codeml.ancrec.ctl.out/
@@ -168,7 +168,7 @@ def parse_hogs(hoglist,model,verbose,multisite=False):
                     parsed_trees = trimmed_trees
                        
             except:
-#                print("Couldn't parse paml for ", hog)
+                print("Couldn't parse paml for", hog)
                 continue
                 
             if hog in final_results:
