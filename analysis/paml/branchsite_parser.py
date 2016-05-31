@@ -94,6 +94,8 @@ def parse_multitree_results (file):
     #split results
     pieces = results.split("\nTREE")
     header = pieces.pop(0)
+    #debugging
+    print(piecies)
     paml_results = {}
     for i in range(len(pieces)):
         recons_res = header + "\nTREE" + pieces[i]
@@ -116,7 +118,7 @@ def parse_multitree_multimodel_results (file):
     for model in models:
         pieces = model.split("\nTREE")
         subheader = "\nModel " + pieces.pop(0)
-        for i in range(0,len(pieces)):
+        for i in range(len(pieces)):
             tree_index = i+1
             try:
                 paml_strings[tree_index] += subheader + "\nTREE" + pieces[i]
