@@ -144,11 +144,7 @@ def parse_hogs(hoglist,model,verbose=True,multisite=False):
             control_file = pamldir + "/" + fullpath + "/" + hog + ".codeml." + model + ".ctl"
             #get species tree
             sptreepath = pamldir + "/" + toppath + "/" + hog + "/" + hog + ".final_spt.nwk"
-            try:
-                species_tree = Phylo.read(sptreepath, "newick")
-            except:
-                print("Couldn't get species tree for ", hog)
-                continue
+            species_tree = Phylo.read(sptreepath, "newick")
                     
             cml = codeml.Codeml()
             try:
