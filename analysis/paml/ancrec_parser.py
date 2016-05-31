@@ -73,7 +73,7 @@ def print_results(results, handle, model):
             res_kappa = res.get('NSsites', {}).get(0, {}).get('parameters', {}).get('kappa')
             print(res_lnl, res_treelen, res_kappa, res_omega, sep="\t", end="\n", file=handle)
 
-def parse_hogs_for_rst(hoglist,model,verbose):
+def parse_hogs_for_rst(hoglist,model,verbose=True):
     #take list of hogs, return parsed final results dictionary
     final_results = {}
     for hog in hoglist:
@@ -106,21 +106,19 @@ def main():
     hogfile_toparse = sys.argv[1]
     resfile_foroutput = sys.argv[2]
     mutfile_foroutput = sys.argv[3]
-    verbose=1
-    multisite=False
     with open(hogfile_toparse) as hfile:
         hogs=[line.rstrip("\n") for line in hfile]
     
     print("Done getting files.")
     with open(resfile_foroutput, 'w') as ofile:
         print("hog", "model", "treenum", "species_tree", "newick_string", "lnl", "treelen", "kappa", "omega", sep="\t", end="\n", file=ofile, flush=True)
-        results = parse_hogs(hogs,"ancrec",verbose,multisite)        
+        results = parse_hogs(hogs,"ancrec")        
         print_results(results, ofile, "ancrec")
     
     print("Done parsing model output, starting on ancestral reconstructions.")
     with open(mutfile_foroutput, 'w') as mutfile:
-        print("hog", "pos", "mutations", sep="\t", end="\n", file=mutfile, flush=True)
-        rst_results = parse_hogs_for_rst(hogs,"ancrec",verbose)       
+        print("hog", "tree", "pos", "mutations", sep="\t", end="\n", file=mutfile, flush=True)
+        rst_results = parse_hogs_for_rst(hogs,"ancrec")       
         print_rst_results(rst_results, mutfile)
 
 if __name__ == "__main__":
