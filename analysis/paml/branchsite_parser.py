@@ -151,7 +151,12 @@ def parse_hogs(hoglist,model,verbose=True,multisite=False):
                 species_tree = None
                     
             cml = codeml.Codeml()
-            cml.read_ctl_file(control_file)
+            try:
+                cml.read_ctl_file(control_file)
+            except OSError:
+                print("Couldn't parse file for", hog)
+                continue
+            
             tree_file = pamldir + "/" + fullpath + "/" + cml.tree
             #now process
             parsed_trees = parse_trees(tree_file,species_tree)
