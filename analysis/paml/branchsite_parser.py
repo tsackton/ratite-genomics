@@ -68,7 +68,10 @@ def parse_trees (file,speciestree):
             cur_tree = tree_strings[i].replace(" ","")
             processed_trees = Phylo.read(io.StringIO(cur_tree), "newick")
             final_tree, foreground_sp = classify_tree(processed_trees)
-            sptree = compare_trees(final_tree, speciestree)
+            if speciestree is not None:
+                sptree = compare_trees(final_tree, speciestree)
+            else:
+                sptree = False
             tree_dict = {'tree':final_tree, 'foreground':foreground_sp, 'is_species_tree':sptree, 'original':tree_strings[i].rstrip()}
             paml_trees[i] = tree_dict
     
@@ -144,7 +147,10 @@ def parse_hogs(hoglist,model,verbose=True,multisite=False):
             control_file = pamldir + "/" + fullpath + "/" + hog + ".codeml." + model + ".ctl"
             #get species tree
             sptreepath = pamldir + "/" + toppath + "/" + hog + "/" + hog + ".final_spt.nwk"
-            species_tree = Phylo.read(sptreepath, "newick")
+            try:
+                species_tree = Phylo.read(sptreepath, "newick")
+            except FileNotFoundError:
+                species_tree = None
                     
             cml = codeml.Codeml()
             try:
