@@ -95,7 +95,7 @@ def parse_multitree_results (file):
     pieces = results.split("\nTREE")
     header = pieces.pop(0)
     #debugging
-    print(piecies)
+    print(pieces)
     paml_results = {}
     for i in range(len(pieces)):
         recons_res = header + "\nTREE" + pieces[i]
