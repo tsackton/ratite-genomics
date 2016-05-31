@@ -222,8 +222,6 @@ def main():
     print("Starting to parse.")
     hogfile_toparse = sys.argv[1]   
     resfile_foroutput = sys.argv[2] 
-    verbose=1
-    multisite=False
     #get hog list, for now from a file
     with open(hogfile_toparse) as hfile:
         hogs=[line.rstrip('\n') for line in hfile]
@@ -233,7 +231,7 @@ def main():
         print("hog", "model", "treenum", "foreground_species", "species_tree", "newick_string", "lnl", "treelen", "class0_prop", "class0_fore", "class0_back", "class1_prop", "class1_fore", "class1_back", "class2a_prop", "class2a_fore", "class2a_back", "class2b_prop", "class2b_fore", "class2b_back", sep="\t", end="\n", file=ofile, flush=True)
 
         for model in ("branchsite", "branchsitenull"):
-            results = parse_hogs(hogs,model,verbose,multisite)
+            results = parse_hogs(hogs,model)
             #print out
             print_results(results, ofile, model)
                  
