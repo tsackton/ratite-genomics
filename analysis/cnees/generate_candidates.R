@@ -2,6 +2,8 @@
 #currently requires the analyze_cnees.R script to be run first
 #will refactor to load data eventually
 
+library(ape)
+
 #make into wide format
 accel.wide<-dcast(accel.clade, name ~ result.type, value.var=c("clade.ct", "clade.ct.2"))
 accel.wide$max.1=apply(accel.wide[,c("clade.ct_with_moa.neut_ver3","clade.ct_with_moa.neut_ver2","clade.ct_with_moa.neut_ver1","clade.ct_wga.neut_ver1", "clade.ct_wga.neut_ver2", "clade.ct_wga.neut_ver3"),with=F], 1, max, na.rm=T)
@@ -33,6 +35,7 @@ ratite.candidates<-merge(ratite.candidates, ens.info, by.x="best_ens", by.y="Ens
 write.table(ratite.candidates[,c("name", "best_ens", "Associated.Gene.Name", "Description", "Chromosome.Name", "max.1", "max.2", "min.1", "min.2", "length", "clustType", "ratitePres", "nonAvesPres"), with=F], file="ratite_candidates_final.tsv", sep="\t", quote=F, row.names=F)
 
 #read in and plot all trees associated with candidates
+load("/Volumes/LaCie/Projects/Current/ratites/final/cnee_branchlen/alltrees.Rlist")
 cand.trees<-data.frame(path=alltrees, name=character(284001), stringsAsFactors=F)
 cand.trees$name = sub(".*RAxML_result\\.", "", cand.trees$path, perl=T)
 cand.trees$name<-sub("_ver\\d+", "", cand.trees$name, perl=T)
