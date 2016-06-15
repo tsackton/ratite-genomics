@@ -40,10 +40,14 @@ def classify_tree (tree):
     
     regex = re.compile(r"#")
     foreground = []
-    
+    genetree_names = re.compile(r"([A-Za-z])_[A-Za-z0-9_.-]+")    
     for term in tree.get_terminals():
         if regex.search(term.name):
             term.name = term.name.replace("#1","")
+            if len(term.name) > 6:
+                genetree_match = genetree_names.search(term.name):
+                if genetree_match:
+                    term.name = genetree_match.group(1)
             foreground.append(term.name)
     
     foreground_string = ":".join(sorted(foreground))
@@ -215,14 +219,14 @@ def print_results (results, handle, model):
             res_lnl = res.get('NSsites', {}).get(2, {}).get('lnL')
             res_siteclass = res.get('NSsites', {}).get(2, {}).get('parameters', {}).get('site classes')
             res_treelen = res.get('NSsites', {}).get(2, {}).get('tree length')
-            print(res_lnl, res_treelen, sep="\t", end="\t", file=handle)
+            print(res_lnl, res_treelen, sep="\t", end="", file=handle)
             #need to iterate over site class numbers
             try:
                 for sc in sorted(res_siteclass):
-                    print(res_siteclass[sc]['proportion'], res_siteclass[sc]['branch types']['foreground'], res_siteclass[sc]['branch types']['background'], sep="\t", end="\t", file=handle)
+                    print("\t" + res_siteclass[sc]['proportion'], res_siteclass[sc]['branch types']['foreground'], res_siteclass[sc]['branch types']['background'], sep="\t", end = "", file=handle)
                 print(file=handle)
             except:
-                print('None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', sep="\t", end="\n", file=handle)
+                print("\tNone", 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', sep="\t", end="\n", file=handle)
 
 def main():
 
