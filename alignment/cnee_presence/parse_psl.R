@@ -19,5 +19,5 @@ for (group in psp) {
 }
 
 #write out list as a backup
-save(cnee.pres, file=outfile)
+saveRDS(cnee.pres, file=outfile)
 

@@ -175,3 +175,15 @@ accel.clade[,rhea.acc.2:=max(c(rhea.acc, (as.numeric(rheAmePres)+as.numeric(rheP
 accel.clade[,cas.acc.2:=max(c(cas.acc, (as.numeric(droNovPres)+as.numeric(casCasPres))==0)), by=1:nrow(accel.clade)] 
 accel.clade[,kiwi.acc.2:=max(c(kiwi.acc, (as.numeric(aptHaaPres)+as.numeric(aptOwePres)+as.numeric(aptRowPres))==0)), by=1:nrow(accel.clade)] 
 accel.clade[,clade.ct.2:=rhea.acc.2+cas.acc.2+kiwi.acc.2+moa.acc+ostrich.acc.2]
+
+#ratites
+ratites<-data.frame(count=c(2,3,4), num=c(1256, 117, 6))
+ratites$freq = ratites$num / 17157
+neo<-data.frame(count=c(2,3,4), num=c(88, NA, NA))
+neo$freq = neo$num / 7640
+barplotdata<-data.frame(count=ratites$count, ratites=ratites$freq, neo=neo$freq)
+barplot(t(as.matrix(barplotdata[,c(2,3)])), beside=T, col=c("red", "blue"), names=c("2+","3+","4+"), las=1)
+
+barplot(sort(t(as.matrix(ratites$num))), horiz=T, col="red", xlab="Number of CNEEs", names=c("4+", "3+", "2+", "1+"), las=1)
+
+

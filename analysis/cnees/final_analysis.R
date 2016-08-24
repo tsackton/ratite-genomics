@@ -36,3 +36,12 @@ abline(v=6.5, lty="dashed", col="gray")
 abline(v=9.5, lty="dashed", col="gray")
 
 
+#gene pvals
+genepval<-read.table("cnee_permutations/with_moa.neut_ver2.for_perm.2.gene_pvals")
+genetot<-as.data.frame(table(cnees$best_ens))
+head(genepval)
+genepval<-merge(genepval, genetot, by.x="row.names", by.y="Var1")
+genepval$qval<-p.adjust(genepval$pval, method="fdr")
+hist(genepval$pval[genepval$pval<0.99], breaks=50, col="red")
+
+plot(genepval$Freq ~ genepval$ct, pch=16, col=ifelse(genepval$qval < 0.1, "red", "black"), log="xy", cex=0.75, las=1, xlab="# ratite-accelerated CNEEs", ylab="Total # CNEEs", bty="n")
