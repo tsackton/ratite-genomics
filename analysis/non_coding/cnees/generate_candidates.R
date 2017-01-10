@@ -1,5 +1,6 @@
 #generate candidates 
 #currently requires the analyze_cnees.R script to be run first
+source("analyze_cnees.R")
 #will refactor to load data eventually
 
 library(ape)
@@ -13,7 +14,7 @@ accel.wide$min.2=apply(accel.wide[,c("clade.ct.2_with_moa.neut_ver3","clade.ct.2
 accel.wide<-merge(accel.wide, ce.annot[,c("id", "best_ens", "length", "class"),with=F], by.x="name", by.y="id", all.x=T, all.y=F)
 
 #add score from cons score analysis
-accel.wide<-merge(accel.wide, clust, by.x="name", by.y="elementID", all.x=T, all.y=F)
+#accel.wide<-merge(accel.wide, clust, by.x="name", by.y="elementID", all.x=T, all.y=F)
 
 #get minimum acceleration q-value from accel.clade
 accel.pal<-dcast(accel.final[group == "Tinamou" | group=="BasalPaleo" | group=="BasalPaleo_noR",], name ~ result.type + group, value.var="qval.raw")
@@ -25,7 +26,20 @@ accel.wide$neognathLoss = 21 - (accel.wide$AvesPres - accel.wide$ratitePres - ac
 #define best candidate set as:
 #1 (clustType == convFlightless | clustType == convFlightless) & (min.2 >= 2) 
 
-ratite.candidates=subset(accel.wide, (clustType == "convFlightless" | clustType == "convRatite" | is.na(clustType)) & (min.2 >= 2) & (filtQ > 0.25) & (neognathLoss == 0) & (tinPres == 4))
+ratite.candidates=subset(accel.wide, (min.2 >= 2) & (filtQ > 0.25) & (neognathLoss == 0) & (tinPres == 4))
+
+#make final file for Phil
+phast_cand<-subset(accel.wide, select=c("name", "clade.ct.2_with_moa.neut_ver3", "filtQ", "tinPres", "ratitePres", "nonAvesPres", "AvesPres", "neognathLoss"))
+phast_cand<-merge(phast_cand, accel.qval[,c("name", "Rhea_with_moa.neut_ver3"), with=F], by="name", all.x=T)
+
+#add existing neognath data
+source("analyze_neognath_test.R")
+phast_cand<-merge(phast_cand, neoaccl, by.x="name", by.y="ce", all.x=T, all.y=F)
+phast_cand<-phast_cand[,c(1:9,15), with=F]
+
+names(phast_cand)=c("name", "ratite.conv", "filtQval", "tinPres", "ratitePres", "nonAvesPres", "AvesPres", "neognathLoss", "rheaQval", "neognathAccelCt")
+
+write.table(phast_cand, file="phast_cand_2016Dec06.txt", col.names=T, row.names=F, quote=F, sep="\t")
 
 #add symbols
 ens.info<-read.table("/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/annotation/galGalAnnot//galGal_ens_sym_04202016.txt", header=T, sep="\t", stringsAsFactors=F, quote="")
