@@ -11,6 +11,8 @@ neoaccl<-data.frame(ce=chaVoc$name, chaVoc=p.adjust(chaVoc$pval, method="fdr"), 
 
 neoaccl.good = subset(neoaccl, neoaccl$ce %in% cnees.good, select=c(2,3,4,5,6))
 neoaccl.good$clade.ct = apply(neoaccl.good, 1, function(x) sum(x < 0.05))
+neoaccl$clade.ct = apply(neoaccl[,c(2,3,4,5,6)], 1, function(x) sum(x < 0.05))
 
-setwd("~/Projects/")
+
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
 
