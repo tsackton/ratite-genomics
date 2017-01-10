@@ -23,12 +23,14 @@ ancrec.st<-subset(ancrec.muts, clean=="clean" & species_tree==TRUE)
 make_hist<-function(indata, freq = 10, subs = 100, file = "hist.pdf", type) {
   ancrec.clean <- indata
   #branchpair <-> ratite key
-  branchpair.key<-unique(ancrec.clean[,c("branchpair", "ratite"), with=FALSE])
+  branchpair.key<-unique(ancrec.clean[,c("branchpair", "ratite"), with=FALSE], by=c("branchpair", "ratite"))
+  branchpair.ratite<-subset(branchpair.key, ratite == 2)
+  branchpair.other<-subset(branchpair.key, ratite < 2)
   
   #branchpair <-> hog count
-  branchpair.hog<-unique(ancrec.clean[,c("hog", "branchpair"), with=FALSE])
+  branchpair.hog<-unique(ancrec.clean[,c("hog", "branchpair"), with=FALSE], by=c("hog", "branchpair"))
   branchpair.count<-as.data.frame(table(branchpair.hog$branchpair))
-  branchpair.key<-merge(branchpair.key, branchpair.count, by.x="branchpair", by.y="Var1")
+  branchpair.use<-as.character(branchpair.count$Var1[branchpair.count$Freq >= freq])
   
   if (type == "all") {
     ancrec.all.sum<-as.data.frame.matrix(table(ancrec.clean$branchpair, ancrec.clean$mutclass))
@@ -37,17 +39,23 @@ make_hist<-function(indata, freq = 10, subs = 100, file = "hist.pdf", type) {
     ancrec.all.sum<-as.data.frame.matrix(table(ancrec.clean.tips$branchpair, ancrec.clean.tips$mutclass))
   }
   ancrec.all.sum$total = ancrec.all.sum$convergent + ancrec.all.sum$divergent + ancrec.all.sum$parallel + ancrec.all.sum$regular
-  ancrec.all.sum<-merge(ancrec.all.sum, branchpair.key, by.x="row.names", by.y="branchpair", all.x=T, all.y=F)
   #filter
-  ancrec.all.sum<-subset(ancrec.all.sum, Freq > freq & total > subs)
+  ancrec.all.sum<-subset(ancrec.all.sum, row.names(ancrec.all.sum) %in% branchpair.use & total > subs)
 
   ancrec.all.sum$ratio = ancrec.all.sum$convergent / (ancrec.all.sum$divergent+1)
+  ancrec.all.ratite = subset(ancrec.all.sum, rownames(ancrec.all.sum) %in% branchpair.ratite$branchpair)
+  ancrec.all.other = subset(ancrec.all.sum, rownames(ancrec.all.sum) %in% branchpair.other$branchpair)  
   pdf(file=file)
-  hist(ancrec.all.sum$ratio[ancrec.all.sum$ratite < 2], breaks=100, xlab="Convergent/Divergent Ratio", xlim=c(0,0.3), col="gray", main="")
-  points(x=ancrec.all.sum$ratio[ancrec.all.sum$ratite==2], y=rep(5, sum(ancrec.all.sum$ratite==2)), pch=16, col="red", cex=1)
+  hist(ancrec.all.other$ratio, breaks=50, xlab="Convergent/Divergent Ratio", xlim=c(0,0.25), col="gray", main="")
+  points(x=ancrec.all.ratite$ratio, y=rep(5, length(ancrec.all.ratite$ratio)), pch=16, col="red", cex=1)
   legend(x="right", legend=c("Ratite/Ratite branches"), pch=16, col="red", bty="n")
   dev.off()
 }
+
+make_hist(indata=ancrec.gt, freq=1, subs=25, file="aaconv_genetree_hist_freq1_subs25_allbranch.pdf", type="all")
+make_hist(indata=ancrec.st, freq=1, subs=25, file="aaconv_sptree_hist_freq1_subs25_allbranch.pdf", type="all")
+make_hist(indata=ancrec.gt, freq=1, subs=25, file="aaconv_genetree_hist_freq1_subs25_tipbranch.pdf", type="tips")
+make_hist(indata=ancrec.st, freq=1, subs=25, file="aaconv_sptree_hist_freq1_subs25_tipbranch.pdf", type="tips")
 
 make_hist(indata=ancrec.gt, freq=10, subs=100, file="aaconv_genetree_hist_freq10_subs100_allbranch.pdf", type="all")
 make_hist(indata=ancrec.st, freq=10, subs=100, file="aaconv_sptree_hist_freq10_subs100_allbranch.pdf", type="all")
