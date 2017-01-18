@@ -1,45 +1,55 @@
 setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/protein_coding/hyphy_bsrel/")
 library(data.table)
-ratites<-as.data.table(read.table("bsrel_res_parsed_ratites.txt", header=F, fill=T))
-names(ratites)=c("class", "tree", "hog", "tsel", "nsel", "tnon", "nnon")
-ratite.tree1<-subset(ratites, tree=="tree1")
-ratite.tree1[,pval:={
-  if (inherits(try(ans<-fisher.test(matrix(c(tsel,nsel,tnon,nnon),nrow=2))$p.value,silent=T),"try-error"))
-    NA_real_
-  else
-    ans
-  }, by=hog]
 
-
-
-vl<-as.data.table(read.table("bsrel_res_parsed_vl.txt", header=F, fill=T))
-names(vl)=c("class", "tree", "hog", "tsel", "nsel", "tnon", "nnon")
-vl.tree1<-subset(vl, tree=="tree1")
-vl.tree1[,pval:={
-  if (inherits(try(ans<-fisher.test(matrix(c(tsel,nsel,tnon,nnon),nrow=2))$p.value,silent=T),"try-error"))
-    NA_real_
-  else
-    ans
-}, by=hog]
+#make hog<->galGal key
+hogs<-read.table("/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/homology/new_hog_list.txt")
+ncbikey<-read.table("/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/annotation/galGalAnnot/CGNC_Gallus_gallus_20161020.txt", header=F, sep="\t", comment.char="", col.names=c("cgnc", "ncbi", "ensembl", "sym", "descr", "sp"), quote="")
+hogs.galgal<-subset(hogs, V4=="galGal")
+hogs.galgal$hog=sub("HOG2_","",hogs.galgal$V1,fixed=T)
+hogs.galgal<-merge(hogs.galgal, ncbikey, all.x=T, all.y=F, by.x="V3", by.y="ncbi")
 
 merged = read.table("merged_res.txt", fill=T)
 names(merged)=c("class", "tree", "hog", "tsel", "nsel", "tnon", "nnon")
-merged=subset(merged, tree=="tree1")
-#looking at another approach
+
+#load tree key from paml_ancrec 
+ancrec.parsed<-fread("gunzip -c ../paml_ancrec/ancrec_parsed.out.gz")
+paml.treekey<-ancrec.parsed[,c("hog", "treenum", "species_tree"), with=FALSE]
+paml.treekey$tree = paste0("tree", paml.treekey$treenum)
+merged=merge(merged, paml.treekey, by.x=c("hog", "tree"), by.y=c("hog", "tree"))
+merged = subset(merged, species_tree==TRUE)
+
+#note that this is just the ~8700 hogs with no duplication and just the species tree runs
+
 merged$total_sel = merged$tsel + merged$nsel
 merged$target_prop = merged$tsel / merged$total_sel
-plot(sort(merged$target_prop[merged$class=="ratites"]), type='l', col="red", ylab="Proportion of Selected Branches in Target Class")
-lines(sort(merged$target_prop[merged$class=="vl"]), type="l", col="darkgreen")
-lines(sort(merged$target_prop[merged$class=="rand1"]), type="l", col="gray")
-lines(sort(merged$target_prop[merged$class=="rand2"]), type="l", col="gray")
-lines(sort(merged$target_prop[merged$class=="wb"]), type="l", col="blue")
-lines(sort(merged$target_prop[merged$class=="bop"]), type="l", col="purple")
-legend("topleft", legend=c("'Random'", "Ratites", "Waterbirds", "Vocal Learners", "Birds of Prey"), col=c("gray", "red", "blue", "darkgreen", "purple"), lwd=2)
+table(merged$total_sel, merged$class)
 
-table(merged$tsel, merged$target_prop == 1, merged$class)
+#add annotation
+bsrel<-merge(merged, hogs.galgal, by="hog", all.x=T, all.y=F)
+bsrel$tot_lin = bsrel$tsel + bsrel$nsel + bsrel$tnon + bsrel$nnon
+bsrel$target_lin = bsrel$tsel + bsrel$tnon
 
-barplot(table(merged$tsel[merged$nsel == 0 & merged$tsel > 1], merged$class[merged$nsel == 0 & merged$tsel > 1]), ylab="Number of Genes Uniquely Selected in >1 Target Lineages")
-legend("topleft", legend=c("2", "3", "4"), col=c("gray20", "gray50", "gray80"), pch=15, cex=2)
+bsrel.clean = subset(bsrel, target_lin > 0)
 
-pos<-subset(merged, tsel>=3 & nsel==0)
-pos<-merge(pos, hogs.galgal, by="hog", all.x=T, all.y=F)
+plot(sort(bsrel.clean$target_prop[bsrel.clean$class=="ratites"]), type='l', col="red", ylab="Proportion of Selected Branches in Target Class")
+lines(sort(bsrel.clean$target_prop[bsrel.clean$class=="vl"]), type="l", col="darkgreen")
+lines(sort(bsrel.clean$target_prop[bsrel.clean$class=="rand1"]), type="l", col="gray")
+lines(sort(bsrel.clean$target_prop[bsrel.clean$class=="rand2"]), type="l", col="gray")
+legend("topleft", legend=c("'Random'", "Ratites", "Vocal Learners"), col=c("gray", "red",  "darkgreen"), lwd=2)
+
+table(bsrel$tsel, bsrel$target_prop == 1, bsrel$class, useNA="ifany")
+
+barplot(table(bsrel$tsel[bsrel$nsel == 0 & bsrel$tsel > 1], bsrel$class[bsrel$nsel == 0 & bsrel$tsel > 1]), ylab="Number of Genes Uniquely Selected in >1 Target Lineages")
+legend("topleft", legend=c("2", "3"), col=c("gray20", "gray80"), pch=15, cex=2)
+
+
+#ratite specific selection
+table(bsrel$target_prop==1, bsrel$tot_lin, bsrel$class)
+table(bsrel$target_prop==1, bsrel$tsel>1, bsrel$class)
+
+#gene symbol list
+write.table(bsrel$sym[bsrel$class=="ratites" & bsrel$target_prop==1], file="ratite.selected", quote=F, row.names=F, col.names=F)
+write.table(bsrel$sym[bsrel$class=="ratites" & bsrel$target_prop<1 & bsrel$total_sel > 0], file="ratite.background", quote=F, row.names=F, col.names=F)
+write.table(bsrel$sym[bsrel$class=="vl" & bsrel$target_prop==1], file="vl.selected", quote=F, row.names=F, col.names=F)
+write.table(bsrel$sym[bsrel$class=="vl" & bsrel$target_prop<1 & bsrel$total_sel > 0], file="vl.background", quote=F, row.names=F, col.names=F)
+
