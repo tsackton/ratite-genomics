@@ -1,18 +1,55 @@
 setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/protein_coding/hyphy_relax/")
-relax<-read.table("relax_parsed.clean", header=F)
-rK<-read.table("relax_parsed_K.clean", header=F, fill=T)
-relax=relax[,c(3,4,5,7)]
-rK=rK[,c(3,4,5,7)]
-names(relax)=c("hog", "tree", "type", "pval")
-names(rK)=c("hog", "tree", "type", "K")
-relax=merge(relax,rK)
+library(data.table)
+
+#ratites
+rp<-read.table("relax_pval.all", header=F)
+rk<-read.table("relax_K.all", header=F, fill=T)
+
+rp=rp[,c(1,4,5,6,8)]
+rk=rk[,c(1,4,5,6,8)]
+
+names(rp)=c("set", "hog", "tree", "type", "pval")
+names(rk)=c("set", "hog", "tree", "type", "K")
+relax=merge(rp,rk)
+
 relax=subset(relax, pval != "-------" & !is.na(K))
 relax$pval=as.numeric(as.character(relax$pval))
+relax=unique(relax)
+
+#make hog<->galGal key
+hogs<-read.table("/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/homology/new_hog_list.txt")
+ncbikey<-read.table("/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/annotation/galGalAnnot/CGNC_Gallus_gallus_20161020.txt", header=F, sep="\t", comment.char="", col.names=c("cgnc", "ncbi", "ensembl", "sym", "descr", "sp"), quote="")
+hogs.galgal<-subset(hogs, V4=="galGal")
+hogs.galgal$hog=sub("HOG2_","",hogs.galgal$V1,fixed=T)
+hogs.galgal<-merge(hogs.galgal, ncbikey, all.x=T, all.y=F, by.x="V3", by.y="ncbi")
+
+#load tree key from paml_ancrec 
+ancrec.parsed<-fread("gunzip -c ../paml_ancrec/ancrec_parsed.out.gz")
+paml.treekey<-ancrec.parsed[,c("hog", "treenum", "species_tree"), with=FALSE]
+paml.treekey$tree = paste0("tree", paml.treekey$treenum)
+
+#add species tree info
+relax = merge(relax, paml.treekey, by.x=c("hog", "tree"), by.y=c("hog", "tree"))
 
 #analysis
-relax.tips<-subset(relax, tree=="tree1" & type=="tips")
+relax.tips<-subset(relax, species_tree==TRUE & type=="tips")
 relax.tips$pval=as.numeric(as.character(relax.tips$pval))
 relax.tips$qval=p.adjust(relax.tips$pval, method="fdr")
+
+table(relax.tips$qval < 0.05, relax.tips$set)
+
+#make sig key
+relax.tips$sig = as.numeric(relax.tips$qval < 0.05) * sign(1 - relax.tips$K)
+#K < 1 is relaxed, K > 1 is accelerated
+
+table(relax.tips$set, relax.tips$sig)
+
+#wide format
+relax.tips.wide<-reshape(relax.tips[,c("hog", "set", "sig")], timevar="set", idvar="hog", direction="wide")
+
+table(relax.tips.wide$sig.tinamou, relax.tips.wide$sig.ratite)
+
+
 relax.tips$Kplot=relax.tips$K
 relax.tips$Kplot[relax.tips$K < 0.01] = 0.01
 relax.tips$chr=1
