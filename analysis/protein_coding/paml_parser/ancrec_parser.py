@@ -73,7 +73,7 @@ def print_results(results, handle, model):
             res_kappa = res.get('NSsites', {}).get(0, {}).get('parameters', {}).get('kappa')
             print(res_lnl, res_treelen, res_kappa, res_omega, sep="\t", end="\n", file=handle)
 
-def parse_hogs_for_rst(hoglist,model,verbose=True):
+def parse_hogs_for_rst(hoglist,model,basedir,verbose=True):
     #take list of hogs, return parsed final results dictionary
     final_results = {}
     for hog in hoglist:

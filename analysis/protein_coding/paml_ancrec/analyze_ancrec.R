@@ -1,11 +1,17 @@
 setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/protein_coding/paml_ancrec/")
 library(data.table)
 
+all_hogs<-read.table("../alignment_summary_stats", sep="\t", header=T, comment.char="", na.strings="n/a")
+#clean up all_hogs
+all_hogs$hog=sub("HOG2_", "", all_hogs$Locus)
+ancrec.parsed<-fread("gunzip -c ancrec_parsed.out.gz")
+ancrec.treekey<-ancrec.parsed[,c("hog", "treenum", "species_tree"), with=FALSE]
+
+all_hogs=merge(all_hogs, ancrec.treekey, all.x=F, all.y=T)
+
 ancrec.muts<-fread("gunzip -c parsed_mutations.txt.gz")
 names(ancrec.muts)<-c("hog", "tree", "branchpair", "ratite", "clean", "type", "mutclass")
 
-ancrec.parsed<-fread("gunzip -c ancrec_parsed.out.gz")
-ancrec.treekey<-ancrec.parsed[,c("hog", "treenum", "species_tree"), with=FALSE]
 ancrec.muts<-merge(ancrec.muts, ancrec.treekey, by.x=c("hog", "tree"), by.y=c("hog", "treenum"))
 
 #make gene tree subset 
