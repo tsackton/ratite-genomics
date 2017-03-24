@@ -45,7 +45,7 @@ def classify_tree (tree):
         if regex.search(term.name):
             term.name = term.name.replace("#1","")
             if len(term.name) > 6:
-                genetree_match = genetree_names.search(term.name):
+                genetree_match = genetree_names.search(term.name)
                 if genetree_match:
                     term.name = genetree_match.group(1)
             foreground.append(term.name)
