@@ -77,24 +77,28 @@ nonratite.losses = rowSums(tips.clean[,!colnames(tips.clean) %in% ratite.tips])
 nonvl.losses = rowSums(tips.clean[,!colnames(tips.clean) %in% vocal.tips])
 ratite.losses = rowSums(tips.clean[,ratite.tips])
 all.losses<-data.frame(ratite=ratite.losses, vl=rowSums(tips.clean[,vocal.tips]), total=rowSums(tips.clean))
+nonbird.losses<-rowSums((tips.clean[,nonbird]))
 
 #candidates
 ratite.cands<-rownames(all.losses[all.losses$ratite == all.losses$total & all.losses$ratite > 4,])
 ratite.cands.loose<-rownames(all.losses[all.losses$ratite == all.losses$total & all.losses$ratite > 1,])
 ratite.cands.strict<-rownames(all.losses[all.losses$ratite == all.losses$total & all.losses$ratite >= 8,])
-  
+ratite.cands.all<-rownames(all.losses[all.losses$ratite == all.losses$total & all.losses$ratite >= 1,])
+
 #add info
 ce.info<-read.csv("~/Dropbox/Work/EggCNEEs/October 2016/gg.final.annotated.csv")
 names(ce.info)[2]="cnee"
 ce.info$rar = ce.info$cnee %in% ratite.cands
 ce.info$rar.s = ce.info$cnee %in% ratite.cands.strict
 ce.info$rar.l = ce.info$cnee %in% ratite.cands.loose
+ce.info$rar.a = ce.info$cnee %in% ratite.cands.all
 
-write.table(unique(ce.info$best_ens[ce.info$rar == T]), file="rar.ensID", quote=F, sep="\t", row.names=F, col.names=F)
+write.table(unique(ce.info$best_ens[ce.info$rar.a == T]), file="rar.all.ensID", quote=F, sep="\t", row.names=F, col.names=F)
+write.table(unique(ce.info$best_ens[ce.info$rar == T]), file="rar.med.ensID", quote=F, sep="\t", row.names=F, col.names=F)
 write.table(unique(ce.info$best_ens[ce.info$rar.s == T]), file="rar.strict.ensID", quote=F, sep="\t", row.names=F, col.names=F)
 write.table(unique(ce.info$best_ens[ce.info$rar.l == T]), file="rar.loose.ensID", quote=F, sep="\t", row.names=F, col.names=F)
 write.table(unique(ce.info$best_ens), file="rar_background.ensID", quote=F, sep="\t", row.names=F, col.names=F)
-table(ce.info$rar)
+table(ce.info$rar.a)
 
 #ratite counts
 rat.3conv = numeric()
@@ -132,12 +136,15 @@ for (i in 0:10000) {
 #save permutation
 write.table(rand.3conv, file="rand.3conv.perms", quote=F, sep="\t", row.names=F, col.names=F)
 
+#read permutation
+rand.3conv<-read.table("rand.3conv.perms", sep="\t", stringsAsFactors = F, header=F)
+
 #compare
-plot(y=seq(10000,1,-1)/10000,x=sort(rand.3conv), type="l", col="red", lwd=3, lty="dashed", xlim=c(0,100), las=1, xlab="Number Convergent", ylab="Proportion")
+plot(y=seq(10000,1,-1)/10000,x=sort(rand.3conv$V1), type="l", col="black", lwd=3, lty="dashed", xlim=c(0,100), las=1, xlab="Number Convergent", ylab="Proportion")
 points(y=0.2, x=mean(rat.3conv), col="blue", pch=16, cex=1.5)
 points(y=0.2, x=mean(rat.3conv.strict), col="blue", pch=17, cex=1.5)
-points(y=0.2, x=mean(vl.3conv), col="darkgreen", pch=16, cex=1.5)
-legend("topright", legend=c("Vocal Learners", "Ratites", "Ratites [strict]"), pch=c(16,16,17), col=c("darkgreen", "blue", "blue"))
+points(y=0.2, x=mean(vl.3conv), col="firebrick", pch=16, cex=1.5)
+legend("topright", legend=c("Vocal Learners", "Ratites", "Ratites [strict]"), pch=c(16,16,17), col=c("firebrick", "blue", "blue"))
 text(x=mean(vl.3conv)-1, y=0.25, labels=paste("P=", sum(rand.3conv >= mean(vl.3conv))/10000), adj=c(0,1))
 text(x=mean(rat.3conv.strict)-1, y=0.25, labels=paste("P=", sum(rand.3conv >= mean(rat.3conv.strict))/10000), adj=c(0.3,1))
 text(x=mean(rat.3conv)-1, y=0.25, labels=paste("P=", sum(rand.3conv >= mean(rat.3conv))/10000), adj=c(0,1))
@@ -163,7 +170,6 @@ nodekey=data.frame(node=factor(c("vertebrate","node_112","node_108","node_107","
 ratites.conv.losses.final.bayesian=merge(nodekey,ratites.conv.losses.final.bayesian, by.y="ancestralnode", by.x="node")
 ce.info<-merge(nodekey, ce.info, by.y="ancestralnode", by.x="node")
 
-plot(table(ratites.conv.losses.final.bayesian$node[ratites.conv.losses.final.bayesian$clades>1])/length(ratites.conv.losses.final.bayesian$node[ratites.conv.losses.final.bayesian$clades>1]), type="p", pch=16, col="blue", las=2, ylab="Prop Origination", xaxt="n", ylim=c(0,0.5), xlim=c(1,7))
-points(table(ce.info$node[ce.info$node %in% c("node_102", "node_107", "node_108", "node_112", "node_95", 'node_99', "vertebrate")])/length(ce.info$node[ce.info$node %in% c("node_102", "node_107", "node_108", "node_112", "node_95", 'node_99', "vertebrate")]), type="p", pch=16, col="red")
+ratite.origin.enrich<-c(table(ratites.conv.losses.final.bayesian$node[ratites.conv.losses.final.bayesian$clades>1])/length(ratites.conv.losses.final.bayesian$node[ratites.conv.losses.final.bayesian$clades>1]))[1:7]/c(table(ce.info$node[ce.info$node %in% c("node_102", "node_107", "node_108", "node_112", "node_95", 'node_99', "vertebrate")])/length(ce.info$node[ce.info$node %in% c("node_102", "node_107", "node_108", "node_112", "node_95", 'node_99', "vertebrate")]))[1:7]
+plot(log2(ratite.origin.enrich), type="b", col="blue", lwd=2, pch=16, ylim=c(-3,3), xaxt="n", bty="n", xlab="", ylab="Relative RAR origination rate", las=2)
 axis(side=1, at=c(1,2,3,4,5,6,7), labels=nodekey$name[1:7], las=2)
-legend("topleft", legend=c("Ratite Convergently Accelerated Regions", "All CNEEs"), pch=16, col=c("blue", "red"), bty="n")

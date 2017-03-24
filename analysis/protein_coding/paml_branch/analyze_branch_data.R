@@ -9,13 +9,13 @@ hogs.galgal<-subset(hogs, V4=="galGal")
 hogs.galgal$hog=sub("HOG2_","",hogs.galgal$V1,fixed=T)
 hogs.galgal<-merge(hogs.galgal, ncbikey, all.x=T, all.y=F, by.x="V3", by.y="ncbi")
 
-dn<-fread("gunzip -c dn_parsed.txt", header=F, sep=",")
-names(dn)<-c("hog", "tree", "parent.node", "desc.node", "branch.id", "dn", "ratite", "bop", "wb", "vl", "rand1", "rand2")
-
 #load tree key from paml_ancrec 
 ancrec.parsed<-fread("gunzip -c ../paml_ancrec/ancrec_parsed.out.gz")
 paml.treekey<-ancrec.parsed[,c("hog", "treenum", "species_tree"), with=FALSE]
 paml.treekey$tree = paste0("tree", paml.treekey$treenum)
+
+dn<-fread("gunzip -c dn_parsed.txt", header=F, sep=",")
+names(dn)<-c("hog", "tree", "parent.node", "desc.node", "branch.id", "dn", "ratite", "bop", "wb", "vl", "rand1", "rand2")
 
 #add species tree info to dn
 dn<-merge(dn, paml.treekey, by=c("hog", "tree"))
@@ -23,6 +23,7 @@ dn<-merge(dn, paml.treekey, by=c("hog", "tree"))
 #subset to keep only branches present frequently
 branchfreq<-as.data.frame(table(dn$branch.id))
 dn.clean<-subset(dn, branch.id %in% branchfreq$Var1[branchfreq$Freq>1])
+
 
 #normalize by branch
 dn.clean[,dn.sum.bygene:=sum(dn), by=list(hog,species_tree)]
@@ -204,12 +205,12 @@ rand1<-cut(dn.pval.st$rand1.p, breaks=seq(0,1,0.01), include.lowest=F, right=T, 
 rand2<-cut(dn.pval.st$rand2.p, breaks=seq(0,1,0.01), include.lowest=F, right=T, labels=F)
 vl<-cut(dn.pval.st$vl.p, breaks=seq(0,1,0.01), include.lowest=F, right=T, labels=F)
 
-plot(table(vl), type="l", col="firebrick", xlab="P-value", ylab="Count", bty="l", las=1, xaxt="n", lwd=2, lty="dashed")
-lines(table(ratite), type="l", col="blue", lwd=2, lty="dashed")
-lines(table(rand1), type="l", col="black", lwd=2, lty="dashed")
-lines(table(rand2), type="l", col="black", lwd=2, lty="dashed")
+plot(table(vl), type="l", col="firebrick", xlab="P-value", ylab="Count", bty="l", las=1, xaxt="n", lwd=3, lty="dashed")
+lines(table(ratite), type="l", col="blue", lwd=3, lty="dashed")
+lines(table(rand1), type="l", col="black", lwd=3, lty="dashed")
+lines(table(rand2), type="l", col="black", lwd=3, lty="dashed")
 axis(1, labels=seq(0,1,0.2), at=seq(0,100,20))
-legend("topright", legend=c("random", "ratite", "vocal learners"), col=c("black", "blue", "firebrick"), lwd=2, lty="dashed")
+legend("topright", legend=c("random", "ratite", "vocal learners"), col=c("black", "blue", "firebrick"), lwd=3, lty="dashed")
 
 #qvalue analysis - gene tree
 
@@ -259,3 +260,23 @@ vl.hogs<-merge(vl.hogs, hogs.galgal, by.x="hog", by.y="hog")
 write.table(unique(vl.hogs$V2[vl.hogs$acc==T]), file="vl.ncbi.acc", quote=F, col.names=F, row.names=F)
 write.table(unique(vl.hogs$V2[vl.hogs$acc==F]), file="vl.ncbi.decel", quote=F, col.names=F, row.names=F)
 write.table(unique(hogs.galgal$V2), file="vl.background", quote=F, col.names=F, row.names=F)
+
+#compare to relax
+source("../hyphy_relax/analyze_hyphy_relax.R")
+
+comp<-merge(dn.pval.st, relax.tips.wide, by="hog")
+fisher.test(table(comp$sig.vl != 0, factor(p.adjust(comp$vl.p, method="fdr") < 0.05, levels=c("FALSE", "TRUE"))))
+
+comp2<-merge(dn.cor.st, relax.tips.wide, by="hog")
+head(comp2)
+boxplot(comp2$vl.cor ~ comp2$sig.vl, notch=T, outline=F)
+
+table(comp$sig.rand != 0)
+table(comp$sig.vl != 0)
+table(comp$sig.ratite != 0)
+
+boxplot(-log10(comp$ratite.p) ~ comp$sig.ratite != 0, outline=F, notch=T, ylim=c(0,5))
+boxplot(-log10(comp$vl.pg) ~ comp$sig.vl, outline=F, notch=T, ylim=c(0,5))
+boxplot(-log10(comp$vl.pl) ~ comp$sig.vl, outline=F, notch=T, ylim=c(0,5))
+
+boxplot(-log10(comp$rand1.p) ~ comp$sig.rand != 0, outline=F, notch=T, ylim=c(0,5))
