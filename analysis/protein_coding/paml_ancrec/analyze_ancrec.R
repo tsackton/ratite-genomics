@@ -42,11 +42,11 @@ make_hist<-function(indata, freq = 10, subs = 100, file = "hist.pdf", type) {
   #filter
   ancrec.all.sum<-subset(ancrec.all.sum, row.names(ancrec.all.sum) %in% branchpair.use & total > subs)
 
-  ancrec.all.sum$ratio = ancrec.all.sum$convergent / (ancrec.all.sum$divergent+1)
+  ancrec.all.sum$ratio = (ancrec.all.sum$parallel + ancrec.all.sum$convergent) / (ancrec.all.sum$divergent+ancrec.all.sum$regular)
   ancrec.all.ratite = subset(ancrec.all.sum, rownames(ancrec.all.sum) %in% branchpair.ratite$branchpair)
   ancrec.all.other = subset(ancrec.all.sum, rownames(ancrec.all.sum) %in% branchpair.other$branchpair)  
   pdf(file=file)
-  hist(ancrec.all.other$ratio, breaks=50, xlab="Convergent/Divergent Ratio", xlim=c(0,0.25), col="gray", main="")
+  hist(ancrec.all.other$ratio, breaks=50, xlab="Convergent/Divergent Ratio", xlim=c(0,2), col="gray", main="")
   points(x=ancrec.all.ratite$ratio, y=rep(5, length(ancrec.all.ratite$ratio)), pch=16, col="red", cex=1)
   legend(x="right", legend=c("Ratite/Ratite branches"), pch=16, col="red", bty="n")
   dev.off()
@@ -68,9 +68,22 @@ make_hist(indata=ancrec.gt, freq=100, subs=100, file="aaconv_genetree_hist_freq1
 make_hist(indata=ancrec.st, freq=100, subs=100, file="aaconv_sptree_hist_freq100_subs100_tipbranch.pdf", type="tips")
 
 get_conv_num<-function(indata) {
-  ancrec.conv<-subset(indata, mutclass=="convergent" & type=="tip-tip")
+  ancrec.conv<-subset(indata, (mutclass=="convergent" | mutclass=="parallel") & type=="tip-tip")
+  ancrec.all<-subset(indata, type=="tip-tip")
+  ancrec.all.gene<-as.data.frame.matrix(table(ancrec.all$hog, ancrec.all$ratite==2))
+  names(ancrec.all.gene)=c("non", "rat")
+  ancrec.all.gene$prop.ratite = ancrec.all.gene$rat/(ancrec.all.gene$non+ancrec.all.gene$rat)
   ancrec.conv.gene<-as.data.frame.matrix(table(ancrec.conv$hog, ancrec.conv$ratite==2))
-  names(ancrec.conv.gene)=c("other", "ratite")
+  names(ancrec.conv.gene)=c("non", "rat")
+  ancrec.test<-merge(ancrec.all.gene, ancrec.conv.gene, by="row.names")
+  #conv is y
+apply(head(ancrec.test), 1, function(x) str(as.numeric(x[4])))
+ ancrec.test2<-subset(ancrec.test, prop.ratite > 0)
+  ancrec.test2$pval<-apply(ancrec.test2, 1, function(x) prop.test(as.numeric(x[6]),as.numeric(x[5])+as.numeric(x[6]),as.numeric(x[4]),alt="g")$p.value)
+  
+  
+  prop.test(ancrec.test$rat.y[1], ancrec.test$non.y[1]+ancrec.test$rat.y[1], ancrec.test$prop.ratite[1], alt="g")$p.value
+  ancrec.test$pval = prop.test()
   return(table(ancrec.conv.gene$ratite))
 }
 

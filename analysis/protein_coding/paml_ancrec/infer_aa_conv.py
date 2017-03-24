@@ -81,11 +81,14 @@ def parse_muts(mutstring,t,nodes,testclass):
 #        print("i:", i, sep=" ")
         info1=muts[i].replace("..",":").replace("-",":").split(":")
         isratite1=node_in_class(nodes[int(info1[1])],t,testclass)
+        brnames1="_".join(sorted(nodes[int(info1[1])].get_leaf_names()))
         for j in range(i+1,len(muts)):
 #           print("j:", j, sep=" ")
-            info2=muts[j].replace("..",":").replace("-",":").split(":")   
+            info2=muts[j].replace("..",":").replace("-",":").split(":")  
+            brnames2="_".join(sorted(nodes[int(info2[1])].get_leaf_names())) 
             isratite2=node_in_class(nodes[int(info2[1])],t,testclass)
             branch_comp_label="-".join(sorted([nodes[int(info1[1])].get_topology_id(),nodes[int(info2[1])].get_topology_id()]))
+            branch_names_label="-".join(sorted([brnames1,brnames2]))
             mut_type=get_mut_type(info1[2],info1[3],info2[2],info2[3])
             comp_type=int(isratite1)+int(isratite2)
 #           print(int(info1[0]),int(info2[0]))
@@ -97,7 +100,7 @@ def parse_muts(mutstring,t,nodes,testclass):
                 break
             ancestry_type=test_ancestry(t,ancestry1,ancestry2)
             branch_comp_type="-".join(sorted([get_branch_type(t,nodes[int(info1[1])]),get_branch_type(t,nodes[int(info2[1])])]))
-            pairs.append(",".join([str(branch_comp_label),str(comp_type),str(ancestry_type),str(branch_comp_type),str(mut_type)]))
+            pairs.append(",".join([str(branch_names_label),str(branch_comp_label),str(comp_type),str(ancestry_type),str(branch_comp_type),str(mut_type)]))
     return(pairs)
 
 
