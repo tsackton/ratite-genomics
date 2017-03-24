@@ -134,7 +134,7 @@ def parse_multitree_multimodel_results (file):
 
     return(paml_results)
 
-def parse_hogs(hoglist,model,input_dirs,verbose=True,multisite=False):
+def parse_hogs(hoglist,model,basedir,verbose=True,multisite=False):
     #take list of hogs, return parsed final results dictionary
     final_results = {}
     for hog in hoglist:
@@ -143,59 +143,58 @@ def parse_hogs(hoglist,model,input_dirs,verbose=True,multisite=False):
             
         toppath = '{:0>4}'.format(int(hog) % 100)
         # 0000/100/100.codeml.ancrec.ctl.out/
-        fullpath = toppath + "/" + hog + "/" + hog + ".codeml." + model + ".ctl.out"
-        for pamldir in input_dirs:
-            results_file = pamldir + "/" + fullpath + "/" + model + ".out"
-            control_file = pamldir + "/" + fullpath + "/" + hog + ".codeml." + model + ".ctl"
-            #get species tree
-            sptreepath = pamldir + "/" + toppath + "/" + hog + "/" + hog + ".final_spt.nwk"
-            try:
-                species_tree = Phylo.read(sptreepath, "newick")
-            except FileNotFoundError:
-                species_tree = None
-                    
-            cml = codeml.Codeml()
-            try:
-                cml.read_ctl_file(control_file)
-            except OSError:
-                print("Couldn't parse file for", hog, "at", pamldir + "/" + fullpath)
-                continue
-            
-            tree_file = pamldir + "/" + fullpath + "/" + cml.tree
-            #now process
-            parsed_trees = parse_trees(tree_file,species_tree)
-            try:
-                if multisite:
-                    parsed_results = parse_multitree_multimodel_results(results_file)
-                else:
-                    parsed_results = parse_multitree_results(results_file)
-            except FileNotFoundError:
-                print("Couldn't parse file for", hog, "at", pamldir + "/" + fullpath)
-                continue
-            
-            #check that we have a result for each tree
-            if len(parsed_trees) < len(parsed_results):
-                print("Warning, too few trees for number of results for", hog, "in", results_file)
-                continue
-            elif len(parsed_trees) > len(parsed_results):
-                #remove trees that aren't in results
-                trimmed_trees = {x:parsed_trees[x] for x in parsed_results.keys()}
-                parsed_trees = trimmed_trees
+        fullpath = basedir + "/" + toppath + "/" + hog + "/" + hog + ".codeml." + model + ".ctl.out"
+        results_file = fullpath + "/" + model + ".out"
+        control_file = fullpath + "/" + hog + ".codeml." + model + ".ctl"
+        #get species tree
+        sptreepath = basedir + "/" + toppath + "/" + hog + "/" + hog + ".final_spt.nwk"
+        try:
+            species_tree = Phylo.read(sptreepath, "newick")
+        except FileNotFoundError:
+            species_tree = None
                 
-            if hog in final_results:
-                #append
-                cur_len = len(final_results[hog]['trees'])
-                if cur_len != len(final_results[hog]['results']):
-                    print("Warning, something went wrong!!")
+        cml = codeml.Codeml()
+        try:
+            cml.read_ctl_file(control_file)
+        except OSError:
+            print("Couldn't parse file for", hog, "at", pamldir + "/" + fullpath)
+            continue
+            
+        tree_file = fullpath + "/" + cml.tree
+        #now process
+        parsed_trees = parse_trees(tree_file,species_tree)
+        try:
+            if multisite:
+                parsed_results = parse_multitree_multimodel_results(results_file)
+            else:
+                parsed_results = parse_multitree_results(results_file)
+        except FileNotFoundError:
+            print("Couldn't parse file for", hog, "at", pamldir + "/" + fullpath)
+            continue
+            
+        #check that we have a result for each tree
+        if len(parsed_trees) < len(parsed_results):
+            print("Warning, too few trees for number of results for", hog, "in", results_file)
+            continue
+        elif len(parsed_trees) > len(parsed_results):
+            #remove trees that aren't in results
+            trimmed_trees = {x:parsed_trees[x] for x in parsed_results.keys()}
+            parsed_trees = trimmed_trees
+                
+        if hog in final_results:
+            #append
+            cur_len = len(final_results[hog]['trees'])
+            if cur_len != len(final_results[hog]['results']):
+                print("Warning, something went wrong!!")
                     
-                #update keys (tree numbers)
-                new_trees = {int(x)+cur_len:parsed_trees[x] for x in parsed_trees.keys()}
-                new_results = {int(x)+cur_len:parsed_results[x] for x in parsed_results.keys()}
-                final_results[hog]['trees'].update(new_trees)
-                final_results[hog]['results'].update(new_results)
+            #update keys (tree numbers)
+            new_trees = {int(x)+cur_len:parsed_trees[x] for x in parsed_trees.keys()}
+            new_results = {int(x)+cur_len:parsed_results[x] for x in parsed_results.keys()}
+            final_results[hog]['trees'].update(new_trees)
+            final_results[hog]['results'].update(new_results)
                     
-            else:       
-                final_results[hog] = {'trees':parsed_trees, 'results':parsed_results}
+        else:       
+            final_results[hog] = {'trees':parsed_trees, 'results':parsed_results}
     
     return(final_results) 
     

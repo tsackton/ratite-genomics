@@ -82,9 +82,8 @@ def parse_hogs_for_rst(hoglist,model,verbose=True):
             
         toppath = '{:0>4}'.format(int(hog) % 100)
         # 0000/100/100.codeml.ancrec.ctl.out/
-        fullpath = toppath + "/" + hog + "/" + hog + ".codeml." + model + ".ctl.out"
-        pamldir = "paml"
-        results_file = pamldir + "/" + fullpath + "/" + "rst"
+        fullpath = basedir + "/" + toppath + "/" + hog + "/" + hog + ".codeml." + model + ".ctl.out"
+        results_file = fullpath + "/" + "rst"
         try:
             single_results = parse_rst_mutations(results_file)
             final_results[hog] = single_results
@@ -106,19 +105,20 @@ def main():
     hogfile_toparse = sys.argv[1]
     resfile_foroutput = sys.argv[2]
     mutfile_foroutput = sys.argv[3]
+    basedir = sys.argv[4]
     with open(hogfile_toparse) as hfile:
         hogs=[line.rstrip("\n") for line in hfile]
     
     print("Done getting files.")
     with open(resfile_foroutput, 'w') as ofile:
         print("hog", "model", "treenum", "species_tree", "newick_string", "lnl", "treelen", "kappa", "omega", sep="\t", end="\n", file=ofile, flush=True)
-        results = parse_hogs(hogs,"ancrec",["paml"])        
+        results = parse_hogs(hogs,"ancrec",basedir)        
         print_results(results, ofile, "ancrec")
     
     print("Done parsing model output, starting on ancestral reconstructions.")
     with open(mutfile_foroutput, 'w') as mutfile:
         print("hog", "tree", "pos", "mutations", sep="\t", end="\n", file=mutfile, flush=True)
-        rst_results = parse_hogs_for_rst(hogs,"ancrec")       
+        rst_results = parse_hogs_for_rst(hogs,"ancrec",basedir)       
         print_rst_results(rst_results, mutfile)
 
 if __name__ == "__main__":
