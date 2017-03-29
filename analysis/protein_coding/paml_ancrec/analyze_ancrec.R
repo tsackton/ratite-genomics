@@ -1,81 +1,80 @@
 setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/protein_coding/paml_ancrec/")
 library(data.table)
+library(ape)
 
-all_hogs<-read.table("../alignment_summary_stats", sep="\t", header=T, comment.char="", na.strings="n/a")
-#clean up all_hogs
-all_hogs$hog=sub("HOG2_", "", all_hogs$Locus)
-ancrec.parsed<-fread("gunzip -c ancrec_parsed.out.gz")
+#read in files
+ancrec.parsed<-fread("gunzip -c paml_M0_parsed.txt.gz")
 ancrec.treekey<-ancrec.parsed[,c("hog", "treenum", "species_tree"), with=FALSE]
+hog_info<-read.table("../all_hog_info.tsv", sep="\t", header=T)
 
-all_hogs=merge(all_hogs, ancrec.treekey, all.x=F, all.y=T)
+hog_info$has_species_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$species_tree]
+hog_info$has_gene_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$species_tree == F]
 
-ancrec.muts<-fread("gunzip -c parsed_mutations.txt.gz")
-names(ancrec.muts)<-c("hog", "tree", "branchpair", "ratite", "clean", "type", "mutclass")
+ancrec.muts<-fread("gunzip -c paml_M0_parsedmuts.txt.gz")
+names(ancrec.muts)<-c("hog", "tree", "branchnames", "branchpair", "ratite", "clean", "type", "mutclass")
 
-ancrec.muts<-merge(ancrec.muts, ancrec.treekey, by.x=c("hog", "tree"), by.y=c("hog", "treenum"))
+ancrec.muts.merge<-merge(ancrec.muts, ancrec.treekey, by.x=c("hog", "tree"), by.y=c("hog", "treenum"), all=T)
 
-#make gene tree subset 
-ancrec.gt<-subset(ancrec.muts, clean=="clean" & species_tree==FALSE)
+#get tree
+fulltree<-read.tree("../final_neut_tree.nwk")
+tipdist<-cophenetic.phylo(fulltree)
 
-#make species tree subset
-ancrec.st<-subset(ancrec.muts, clean=="clean" & species_tree==TRUE)
+#recaculate missing after removing species not in tree
+tips_to_keep = fulltree$tip.label[fulltree$tip.label %in% names(hog_info)]
+hog_info$missing_ct_clean = apply(hog_info[,tips_to_keep], 1, function(x) sum(is.na(x)))
 
-#clean=="clean" excludes branch pairs that are either sister to each other or where one is ancestral to the other#
+#merge
+ancrec.muts.merge<-merge(ancrec.muts.merge, hog_info, by="hog")
 
-#ANALYSIS FUNCTIONS, RUN WITH DIFFERENT INPUTS (gene tree, species tree) AND FILTERING OPTIONS
-#SOME CODE REUSE BETWEEN FUNCTIONS COULD BE CLEANED UP BUT TOO LAZY##
-#ALSO: NO ERROR CHECKING##
+#okay, let's start with a conservative set: species tree, no gene duplications, only tips
+#redo filtering to remove species not included in tree prior to computing missing and dup_ct measures
 
-make_hist<-function(indata, freq = 10, subs = 100, file = "hist.pdf", type) {
-  ancrec.clean <- indata
-  #branchpair <-> ratite key
-  branchpair.key<-unique(ancrec.clean[,c("branchpair", "ratite"), with=FALSE], by=c("branchpair", "ratite"))
-  branchpair.ratite<-subset(branchpair.key, ratite == 2)
-  branchpair.other<-subset(branchpair.key, ratite < 2)
-  
-  #branchpair <-> hog count
-  branchpair.hog<-unique(ancrec.clean[,c("hog", "branchpair"), with=FALSE], by=c("hog", "branchpair"))
-  branchpair.count<-as.data.frame(table(branchpair.hog$branchpair))
-  branchpair.use<-as.character(branchpair.count$Var1[branchpair.count$Freq >= freq])
-  
-  if (type == "all") {
-    ancrec.all.sum<-as.data.frame.matrix(table(ancrec.clean$branchpair, ancrec.clean$mutclass))
-  } else if (type == "tips") {
-    ancrec.clean.tips=subset(ancrec.clean, type=="tip-tip")
-    ancrec.all.sum<-as.data.frame.matrix(table(ancrec.clean.tips$branchpair, ancrec.clean.tips$mutclass))
-  }
-  ancrec.all.sum$total = ancrec.all.sum$convergent + ancrec.all.sum$divergent + ancrec.all.sum$parallel + ancrec.all.sum$regular
-  #filter
-  ancrec.all.sum<-subset(ancrec.all.sum, row.names(ancrec.all.sum) %in% branchpair.use & total > subs)
+ancrec.1<-subset(ancrec.muts.merge, species_tree == TRUE & dup_ct == 0 & clean=="clean" & type=="tip-tip" & missing_ct_clean<3, select=c("hog", "branchnames", "branchpair", "ratite", "mutclass"))
+#get number of hogs
+length(unique(ancrec.1$hog))
 
-  ancrec.all.sum$ratio = (ancrec.all.sum$parallel + ancrec.all.sum$convergent) / (ancrec.all.sum$divergent+ancrec.all.sum$regular)
-  ancrec.all.ratite = subset(ancrec.all.sum, rownames(ancrec.all.sum) %in% branchpair.ratite$branchpair)
-  ancrec.all.other = subset(ancrec.all.sum, rownames(ancrec.all.sum) %in% branchpair.other$branchpair)  
-  pdf(file=file)
-  hist(ancrec.all.other$ratio, breaks=50, xlab="Convergent/Divergent Ratio", xlim=c(0,2), col="gray", main="")
-  points(x=ancrec.all.ratite$ratio, y=rep(5, length(ancrec.all.ratite$ratio)), pch=16, col="red", cex=1)
-  legend(x="right", legend=c("Ratite/Ratite branches"), pch=16, col="red", bty="n")
-  dev.off()
-}
+ancrec.1.sum<-as.data.frame.matrix(table(ancrec.1$branchpair, ancrec.1$mutclass))
+ancrec.1.key<-unique(ancrec.1[,c("branchpair", "branchnames", "ratite"), with=FALSE], by=c("branchpair", "branchnames", "ratite"))
 
-make_hist(indata=ancrec.gt, freq=1, subs=25, file="aaconv_genetree_hist_freq1_subs25_allbranch.pdf", type="all")
-make_hist(indata=ancrec.st, freq=1, subs=25, file="aaconv_sptree_hist_freq1_subs25_allbranch.pdf", type="all")
-make_hist(indata=ancrec.gt, freq=1, subs=25, file="aaconv_genetree_hist_freq1_subs25_tipbranch.pdf", type="tips")
-make_hist(indata=ancrec.st, freq=1, subs=25, file="aaconv_sptree_hist_freq1_subs25_tipbranch.pdf", type="tips")
+#add between clade and within clade info to key: neo-neo, paleo-paleo, neo-paleo
+palaeo<-c("rheAme", "rhePen", "droNov", "casCas", "aptRow", "aptOwe", "aptHaa", "strCam", "tinGut", "cryCin", "notPer", "eudEle")
+ancrec.1.key$branch1 = sub("-\\w+", "", ancrec.1.key$branchnames)
+ancrec.1.key$branch2 = sub("\\w+-", "", ancrec.1.key$branchnames)
+ancrec.1.key$dist = apply(ancrec.1.key, 1, function(x) if(x[4] %in% rownames(tipdist) & x[5] %in% rownames(tipdist)) { tipdist[x[4], x[5]] } else { return(NA) })
 
-make_hist(indata=ancrec.gt, freq=10, subs=100, file="aaconv_genetree_hist_freq10_subs100_allbranch.pdf", type="all")
-make_hist(indata=ancrec.st, freq=10, subs=100, file="aaconv_sptree_hist_freq10_subs100_allbranch.pdf", type="all")
-make_hist(indata=ancrec.gt, freq=10, subs=100, file="aaconv_genetree_hist_freq10_subs100_tipbranch.pdf", type="tips")
-make_hist(indata=ancrec.st, freq=10, subs=100, file="aaconv_sptree_hist_freq10_subs100_tipbranch.pdf", type="tips")
+ancrec.1.key$clade = "neo-palaeo"
+ancrec.1.key$clade[ancrec.1.key$branch1 %in% palaeo & ancrec.1.key$branch2 %in% palaeo] = "palaeo-palaeo"
+ancrec.1.key$clade[!(ancrec.1.key$branch1 %in% palaeo) & !(ancrec.1.key$branch2 %in% palaeo)] = "neo-neo"
 
-make_hist(indata=ancrec.gt, freq=100, subs=100, file="aaconv_genetree_hist_freq100_subs100_allbranch.pdf", type="all")
-make_hist(indata=ancrec.st, freq=100, subs=100, file="aaconv_sptree_hist_freq100_subs100_allbranch.pdf", type="all")
-make_hist(indata=ancrec.gt, freq=100, subs=100, file="aaconv_genetree_hist_freq100_subs100_tipbranch.pdf", type="tips")
-make_hist(indata=ancrec.st, freq=100, subs=100, file="aaconv_sptree_hist_freq100_subs100_tipbranch.pdf", type="tips")
+ancrec.1.sum<-merge(ancrec.1.sum, ancrec.1.key, by.x="row.names", by.y="branchpair")
+ancrec.1.sum$color="black"
+ancrec.1.sum$color[ancrec.1.sum$ratite==2]="red"
+ancrec.1.sum$broadconv = ancrec.1.sum$parallel+ancrec.1.sum$convergent
+ancrec.1.sum$broaddiv = ancrec.1.sum$divergent + ancrec.1.sum$regular
+ancrec.1.sum$broadratio = ancrec.1.sum$broadconv/(ancrec.1.sum$broaddiv+1)
+ancrec.1.sum$totalsubs = ancrec.1.sum$broadconv + ancrec.1.sum$broaddiv
 
+#done prepping data for species tree analysis
+
+#linear model
+mod.full<-lm(broadconv ~ broaddiv*dist + as.factor(ratite==2), data=ancrec.1.sum)
+mod.noratite<-lm(broadconv ~ broaddiv*dist, data=ancrec.1.sum)
+anova(mod.noratite,mod.full)
+
+#figure 2a
+
+plot(broadconv ~ broaddiv, col=color, pch=16, data=ancrec.1.sum[ancrec.1.sum$dist < 0.15,], log="xy", xlab="# of Divergent Subs", ylab="# of Convergent Subs", bty="l")
+nonratite.mod<-lm(broadconv ~ 0 + broaddiv, data=ancrec.1.sum[ancrec.1.sum$ratite < 2 & ancrec.1.sum$dist<0.15,])
+
+plotpoints=data.frame(x=seq(1,10000,10), y=seq(1,10000,10)*coef(nonratite.mod))
+points(plotpoints, type='l')
+
+legend(x="topleft", legend=c("Ratite-ratite branch pair", "Other branch pairs"), pch=16, col=c("red", "black"), bty="n")
+
+#specific genes
 get_conv_num<-function(indata) {
-  ancrec.conv<-subset(indata, (mutclass=="convergent" | mutclass=="parallel") & type=="tip-tip")
-  ancrec.all<-subset(indata, type=="tip-tip")
+  ancrec.conv<-subset(indata, (mutclass=="convergent" | mutclass=="parallel"))
+  ancrec.all<-indata
   ancrec.all.gene<-as.data.frame.matrix(table(ancrec.all$hog, ancrec.all$ratite==2))
   names(ancrec.all.gene)=c("non", "rat")
   ancrec.all.gene$prop.ratite = ancrec.all.gene$rat/(ancrec.all.gene$non+ancrec.all.gene$rat)
@@ -83,16 +82,15 @@ get_conv_num<-function(indata) {
   names(ancrec.conv.gene)=c("non", "rat")
   ancrec.test<-merge(ancrec.all.gene, ancrec.conv.gene, by="row.names")
   #conv is y
-apply(head(ancrec.test), 1, function(x) str(as.numeric(x[4])))
- ancrec.test2<-subset(ancrec.test, prop.ratite > 0)
+  ancrec.test2<-subset(ancrec.test, prop.ratite > 0)
   ancrec.test2$pval<-apply(ancrec.test2, 1, function(x) prop.test(as.numeric(x[6]),as.numeric(x[5])+as.numeric(x[6]),as.numeric(x[4]),alt="g")$p.value)
-  
-  
-  prop.test(ancrec.test$rat.y[1], ancrec.test$non.y[1]+ancrec.test$rat.y[1], ancrec.test$prop.ratite[1], alt="g")$p.value
-  ancrec.test$pval = prop.test()
-  return(table(ancrec.conv.gene$ratite))
+  return(ancrec.test2)
 }
 
-get_conv_num(indata=ancrec.gt)
-get_conv_num(indata=ancrec.st)
+ratite.conv.genes<-get_conv_num(indata=ancrec.1)
+
+##robustness
+
+##STILL TO FINALIZE
+#REDO?
 
