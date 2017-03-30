@@ -52,17 +52,20 @@ dn.clean$ratite=sapply(strsplit(dn.clean$desc.node, "-"), function(x) sum(x %in%
 dn.clean$vl=sapply(strsplit(dn.clean$desc.node, "-"), function(x) sum(x %in% vl_clades)/length(x) == 1)
 dn.clean$nrpalaeo=sapply(strsplit(dn.clean$desc.node, "-"), function(x) sum(x %in% non_ratite_palaeo)/length(x) == 1)
 
-#normalize by branch
-dn.clean[,dn.sum.bygene:=sum(dn), by=list(hog)]
-dn.clean$dn.norm.bygene=dn.clean$dn/dn.clean$dn.sum.bygene
-#dn.norm.bygene should add to to 1 for each hog/tree -- it does
-#check
-dn.clean[,dn.check:=sum(dn.norm.bygene), by=list(hog)]
-table(dn.clean$dn.check)
-#now center and scale to be relative rate for each branch
-#dn.clean[,dn.norm:=scale(dn.norm.bygene, center=T, scale=F), by=list(branch.id)]
-dn.clean[,dn.branch.norm:=mean(dn.norm.bygene, na.rm=T), by=list(branch.id)]
-dn.clean$dn.norm=dn.clean$dn.norm.bygene-dn.clean$dn.branch.norm
+#make unit vector
+dn.clean[,dn.length.bygene:=sqrt(sum(dn^2)), by=list(hog)]
+dn.clean$dn.unit.bygene=dn.clean$dn/dn.clean$dn.length.bygene
+#make average tree (average of all branches a tree appears on)
+dn.clean[,dn.average.tree:=mean(dn.unit.bygene, na.rm=T), by=list(branch.id)]
+#convert to unit vector (this will be different for each species tree configuration)
+dn.clean[,dn.unit.sptree:=dn.average.tree/sqrt(sum(dn.average.tree^2)), by=.(hog)]
+
+#function to do vector projection
+proj_vect <- function(genevec, sptree) {
+  as.matrix(genevec) - sptree %*% t(sptree) %*% as.matrix(genevec)
+}
+dn.clean[,dn.norm1 := proj_vect(dn,dn.unit.sptree), by=.(hog)]
+dn.clean[,dn.norm2 := proj_vect(dn.unit.bygene, dn.unit.sptree), by=.(hog)]
 
 #checks
 branch_freqs<-as.data.frame(table(dn.clean$branch.id))
@@ -72,22 +75,23 @@ dn.clean<-dn.clean[dn.clean$branch.id %in% branch_freqs$Var1[branch_freqs$Freq >
 length(unique(dn.clean$hog))
 
 #more checks
-hist(dn.clean$dn.norm, breaks=100)
+hist(dn.clean$dn.norm1, breaks=100)
+hist(dn.clean$dn.norm2, breaks=100)
 
 #normalization checks
 high_freq_branches = branch_freqs$Var1[branch_freqs$Freq > 5000]
 branch_key = unique(dn.clean[,c("branch.id","ratite","vl"), with=F])
-plot_branch_dists = data.frame(dn.norm=dn.clean$dn.norm[dn.clean$branch.id %in% high_freq_branches], branch.id=dn.clean$branch.id[dn.clean$branch.id %in% high_freq_branches])
+plot_branch_dists = data.frame(dn.norm2=dn.clean$dn.norm2[dn.clean$branch.id %in% high_freq_branches], branch.id=dn.clean$branch.id[dn.clean$branch.id %in% high_freq_branches])
 plot_branch_dists = merge(plot_branch_dists, branch_key, by.x="branch.id", by.y="branch.id")
 plot_branch_dists$color = "black"
 plot_branch_dists$color[plot_branch_dists$ratite]="red"
 plot_branch_dists$color[plot_branch_dists$vl]="blue"
 plot_branch_dists_colors = unique(plot_branch_dists[,c("branch.id", "color")])
-boxplot(plot_branch_dists$dn.norm ~ plot_branch_dists$branch.id, outline=F, col=plot_branch_dists_colors$color)
+boxplot(plot_branch_dists$dn.norm2 ~ plot_branch_dists$branch.id, outline=F, col=plot_branch_dists_colors$color)
 
 #compute p-values
 dn.clean[,ratite.p:= { 
-  if (inherits(try(ans<-wilcox.test(dn.norm ~ ratite)$p.value,silent=TRUE),"try-error"))
+  if (inherits(try(ans<-wilcox.test(dn.norm1 ~ ratite)$p.value,silent=TRUE),"try-error"))
     NA_real_
   else
     ans
@@ -95,7 +99,7 @@ dn.clean[,ratite.p:= {
 
 
 dn.clean[,vl.p:= { 
-  if (inherits(try(ans<-wilcox.test(dn.norm ~ vl)$p.value,silent=TRUE),"try-error"))
+  if (inherits(try(ans<-wilcox.test(dn.norm1 ~ vl)$p.value,silent=TRUE),"try-error"))
     NA_real_
   else
     ans
@@ -130,11 +134,14 @@ for (i in 1:nreps) {
  }, by=list(hog)]
 }
 
+dn.perm.pval=unique(dn.perm[,c(1,5:length(dn.perm)), with=F])
+fwrite(dn.perm.pval, file="raw_dn_perm_out.csv")
+
 #testing out plotting
 
 #option1
-dn.perm.pval=unique(dn.perm[,c(1,5:length(dn.perm)), with=F])
-plot(density(apply(dn.perm.pval, 2, function(x) sum(x < 0.05)/length(x))[2:101]), col="black", xlim=c(0,0.25), xlab="Fraction of tests with P < 0.05", las=1, bty="n", main="")
+
+plot(density(apply(dn.perm.pval, 2, function(x) sum(x < 0.05)/length(x))[2:length(dn.perm.pval)]), col="black", xlim=c(0,0.25), xlab="Fraction of tests with P < 0.05", las=1, bty="n", main="")
 ratite.p.frac=sum(dn.pval$ratite.p[!is.na(dn.pval$ratite.p)] < 0.05)/sum(!is.na(dn.pval$ratite.p))
 vl.p.frac=sum(dn.pval$vl.p[!is.na(dn.pval$vl.p)] < 0.05)/sum(!is.na(dn.pval$vl.p))
 arrows(x0=vl.p.frac,y0=2,x1=vl.p.frac,y1=0, col="firebrick", lwd=2)
@@ -145,7 +152,7 @@ text(x=ratite.p.frac, y=2.5, labels=c("Ratites"))
 #option2
 permdist<-cut(as.data.frame(dn.perm.pval)[,2], breaks=seq(0,1,0.01),labels=F)
 plot(table(permdist), type="l", col=rgb(100,100,100,alpha=50,maxColorValue=255), ylim=c(0,700), xaxt="n", ylab="Count", las=1, xlab="P-value")
-for (i in 3:101) {
+for (i in 3:length(dn.perm.pval)) {
   permdist<-cut(as.data.frame(dn.perm.pval)[,i], breaks=seq(0,1,0.01))
   points(table(permdist), type="l", col=rgb(100,100,100,alpha=50,maxColorValue=255))
   
@@ -160,7 +167,7 @@ axis(1, labels=seq(0,1,0.2), at=seq(0,100,20))
 legend("topright", legend=c("random", "ratite", "vocal learners"), col=c("gray50", "blue", "firebrick"), lwd=3, lty="dashed")
 
 #option3
-rand_sig_counts<-apply(dn.perm.pval[,2:101], 1, function(x) sum(p.adjust(x, method="fdr")<0.05))
+rand_sig_counts<-apply(dn.perm.pval[,2:length(dn.perm.pval)], 1, function(x) sum(p.adjust(x, method="fdr")<0.05))
 plot(y=as.numeric(table(rand_sig_counts)), x=as.numeric(names(table(rand_sig_counts))), type="l", lwd=4, bty="n", xlim=c(0,400), xlab="# of Significant Genes", ylab="Freq", las=1)
 
 vl.qvalue<-p.adjust(dn.pval$vl.p, method="fdr")
