@@ -91,7 +91,7 @@ boxplot(plot_branch_dists$dn.norm2 ~ plot_branch_dists$branch.id, outline=F, col
 
 #compute p-values
 dn.clean[,ratite.p:= { 
-  if (inherits(try(ans<-wilcox.test(dn.norm1 ~ ratite)$p.value,silent=TRUE),"try-error"))
+  if (inherits(try(ans<-wilcox.test(dn.norm2 ~ ratite)$p.value,silent=TRUE),"try-error"))
     NA_real_
   else
     ans
@@ -99,7 +99,7 @@ dn.clean[,ratite.p:= {
 
 
 dn.clean[,vl.p:= { 
-  if (inherits(try(ans<-wilcox.test(dn.norm1 ~ vl)$p.value,silent=TRUE),"try-error"))
+  if (inherits(try(ans<-wilcox.test(dn.norm2 ~ vl)$p.value,silent=TRUE),"try-error"))
     NA_real_
   else
     ans
