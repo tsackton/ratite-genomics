@@ -55,10 +55,10 @@ relax.clean = subset(relax, (hog %in% hogs_to_use) & dup_ct == 0 & missing_ct <=
 #add qvalues
 relax.clean[,qval := p.adjust(pval, method="fdr"), by=.(set, type)]
 relax.clean$sample = paste0(relax.clean$set, ".", relax.clean$type)
-table(relax.clean$qval < 0.05, relax.clean$sample)
+table(relax.clean$qval < 0.01, relax.clean$sample)
 
 #add sig key
-relax.clean$sig = as.numeric(relax.clean$qval < 0.05) * sign(1 - relax.clean$K)
+relax.clean$sig = as.numeric(relax.clean$qval < 0.01) * sign(1 - relax.clean$K)
 #positive is increased selection, negative is relaxed selection
 
 table(relax.clean$sig, relax.clean$sample)

@@ -1,55 +1,89 @@
 library(ape)
+library(dplyr)
+library(tidyr)
+library(HyPhy) #used for gene tree species tree reconcilation to get loss numbers
 
 setwd("/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/analysis/protein_coding/blastp")
-blastp<-read.table("all_besthit.out", header=F)
-names(blastp)=c("file", "qseqid", "sseqid", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart","send", "evalue", "bitscore")
+blastp<-read.table("all_besthit.out", header=F, stringsAsFactors = F)
+blastp <- tbl_df(blastp)
+blastp <- blastp %>% 
+  rename(file = V1, query_id = V2, subj_id = V3, perc_ident = V4, length = V5, mismatch = V6, gapopen = V7, query_start = V8, query_end = V9, subj_start = V10, subj_end = V11, eval = V12, bitscore = V13) %>%
+  mutate(species = sub("_galGal_blastp.out", "", file, fixed=T))
 
-#add species column
-blastp$species = sub("_galGal_blastp.out", "", blastp$file, fixed=T)
-blastp$spclass = "Neognath"
-blastp$spclass[blastp$species %in% c("eudEle", "notPer", "tinGut", "cryCin")] = "Tinamou"
-blastp$spclass[blastp$species %in% c("aptRow", "aptOwe", "aptHaa", "droNov", "casCas", "rhePen", "rheAme", "strCam")] = "Ratite"
-blastp$spclass[blastp$species %in% c("allMis", "anoCar", "chrPic")] = "Reptile"
+#make species <-> clade key
+tinsp <- c("eudEle", "notPer", "tinGut", "cryCin")
+ratitesp <- c("aptRow", "aptOwe", "aptHaa", "droNov", "casCas", "rhePen", "rheAme", "strCam")
+reptilesp <- c("allMis", "anoCar", "chrPic")
+protsp <- blastp %>% distinct(species) %>% group_by(species) %>%
+  mutate(spclass = { if(species %in% tinsp) {return("tinamou")} else if (species %in% ratitesp) {return("ratite")} else if (species %in% reptilesp) { return("reptile")} else { return ("neognath")}  })
 
-#protein species
-protsp<-unique(blastp$species)
+#merge
+
+blastp <- blastp %>% inner_join(., protsp)
+
+#add length, also has the effect of removing a few sequences that don't blast back to chicken for some reason
+
+blastp <- blastp %>% filter(species == "galGal") %>% 
+  select(query_id, galgal_len = query_end) %>% 
+  inner_join(blastp, ., by=c("query_id" = "query_id"))
 
 #compute presence/absence matrix
-prot_len = blastp[blastp$species=="galGal", c("qseqid", "qend")]
-names(prot_len)[2]="qlen"
-blastp<-merge(blastp, prot_len, by="qseqid")
 
-blastp$pres_strict = ifelse(blastp$pident >= 50 & blastp$length/blastp$qlen > 0.70, 1, 0)
+blastp <- blastp %>% mutate(pres_strict = as.numeric(perc_ident >= 50 & length/galgal_len > 0.70), pres_loose = 1)
 
-prot_pres_strict = data.frame(prot=blastp$qseqid[blastp$species=="galGal" & blastp$pres_strict==1])
+#convert to wide format
 
-for (sp in protsp) {
-  prot_pres_strict[,sp] = as.numeric(prot_pres_strict$prot %in% blastp[blastp$pres_strict == 1 & blastp$species == sp, c("qseqid")])
-  }
+blastp_wide <- blastp %>% select(query_id, species, pres_strict) %>% spread(species, pres_strict, drop=FALSE, fill=0)
+
 #get tree
-sptree<-read.tree("../final_neut_tree.nwk")
+full_species_tree<-read.tree("../final_neut_tree.nwk")
 
 #remove tips not in protsp
-tips_to_drop<-sptree$tip.label[!(sptree$tip.label %in% protsp)]
-prot_tree<-drop.tip(sptree, tips_to_drop)
+tips_to_drop<-full_species_tree$tip.label[!(full_species_tree$tip.label %in% protsp$species)]
+prot_tree<-drop.tip(full_species_tree, tips_to_drop)
 plot(prot_tree)
 
-#clean up to require presence at base of birds, and to remove outgroups
-prot_pres_good = apply(prot_pres_strict[,c("eudEle", "notPer", "tinGut", "cryCin","aptRow", "aptOwe", "aptHaa", "droNov", "casCas", "rhePen", "rheAme", "strCam")], 1, max)
-prot_pres_use = subset(prot_pres_strict, prot_pres_good == 1, select=c(-anoCar, -allMis, -chrPic))
+#working with blastp_wide, do some cleanup
 
-compute_losses <- function(pres_line, orig_tree) {
-  if (sum(pres_line)==length(pres_line)) { return(0) }
-  newtree<-drop.tip(orig_tree, names(pres_line[pres_line==0]), subtree=T)
-  neognath<-"taeGut-galGal"
-  palaeo<-"aptHaa-strCam"
-  tinamou<-"cryCin-eudEle"
+blastp_use <- blastp_wide %>% mutate(use_prot = pmax(eudEle, notPer, tinGut, cryCin, aptRow, aptOwe, aptHaa, droNov, casCas, rhePen, rheAme, strCam)) %>% filter(use_prot == 1) %>% select(-anoCar, -allMis, -chrPic) %>% gather(species, present, anaPla:tinGut)
+
+#15083 genes inferred to be present at base of birds (i.e., present in galGal and at least 1 palaeognath)
+
+compute_losses <- function(DF, orig_tree) {
+  pres_line = unlist(DF$present)
+  spec_line = unlist(DF$species[DF$present == 0])
+  newtree<-drop.tip(orig_tree, spec_line)
+  node_names = list("neognath" = "taeGut-galGal", "palaeo" = "aptHaa-strCam", "tinamou" = "cryCin-eudEle")
   
-  pal_loss<-tryCatch(sum(grepl("_tip", extract.clade(newtree, palaeo)$tip.label)),error = function(c) return(1))
-  tin_loss<-tryCatch(sum(grepl("_tip", extract.clade(newtree, tinamou)$tip.label)),error = function(c) return(1))
-  rat_loss = pal_loss - tin_loss
-  return(rat_loss)
+  #output
+  output<-data.frame(clade=c("neognath", "palaeo", "tinamou"), loss=NA_integer_, br=NA_integer_)
+  
+  #loop over branches 
+  for (i in 1:3) {
+    sptree<-extract.clade(orig_tree, node_names[[i]])
+    gtree<-tryCatch(extract.clade(newtree, node_names[[i]]), error=function(c) {return(0)})
+    if (!is.numeric(gtree)) {
+      output$loss[output$clade == names(node_names)[i]]<-recon.score(sptree, gtree)[2]
+      output$br[output$clade == names(node_names)[i]]<-(length(gtree$edge.length)
+    }
+    else {
+      output$loss[output$clade == names(node_names)[i]]<-1
+      output$br[output$clade == names(node_names)[i]]<-1
+    }
+  }
+  return(output)
 }
+
+#look at number of ratite losses
+
+protein_loss <- blastp_use %>% group_by(query_id) %>% do(compute_losses(DF=., orig_tree=prot_tree))
+
+protein_loss %>% select(query_id, clade, loss) %>% spread(clade, loss) %>% filter(tinamou == 0) %>% with(., table(neognath, palaeo))
+
+ratite_treelen <- sum(extract.clade(full_species_tree, "aptHaa-strCam")$edge.length) - sum(extract.clade(full_species_tree, "cryCin-eudEle")$edge.length) 
+neo_treelen <- sum(extract.clade(full_species_tree, "taeGut-galGal")$edge.length)
+
+protein_loss %>% select(query_id, clade, loss) %>% spread(clade, loss) %>% filter(tinamou == 0, palaeo>3) %>% left_join(., blastp_wide) %>% mutate(ratite_ct = aptHaa + aptOwe + aptRow + casCas + droNov + rheAme + rhePen + strCam) %>% print.data.frame
 
 bootstrap_loss <- function(pres_line, orig_tree, nreps=100) {
   real_ct <- compute_losses(pres_line, orig_tree)
