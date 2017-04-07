@@ -32,3 +32,12 @@ abline(v=0.5, lty="dashed", lwd=2)
 
 #number of genes
 lapply(maker.qc, function(x) length(unique(x$gene)))
+
+maker_clean <- do.call("rbind", maker.qc) %>% add_rownames %>% tbl_df %>%
+  mutate(species = sub("\\.\\d+", "", rowname)) %>% select(species, gene:len.prot)
+
+gene_sum <- maker_clean %>% group_by(species, gene) %>% summarize(isoform_num = n(), aed = max(as.numeric(eaed)))
+gene_sum <- gene_sum %>% mutate(quality_bin = cut(aed, breaks=c(0,0.25,0.5,0.75,1), labels = F))
+par(mar=c(6,4,4,1))
+barplot(table(gene_sum$quality_bin, gene_sum$species), ylab="Number of genes")
+legend(3,-2000, legend=c("AED 0-0.25", "AED 0.26-0.50", "AED 0.51-0.75", "AED 0.76-1"), col=c("gray20", "gray40", "gray60", "gray80"), pch=15, ncol=4, xpd=TRUE)
