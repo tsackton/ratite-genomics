@@ -2,6 +2,7 @@ setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/protein_coding/p
 library(data.table)
 library(qvalue)
 library(tidyr)
+library(dplyr)
 
 ##SETUP##
 
@@ -15,12 +16,15 @@ hog_info<-read.table("../all_hog_info.tsv", sep="\t", header=T)
 hog_info$has_species_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$species_tree]
 hog_info$has_gene_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$species_tree == F]
 
-#make hog<->galGal key
-hogs<-read.table("/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/homology/new_hog_list.txt")
-ncbikey<-read.table("/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/annotation/galGalAnnot/CGNC_Gallus_gallus_20161020.txt", header=F, sep="\t", comment.char="", col.names=c("cgnc", "ncbi", "ensembl", "sym", "descr", "sp"), quote="")
-hogs.galgal<-subset(hogs, V4=="galGal")
-hogs.galgal$hog=as.integer(sub("HOG2_","",hogs.galgal$V1,fixed=T))
-hogs.galgal<-merge(hogs.galgal, ncbikey, all.x=T, all.y=F, by.x="V3", by.y="ncbi")
+#load hog <-> chicken info
+hog_to_gene <- read.table("../HOG_final_alignment_seqids", header=T, stringsAsFactors =F)
+hog_to_gene <- hog_to_gene %>% tbl_df %>%
+  mutate(hog = as.integer(sub("HOG2_", "", HOG, fixed=T))) %>% 
+  filter(Taxon == "galGal") %>%
+  select(-HOG, -Fasta_seqid, -Taxon, -Transcript) %>%
+  group_by(hog) %>%
+  mutate(gene = paste0(Gene, sep="", collapse=";")) %>%
+  select(-Gene)
 
 #define clades -- fixed (vocal learners, palaeognaths, tinamous, ratites)
 all_clades<-names(hog_info)[2:40]
@@ -38,7 +42,7 @@ prep_data <- function(file, ancrec.treekey, hog_info) {
   #load data -- dn
   read_line = paste0("gunzip -c ", file)
   dn<-fread(read_line, header=F, sep=",")
-  names(dn)<-c("hog", "tree", "parent.node", "desc.node", "branch.id", "dn", "ratite", "bop", "wb", "vl", "rand1", "rand2")
+  names(dn)<-c("hog", "tree", "parent.node", "desc.node", "branch.id", "dn", "ratite", "vl")
   
   #add hog_info
   dn$tree = sub("tree", "", dn$tree, fixed=T)
@@ -63,7 +67,7 @@ proj_vect <- function(genevec, sptree) {
   as.matrix(genevec) - sptree %*% t(sptree) %*% as.matrix(genevec)
 }
 #actually compute normalized stat
-compute_branch_stat <- function(DF, filter=TRUE) {
+normalize_branch_stat <- function(DF, filter=TRUE) {
   dn.clean<-as.data.table(DF)
   #make unit vector
   dn.clean[,dn.length.bygene:=sqrt(sum(dn^2)), by=list(hog)]
@@ -77,19 +81,14 @@ compute_branch_stat <- function(DF, filter=TRUE) {
     branch_freqs<-as.data.frame(table(dn.clean$branch.id))
     dn.clean<-dn.clean[dn.clean$branch.id %in% branch_freqs$Var1[branch_freqs$Freq >= 500],]
   }
-  dn.clean[,ratite.p:= { 
-    if (inherits(try(ans<-wilcox.test(dn.norm ~ ratite)$p.value,silent=TRUE),"try-error"))
-      NA_real_
-    else
-      ans
-  }, by=list(hog)]
-  dn.clean[,vl.p:= { 
-    if (inherits(try(ans<-wilcox.test(dn.norm ~ vl)$p.value,silent=TRUE),"try-error"))
-      NA_real_
-    else
-      ans
-  }, by=list(hog)]
   return(dn.clean)
+}
+
+compute_pval <- function (x, groupvar) {
+  if (inherits(try(ans<-wilcox.test(x ~ groupvar)$p.value,silent=TRUE),"try-error"))
+    return(NA_real_)
+  else
+    return(ans)
 }
 
 #qc checks of distributions
@@ -143,14 +142,24 @@ do_perms<-function(DF, nreps=1000, load="", write="") {
   return(dn.perm.pval)
 }
 
+get_dir <- function(x, groupby) {
+  sign(cor(x=x, y=as.numeric(groupby), use="na.or.complete"))
+}
+
 ## ANALYSIS STARTS HERE ###
 
-dn<-prep_data(file="dn_parsed.txt.gz", ancrec.treekey = ancrec.treekey, hog_info = hog_info)
+dn<-prep_data(file="dn_parsed.csv.gz", ancrec.treekey = ancrec.treekey, hog_info = hog_info)
 
 dn.default<-subset_clean_data(dn)
-dn.default<-compute_branch_stat(dn.default)
+#fix vl data, don't want to consider branches with descendant nodes that include the base of passerines/parrots as vocal learners
+dn.default$vl[grepl("-melUnd", dn.default$desc.node, fixed=T)]=FALSE
 
-dn.pval<-unique(dn.default[,c("hog", "ratite.p", "vl.p"), with=F])
+dn.default<-normalize_branch_stat(dn.default)
+
+
+dn.pval<-dn.default[,.(ratite.p = compute_pval(dn.norm, ratite),vl.p=compute_pval(dn.norm, vl)), by=hog]
+dn.dir<-dn.default[,.(vl.dir = get_dir(dn.norm, vl)), by=hog]
+
 length(dn.pval$hog)
 summary(qvalue(dn.pval$ratite.p))
 summary(qvalue(dn.pval$vl.p))
@@ -163,15 +172,114 @@ for (missing in c(0,2,4)) {
     print(missing)
     print(usesp)
     dn.default<-subset_clean_data(dn, missing_cutoff = missing, use_sptree = usesp)
-    dn.default<-compute_branch_stat(dn.default, filter=usesp)
-    dn.pval<-unique(dn.default[,c("hog", "ratite.p", "vl.p"), with=F])
+    dn.default<-normalize_branch_stat(dn.default, filter=usesp)
+    dn.pval<-dn.default[,.(ratite.p = compute_pval(dn.norm, ratite),vl.p=compute_pval(dn.norm, vl)), by=hog]
     print(length(dn.pval$hog))
     summary(qvalue(dn.pval$ratite.p))
     summary(qvalue(dn.pval$vl.p))
   }
 }
 
+#okay now let's look at dropping species and see how things change
+#use only hogs with no missing data
+dn.drop<-subset_clean_data(dn, missing_cutoff = 0)
+#how many hogs?
+dn.drop %>% distinct(hog) %>% summarize(count=n())
+dn.drop <- normalize_branch_stat(dn.drop)
 
+vl_tips_p = c("corBra", "ficAlb", "pseHum", "serCan", "taeGut", "geoFor")
+vl_tips_np = c("melUnd", "calAnn")
+vl_tips <- c("corBra", "ficAlb", "pseHum", "serCan", "taeGut", "geoFor", "melUnd", "calAnn")
+
+get_new_target <- function(drop, nodekey, orig) {
+  vl_tips <- c("corBra", "ficAlb", "pseHum", "serCan", "taeGut", "geoFor", "melUnd", "calAnn")
+  tips_to_keep <- vl_tips[!(vl_tips %in% drop)]
+  new_target<-logical(length(orig))
+  for (selTip in tips_to_keep) {
+    new_target[grepl(selTip, nodekey, fixed=T) & orig]=TRUE
+  }
+  return(new_target)
+}
+
+#make a bunch of new columns that each drop 1 vocal learner tips -- start there at least
+dn.drop <- dn.drop %>% mutate(vl1p1 = get_new_target(c("corBra"), desc.node, vl)) %>%
+  mutate(vl1p2 = get_new_target(c("ficAlb"), desc.node, vl)) %>%
+  mutate(vl1p3 = get_new_target(c("pseHum"), desc.node, vl)) %>%
+  mutate(vl1p4 = get_new_target(c("serCan"), desc.node, vl)) %>%
+  mutate(vl1p5 = get_new_target(c("taeGut"), desc.node, vl)) %>%
+  mutate(vl1p6 = get_new_target(c("geoFor"), desc.node, vl)) %>%
+  mutate(vl1np1 = get_new_target(c("melUnd"), desc.node, vl)) %>%
+  mutate(vl1np2 = get_new_target(c("calAnn"), desc.node, vl)) %>% as.data.table
+
+dn.drop1.pval<- dn.drop %>% group_by(hog) %>% mutate(vl1p1p = compute_pval(dn.norm, vl1p1)) %>%
+  mutate(vl1p2p = compute_pval(dn.norm, vl1p2)) %>%
+  mutate(vl1p3p = compute_pval(dn.norm, vl1p3)) %>%
+  mutate(vl1p4p = compute_pval(dn.norm, vl1p4)) %>%
+  mutate(vl1p5p = compute_pval(dn.norm, vl1p5)) %>%
+  mutate(vl1p6p = compute_pval(dn.norm, vl1p6)) %>%
+  mutate(vl1np1p = compute_pval(dn.norm, vl1np1)) %>%
+  mutate(vl1np2p = compute_pval(dn.norm, vl1np2)) %>%
+  mutate(vlorigP = compute_pval(dn.norm, vl)) %>%
+  select(hog, vl1p1p:vlorigP) %>% ungroup %>% distinct
+
+dn.drop1.pval %>% select(-hog) %>% apply(., 2, function(x) qvalue(x)$pi0)
+
+#need a programmatic way to construct next set of columns
+vl_tips2 <- c("corBra", "ficAlb", "pseHum", "serCan", "taeGut", "geoFor", "melUnd", "calAnn", "none")
+tipCount <- length(vl_tips2)
+drop.res<-data.frame(dropped_tips = character(), q01 = numeric(), q05 = numeric(), p01 = numeric(), p001 = numeric(), pi0 = numeric())
+
+for (i in 1:tipCount) {
+  for (j in i:tipCount) {
+    for (k in j:tipCount) {
+    cols_to_drop = c(vl_tips2[i], vl_tips2[j], vl_tips2[k])
+    colstring = paste0(cols_to_drop, collapse="-")
+    ct<-dn.drop %>% group_by(hog) %>% mutate(newtarget = get_new_target(cols_to_drop, desc.node, vl), newpval = compute_pval(dn.norm, newtarget)) %>% ungroup %>% select(hog, newpval) %>% distinct %>% select(-hog) %>% apply(., 2, qvalue, pi0.method = "bootstrap")
+    drop.res<-rbind(drop.res, data.frame(dropped_tips = colstring, q01 = sum(ct$newpval$qvalues <= 0.01), q05 = sum(ct$newpval$qvalues <= 0.05), p01 = sum(ct$newpval$pvalues <= 0.01), p001 = sum(ct$newpval$pvalues <= 0.001), pi0 = ct$newpval$pi0, row.names = NULL))
+    print(drop.res)
+   }
+  }
+}
+
+#clean up
+drop.res.clean <- drop.res %>% tbl_df %>% 
+  mutate(calAnn = grepl("calAnn", dropped_tips), melUnd = grepl("melUnd", dropped_tips), corBra = grepl("corBra", dropped_tips), ficAlb = grepl("ficAlb", dropped_tips), pseHum = grepl("pseHum", dropped_tips), serCan = grepl("serCan", dropped_tips), taeGut = grepl("taeGut", dropped_tips), geoFor = grepl("geoFor", dropped_tips)) %>%
+  mutate(os_drop_ct = as.numeric(corBra) + as.numeric(ficAlb) + as.numeric(pseHum) + as.numeric(serCan) + as.numeric(taeGut) + as.numeric(geoFor)) %>%
+  mutate(nonos_drop_ct = as.numeric(calAnn) + as.numeric(melUnd)) %>% rowwise %>% 
+  mutate(which_nonos = if(!calAnn & !melUnd) { "none" } else if (calAnn & melUnd) { "both" } else if (calAnn & !melUnd) { "calAnn" } else { "melUnd" }) %>%
+  mutate(drop_ct = os_drop_ct + nonos_drop_ct) %>% select(-dropped_tips) %>% ungroup %>% distinct
+
+
+drop.res.clean %>% ggplot(aes(as.factor(drop_ct),pi0)) + geom_jitter(aes(color=which_nonos), width = 0.1)
+
+drop.res.clean %>% ggplot(aes(as.factor(drop_ct),q01)) + geom_jitter(aes(color=as.factor(os_drop_ct)), width = 0.1)
+
+drop.res.clean %>% ggplot(aes(as.factor(drop_ct),p001)) + geom_jitter(aes(color=as.factor(which_nonos)), width = 0.15)
+
+drop.res.clean %>% filter(drop_ct == 3) %>% mutate(non_osc = factor(which_nonos, levels=c('none', 'calAnn', 'melUnd', 'both'))) %>% lm(q01 ~ non_osc, data= . ) %>% summary
+
+drop.res.clean %>% filter(drop_ct == 2) %>% mutate(non_osc = factor(which_nonos == "none")) %>% lm(q01 ~ non_osc, data= . ) %>% summary
+
+write.table(drop.res.clean, file="drop_init_run.tsv", sep="\t", quote=F, row.names=F, col.names = T)
+
+#FUNCTIONAL TESTS
+
+dn.pval.merge <- dn.pval %>% left_join(., hog_to_gene)
+
+#load Zhang data
+zhang<-read.table("ZhangTableS28.txt", header=T, sep="\t", comment.char="", fill=T, stringsAsFactors = F) %>% tbl_df %>% select(gene = Gene.symbol, qval = adj.p.value)
+
+dn.pval.merge <- dn.pval.merge %>% left_join(., zhang)
+dn.pval.merge$vl.q = qvalue(dn.pval.merge$vl.p)$qvalue
+dn.pval.merge <- dn.pval.merge %>% filter(!is.na(vl.q)) %>% mutate(zhang.sig05 = as.numeric(!is.na(qval)))
+
+dn.pval.merge <- dn.pval.merge %>% left_join(., dn.dir)
+dn.pval.merge$sig05 = as.numeric(dn.pval.merge$vl.q < 0.05) * dn.pval.merge$vl.dir
+
+dn.pval.merge %>% with(., table(zhang.sig05, sig05 == 1)) %>% fisher.test
+#significant if low magnitude overlap with Zhang et al 2014 vocal learning genes, when restricting to accelerated class (dir +)
+
+#based on symbol matching so should be good but not perfect orthology
 
 
 

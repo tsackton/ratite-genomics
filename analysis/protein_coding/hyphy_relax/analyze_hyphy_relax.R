@@ -37,10 +37,9 @@ relax = as.data.table(relax)
 hog_counts<-relax[,.N,by=.(hog,set)]
 hogs_to_run = hog_info$hog[hog_info$has_species_tree]
 
-write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="Ratite" & hog_counts$N == 2])], file="ratite_reruns_Mar2017", quote=F, row.names = F, col.names = F)
-write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="VL" & hog_counts$N == 2])], file="vl_reruns_Mar2017", quote=F, row.names = F, col.names = F)
-write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="RND" & hog_counts$N == 2])], file="rand_reruns_Mar2017", quote=F, row.names = F, col.names = F)
-write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="Tinamou" & hog_counts$N == 2])], file="tinamou_reruns_Mar2017", quote=F, row.names = F, col.names = F)
+write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="ratite" & hog_counts$N == 2])], file="ratite_reruns_Mar2017", quote=F, row.names = F, col.names = F)
+write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="vl" & hog_counts$N == 2])], file="vl_reruns_Mar2017", quote=F, row.names = F, col.names = F)
+write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="rnd" & hog_counts$N == 2])], file="rand_reruns_Mar2017", quote=F, row.names = F, col.names = F)
 
 ## ANALYSIS
 
