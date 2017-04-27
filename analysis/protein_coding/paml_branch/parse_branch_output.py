@@ -3,11 +3,7 @@ from ete3 import EvolTree
 
 #test classes
 ratites={'droNov', 'casCas', 'strCam', 'aptHaa', 'aptOwe', 'aptRow', 'rheAme', 'rhePen'}
-bop={'aquChr', 'falPer', 'halLeu'}
-wb={'anaPla', 'aptFor', 'balReg', 'chaVoc', 'egrGar', 'nipNip', 'pygAde', 'fulGla'}
 vl={'calAnn', 'corBra', 'serCan', 'geoFor', 'melUnd', 'pseHum', 'taeGut', 'ficAlb'}
-rand1={'colLiv', 'chaVoc', 'halLeu', 'taeGut', 'nipNip'}
-rand2={'falPer', 'picPub', 'lepDis', 'melUnd', 'aquChr'}
 
 
 #given name, test if ratite or not
@@ -50,11 +46,7 @@ for line in lines:
         for node in t.traverse():
             #UGLY!
             isratite=node_in_class(node,t,ratites)
-            isbop=node_in_class(node,t,bop)
-            iswb=node_in_class(node,t,wb)
             isvl=node_in_class(node,t,vl)
-            isr1=node_in_class(node,t,rand1)
-            isr2=node_in_class(node,t,rand2)
             brstat=node.dist
             nname=node.name
             if nname=="":
@@ -66,4 +58,4 @@ for line in lines:
             if pname=="":
                 pname="-".join(node.up.get_leaf_names())
             brname=pname + ":" + nname
-            print(hog,tree,pname,nname,brname,brstat,isratite,isbop,iswb,isvl,isr1,isr2, sep=",", end="\n")
+            print(hog,tree,pname,nname,brname,brstat,isratite,isvl, sep=",", end="\n")
