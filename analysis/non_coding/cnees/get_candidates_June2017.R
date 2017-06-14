@@ -1,4 +1,5 @@
 library(dplyr)
+#need to change dir below:
 cnee <- read.table("~/Downloads/tissue_specific_R_May31.txt", header=T, stringsAsFactors = F) %>% tbl_df
 
 ##FILTERS FOR CANDIDATES###
