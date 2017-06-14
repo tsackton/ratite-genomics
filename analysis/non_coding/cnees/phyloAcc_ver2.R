@@ -94,3 +94,44 @@ accel <- accel %>%
 #16 total comps: set1 - set4 * conv2 - conv5
 
 write.table(accel, file="final_phyloAcc_cand_list.tsv", sep="\t", col.names = TRUE, row.names = FALSE)
+
+
+##FUNCTIONAL ENRICHMENT###
+#read in cnee <-> gene files
+
+annot4<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/annotation/cnee/cnees.galgal4.annotation", sep="\t", stringsAsFactors = FALSE) %>% tbl_df %>% separate(V2, into=c("geneid", "symbol"), extra="merge")
+
+annot5<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/annotation/cnee/cnees.galgal5.annotation", stringsAsFactors = FALSE, sep="\t") %>% tbl_df %>% separate(V2, into=c("geneid", "symbol"), extra="merge")
+
+
+#merge
+accel.gg4 <- full_join(accel, annot4, by=c("cnee" = "V1"))
+
+##MESSING AROUND, NEEDS TO BE CLEANED UP##
+#basic story very consistent with previous work, however
+
+library(clusterProfiler)
+library(DOSE)
+foreground <- accel.gg4 %>% filter(set4==TRUE, conv2==TRUE) %>% distinct(geneid)
+background <- accel.gg4 %>% distinct(geneid)
+
+test1<-enrichGO(foreground$geneid, organism = "chicken", qvalueCutoff = 0.01, ont="BP")
+test2<-compareCluster(foreground$geneid,organism="chicken")
+summary(test1)
+summary(test2)
+?enrichKEGG
+enrichMap(test1)
+plotGOgraph(test1, firstSigNodes = 10)
+
+
+library(PANTHER.db)
+pthOrganisms(PANTHER.db)<-"CHICKEN"
+PANTHER.db
+columns(PANTHER.db)
+cols<-c("PATHWAY_ID", "ENTREZ", "PATHWAY_TERM")
+res<-select(PANTHER.db, keys=background$geneid, cols, "ENTREZ")
+t2g <- data.frame(term=res$PATHWAY_ID, gene=res$ENTREZ)
+t2n <- data.frame(term=res$PATHWAY_ID, name=res$PATHWAY_TERM)
+
+test3<-enricher(foreground$geneid, universe = background$geneid, TERM2GENE = t2g, TERM2NAME = t2n, qvalueCutoff = 1, pvalueCutoff = 1)
+summary(test3)
