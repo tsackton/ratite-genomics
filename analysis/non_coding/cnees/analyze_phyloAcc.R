@@ -2,7 +2,7 @@
 library(tidyr)
 library(dplyr)
 library(ggplot2)
-setwd("/Volumes/LaCie/Projects/Current/ratites/final/phyloAcc_May2017/")
+setwd("~/Projects/birds/ratite_compgen/data/phyloAcc_May2017/")
 
 #functions
 trunc_to_one <- function(x) {
