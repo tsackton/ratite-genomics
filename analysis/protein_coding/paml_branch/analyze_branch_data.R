@@ -38,7 +38,7 @@ non_ratite_palaeo<-palaeo_clades[!(palaeo_clades) %in% ratite_clades]
 ##ANALYSIS - FUNCTIONS##
 
 #setup - load and clean data
-prep_data <- function(file, ancrec.treekey, hog_info) {
+prep_data <- function(file, ancrec.treekey, hog_info, check_missing = F) {
   #load data -- dn
   read_line = paste0("gunzip -c ", file)
   dn<-fread(read_line, header=F, sep=",")
@@ -49,11 +49,15 @@ prep_data <- function(file, ancrec.treekey, hog_info) {
   dn$tree = as.integer(dn$tree)
   dn<-merge(dn, ancrec.treekey, by.x=c("hog", "tree"), by.y=c("hog", "treenum"), all.x=T, all.y=F)
   dn<-merge(dn, hog_info, by.x="hog", by.y="hog", all=T)
-  return(dn)
   #get missing runs
-  #check_for_missing<-unique(subset(dn, is.na(dn), select=c("hog", "has_species_tree", "has_gene_tree")))
-  #write.table(check_for_missing$hog, file="branch_reruns", quote=F, sep="", row.names = F, col.names =  F)
+  if (check_missing) {
+    check_for_missing<-unique(subset(dn, is.na(dn), select=c("hog", "has_species_tree", "has_gene_tree")))
+    write.table(check_for_missing$hog, file="branch_hogs_torerun.txt", quote=F, sep="", row.names = F, col.names =  T)
+    print(nrow(check_for_missing))
+   }
+  return(dn)
 }
+
 subset_clean_data <- function(DF, missing_cutoff = 2, dup_cutoff = 0, use_sptree = TRUE) {
   dn.clean = subset(DF, dup_ct <= dup_cutoff & missing_ct <= missing_cutoff  & species_tree == use_sptree, select=c("hog", "parent.node", "desc.node", "branch.id", "dn"))
   dn.clean$ratite=sapply(strsplit(dn.clean$desc.node, "-"), function(x) sum(x %in% ratite_clades)/length(x) == 1)
@@ -148,21 +152,36 @@ get_dir <- function(x, groupby) {
 
 ## ANALYSIS STARTS HERE ###
 
-dn<-prep_data(file="dn_parsed.csv.gz", ancrec.treekey = ancrec.treekey, hog_info = hog_info)
+dn<-prep_data(file="dn_parsed.csv.gz", ancrec.treekey = ancrec.treekey, hog_info = hog_info, check_missing = T)
+
 
 dn.default<-subset_clean_data(dn)
 #fix vl data, don't want to consider branches with descendant nodes that include the base of passerines/parrots as vocal learners
 dn.default$vl[grepl("-melUnd", dn.default$desc.node, fixed=T)]=FALSE
+#test out other convergences
+
+dn.default$wb=FALSE
+dn.default$wb[grepl("anaPla", dn.default$desc.node, fixed=T)]=TRUE
+dn.default$wb[grepl("aptFor", dn.default$desc.node, fixed=T)]=TRUE
+dn.default$wb[grepl("chaVoc", dn.default$desc.node, fixed=T)]=TRUE
+dn.default$wb[grepl("egrGar", dn.default$desc.node, fixed=T)]=TRUE
+dn.default$wb[grepl("nipNip", dn.default$desc.node, fixed=T)]=TRUE
+dn.default$wb[grepl("pygAde", dn.default$desc.node, fixed=T)]=TRUE
+dn.default$wb[grepl("balReg", dn.default$desc.node, fixed=T)]=TRUE
+dn.default$wb[grepl("fulGla", dn.default$desc.node, fixed=T)]=TRUE
+dn.default$wb[grepl("-", dn.default$desc.node, fixed=T)]=FALSE
+
 
 dn.default<-normalize_branch_stat(dn.default)
 
 
-dn.pval<-dn.default[,.(ratite.p = compute_pval(dn.norm, ratite),vl.p=compute_pval(dn.norm, vl)), by=hog]
+dn.pval<-dn.default[,.(ratite.p = compute_pval(dn.norm, ratite),vl.p=compute_pval(dn.norm, vl),wb.p=compute_pval(dn.norm, wb)), by=hog]
 dn.dir<-dn.default[,.(vl.dir = get_dir(dn.norm, vl)), by=hog]
 
 length(dn.pval$hog)
 summary(qvalue(dn.pval$ratite.p))
 summary(qvalue(dn.pval$vl.p))
+summary(qvalue(dn.pval$wb.p))
 
 dn.perm.pval<-do_perms(dn.default, load="raw_dn_perm_out.csv")
 
@@ -286,8 +305,8 @@ dn.pval.merge %>% with(., table(zhang.sig05, sig05 == 1)) %>% fisher.test
 
 # PLOTTING BELOW ##
 
-#hog_to_plot = 1086
-#with(dn.clean[dn.clean$hog==hog_to_plot,], plot(sort(dn.norm), col=ifelse(ratite[order(dn.norm)],"red", ifelse(nrpalaeo[order(dn.norm)], "black", ifelse(vl[order(dn.norm)], "blue", "gray50"))), pch=16))
+hog_to_plot = 37178
+with(dn.default[dn.default$hog==hog_to_plot,], plot(sort(dn.norm), col=ifelse(wb[order(dn.norm)],"red", "gray50"), pch=16))
 
 #FIGURE 2A
 

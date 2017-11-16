@@ -29,7 +29,8 @@ hog_info$has_gene_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$spe
 #merge tree info with relax
 relax$tree = as.integer(sub("tree", "", relax$tree))
 relax = merge(relax, ancrec.treekey, by.x=c("hog", "tree"), by.y=c("hog", "treenum"))
-relax = subset(relax, species_tree)
+relax.sp = subset(relax, species_tree)
+relax.gt = subset(relax, species_tree==FALSE)
 
 #convert to data table
 relax = as.data.table(relax)
@@ -37,9 +38,9 @@ relax = as.data.table(relax)
 hog_counts<-relax[,.N,by=.(hog,set)]
 hogs_to_run = hog_info$hog[hog_info$has_species_tree]
 
-write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="ratite" & hog_counts$N == 2])], file="ratite_reruns_Mar2017", quote=F, row.names = F, col.names = F)
-write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="vl" & hog_counts$N == 2])], file="vl_reruns_Mar2017", quote=F, row.names = F, col.names = F)
-write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="rnd" & hog_counts$N == 2])], file="rand_reruns_Mar2017", quote=F, row.names = F, col.names = F)
+write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="Ratite" & hog_counts$N == 2])], file="ratite_reruns_Oct2017", quote=F, row.names = F, col.names = F)
+write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="VL" & hog_counts$N == 2])], file="vl_reruns_Oct2017", quote=F, row.names = F, col.names = F)
+write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="RND" & hog_counts$N == 2])], file="rand_reruns_Oct2017", quote=F, row.names = F, col.names = F)
 
 ## ANALYSIS
 
