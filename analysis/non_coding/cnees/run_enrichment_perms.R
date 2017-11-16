@@ -78,32 +78,9 @@ write_tsv(perm_mf, path="perm_mf_results.tsv")
 
 
 
-##JUNK BELOW HERE##
-get_bp_perm(cnee, input_counts$set1, merged_bp_terms, "BP")
-
-perm_bp_accel <- accel_go_bp@result %>% dplyr::select(ID) %>% arrange(ID)
-bp_accel_count <- cnee %>% filter(gene != ".", ratite_accel.1, ratite_spec.1) %>% count
-perm_bp_conv <- conv_go_bp@result %>% dplyr::select(ID) %>% arrange(ID)
-bp_conv_count <- cnee %>% filter(gene != ".", ratite_accel.1, ratite_spec.1, ratite_conv.1) %>% count
 
 
-for (n in 2:201) {
-  perm_bp_accel[,n] = get_bp_perm(cnee, bp_accel_count$n, perm_bp_accel) %>% dplyr::select(logp.perm)
-  perm_bp_conv[,n] = get_bp_perm(cnee, bp_conv_count$n, perm_bp_conv) %>% dplyr::select(logp.perm)
-}
-
-test <- left_join(accel_go_bp@result, perm_bp_logp, by=c("ID" = "GO"))
-test %>% dplyr::select(ID, Description, pvalue, logp.perm:GO.9) %>% 
-  group_by(ID) %>% filter(!is.na(GO.9)) %>% 
-  mutate(logp.real = -log10(pvalue), max.perm = max(logp.perm:GO.9)) %>% arrange(desc(logp.real)) %>% filter(logp.real > max.perm+1) 
-
-test2 <- left_join(conv_go_bp@result, perm_bp_logp_2, by=c("ID" = "GO"))
-test2 %>% dplyr::select(ID, Description, pvalue, logp.perm:logp.perm.9) %>% 
-  group_by(ID) %>% filter(!is.na(logp.perm.9)) %>% 
-  mutate(logp.real = -log10(pvalue), max.perm = max(logp.perm:logp.perm.9)) %>% arrange(desc(logp.real)) %>% filter(logp.real > max.perm+1) 
-
-
-
+#OLD CODE BELOW HERE -- NEEDS EDITING#
 
 #ready for analysis -- below code rought draft currently
 
@@ -123,12 +100,6 @@ cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% count(num=floor(ratite_loss.p
 cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% count(num=floor(ratite_loss_cons_min.mat)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
 cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% count(num=floor(ratite_loss_cons.mat)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
 cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% count(num=floor(ratite_loss.mat)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-
-#functional enrichment
-#enrichment
-library(clusterProfiler)
-library(org.Gg.eg.db)
-
 
 ##PLOTS FOR TUFTS TALK##
 library(ggthemes)
@@ -194,68 +165,4 @@ neo_rand_conv %>%
   mutate(conv_prop2 = (conv_ct_3 + conv_ct_4 + conv_ct_5) / (conv_ct_1 + conv_ct_3 + conv_ct_4 + conv_ct_5)) %>% 
   ggplot(aes(x=conv_prop2)) + geom_histogram(binwidth=0.01, fill="steelblue") + geom_vline(xintercept = (6+118+777)/((6+118+777)+18218), col="red") + theme_classic() + theme(text=element_text(size=18))
 
-cnee <- full_join(cnee, atac, by=c("cnee" = "CNEE"))
-
-#testing enhancers generally
-cnee <- cnee %>% mutate(ratite_set_1 = ratite_accel.1 & ratite_spec.1, ratite_set_2 = ratite_accel.1 & ratite_spec.1 & ratite_conv.1)
-cnee %>% with(., table(TotalStrict > 0, ratite_set_1)) %>% fisher.test
-
-cnee %>% with(., prop.table(table(TotalStrict > 0, ratite_set_1 & !ratite_set_2),2))
-cnee %>% with(., prop.table(table(TotalStrict > 0, ratite_set_2),2))
-
-cnee %>% with(., table(TotalStrict > 0 & HL_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict > 0 & Keel10_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict > 0 & Keel9_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict > 0 & Strn10_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict > 0 & Strn9_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict > 0 & Pec10_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict > 0 & Pec9_strict > 0, ratite_set_1)) %>% fisher.test
-
-cnee %>% with(., table(TotalStrict == 1 & FL_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict > 0 & HL_strict > 0, ratite_set_1)) %>% fisher.test
-
-cnee %>% with(., table(TotalStrict == 1 & HL_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict == 1 & Keel10_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict == 1 & Keel9_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict == 1 & Strn10_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict == 1 & Strn9_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict == 1 & Pec10_strict > 0, ratite_set_1)) %>% fisher.test
-cnee %>% with(., table(TotalStrict == 1 & Pec9_strict > 0, ratite_set_1)) %>% fisher.test
-
-#make gene lists for enrichment plots
-cnee %>% filter(gene != ".") %>% select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi) %>% write_csv("all_cnee_genes.txt", col_names=FALSE)
-cnee %>% filter(gene != ".", ratite_set_1) %>% select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi) %>% write_csv("ratite_accel_cnee_genes.txt", col_names=FALSE)
-cnee %>% filter(gene != ".", ratite_set_2) %>% select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi) %>% write_csv("ratite_conv_cnee_genes.txt", col_names=FALSE)
-
-cnee %>% filter(gene != ".") %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% filter(sym=="TBX5") %>% with(., table(ratite_set_2, FL_strict > 0))
-
-#enrichment
-biocLite("org.Gg.eg.db")
-library(clusterProfiler)
-library(org.Gg.eg.db)
-
-ratite_accel_names <- cnee %>% filter(gene != ".", ratite_set_1) %>% select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi)
-all_cnee_names <- cnee %>% filter(gene != ".") %>% select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi)
-ratite_conv_names <- cnee %>% filter(gene != ".", ratite_set_2) %>% select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi) 
-
-all_genes_k <- enrichKEGG(ratite_accel_names$ncbi,organism="gga",pvalueCutoff=0.05,pAdjustMethod="BH",qvalueCutoff=0.05,universe=all_cnee_names$ncbi,keyType="ncbi-geneid")
-dotplot(all_genes_k)
-enrichMap(all_genes_k)
-plotGOgraph(all_genes_k)
-
-accel_go_bp <- enrichGO(ratite_accel_names$ncbi,'org.Gg.eg.db',pvalueCutoff=0.05,pAdjustMethod="BH",qvalueCutoff=0.05,universe=all_cnee_names$ncbi,keytype="ENTREZID",ont="BP")
-conv_go_bp <- enrichGO(ratite_conv_names$ncbi,'org.Gg.eg.db',pvalueCutoff=0.05,pAdjustMethod="BH",qvalueCutoff=0.05,universe=all_cnee_names$ncbi,keytype="ENTREZID",ont="BP")
-
-accel_go_mf <- enrichGO(ratite_accel_names$ncbi,'org.Gg.eg.db',pvalueCutoff=0.05,pAdjustMethod="BH",qvalueCutoff=0.05,universe=all_cnee_names$ncbi,keytype="ENTREZID",ont="MF")
-conv_go_mf <- enrichGO(ratite_conv_names$ncbi,'org.Gg.eg.db',pvalueCutoff=0.05,pAdjustMethod="BH",qvalueCutoff=0.05,universe=all_cnee_names$ncbi,keytype="ENTREZID",ont="MF")
-
-accel_go_cc <- enrichGO(ratite_accel_names$ncbi,'org.Gg.eg.db',pvalueCutoff=0.05,pAdjustMethod="BH",qvalueCutoff=0.05,universe=all_cnee_names$ncbi,keytype="ENTREZID",ont="CC")
-conv_go_cc <- enrichGO(ratite_conv_names$ncbi,'org.Gg.eg.db',pvalueCutoff=0.05,pAdjustMethod="BH",qvalueCutoff=0.05,universe=all_cnee_names$ncbi,keytype="ENTREZID",ont="CC")
-
-
-dotplot(accel_go_bp)
-dotplot(conv_go_bp)
-
-dotplot(accel_go_mf)
-dotplot(conv_go_mf)
 
