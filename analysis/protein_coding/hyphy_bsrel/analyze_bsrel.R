@@ -6,7 +6,7 @@ library(dplyr)
 #load tree key from paml_ancrec 
 ancrec.parsed<-fread("gunzip -c ../paml_ancrec/paml_M0_parsed.txt.gz")
 ancrec.treekey<-ancrec.parsed[,c("hog", "treenum", "species_tree"), with=FALSE]
-ancrec.treekey$tree = paste0("tree", paml.treekey$treenum)
+ancrec.treekey$tree = paste0("tree", ancrec.treekey$treenum)
 hog_info<-read.table("../all_hog_info.tsv", sep="\t", header=T)
 hog_info$has_species_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$species_tree]
 hog_info$has_gene_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$species_tree == F]
@@ -22,7 +22,7 @@ hog_to_gene <- hog_to_gene %>% tbl_df %>%
   select(-Gene)
 
 ##LOAD DATA## 
-merged = read.table("bsrel_res_parsed_ratites_2017-04-06.txt", fill=T)
+merged = read.table("bsrel_res_parsed_ratites_2017-11-01.txt", fill=T)
 names(merged)=c("class", "tree", "hog", "tsel.s", "nsel.s", "tsel.n", "nsel.n", "tnon", "nnon", "strict_branches", "nom_branches")
 merged=merge(merged, ancrec.treekey, by.x=c("hog", "tree"), by.y=c("hog", "tree"), all=T)
 
@@ -35,7 +35,7 @@ merged <- hog_info %>% select(hog, dup_ct, missing_ct) %>% right_join(., merged)
 
 ## THIS CODE CHECKS FOR MISSING HOGS TO RERUN
 #get missing and set up reruns
-check_for_missing = subset(merged, class=="ratites", select=c("hog", "tree", "treenum", "species_tree", "totbranch"))
+check_for_missing = subset(merged, select=c("hog", "tree", "treenum", "species_tree", "totbranch"))
 
 table(check_for_missing$treenum, check_for_missing$tree, useNA="ifany")
 check_for_missing=subset(check_for_missing, !is.na(treenum))
@@ -46,7 +46,7 @@ rerun<-subset(check_for_missing, totbranch==0 | is.na(totbranch))
 #if tree1 is a rerun and not the species tree, no tree2 to rerun
 #if tree2 is a rerun and not the species tree, no need to rerun tree1
 #however because of checks in script, should be able to just run straight up
-write.table(unique(rerun$hog), col.names = F, row.names = F, quote=F, file="hogs_to_rerun_April2017")
+write.table(unique(rerun$hog), col.names = F, row.names = F, quote=F, file="hogs_to_rerun_Nov2017")
 #####
 
 #ANALYSIS 

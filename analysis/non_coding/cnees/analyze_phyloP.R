@@ -31,7 +31,7 @@ for (target in targets$V1) {
 row.names(phylop.holm)<-phylop.holm$cnee
 
 #read clade tests
-setwd("/Volumes/LaCie/Projects/Current/ratites/final/accelTests/withMoa/")
+setwd("~/Projects/birds/ratite_compgen/data/accelTests/withMoa/")
 allRatite <- read.table("allRatite.out_neut_ver3.results", header = T, stringsAsFactors = F) %>% tbl_df %>% mutate(qval = p.adjust(pval, method="fdr"))
 tinamou <- read.table("Tinamou.out_neut_ver3.results", header=T, stringsAsFactors = F) %>% tbl_df %>% mutate(qval = p.adjust(pval, method="fdr"))
 anoDid <- read.table("anoDid.out_neut_ver3.results", header = T, stringsAsFactors = F) %>% tbl_df %>% mutate(qval = p.adjust(pval, method="fdr"))

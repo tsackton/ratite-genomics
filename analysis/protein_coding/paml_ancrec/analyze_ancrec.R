@@ -1,6 +1,7 @@
 setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/protein_coding/paml_ancrec/")
 library(data.table)
 library(ape)
+library(tidyverse)
 
 #read in files
 ancrec.parsed<-fread("gunzip -c paml_M0_parsed.txt.gz")
@@ -55,13 +56,26 @@ prep_data <- function (DF, tipdist) {
   ancrec.1.sum$totalsubs = ancrec.1.sum$broadconv + ancrec.1.sum$broaddiv
   return(ancrec.1.sum)
 }
-run_lm <- function(DF) {
-  ancrec.1.sum<-DF
+run_lm_exp <- function(DF) {
   #linear model
-  mod.full<-lm(broadconv ~ broaddiv*dist + as.factor(ratite==2), data=ancrec.1.sum)
-  mod.noratite<-lm(broadconv ~ broaddiv*dist, data=ancrec.1.sum)
-  anova(mod.noratite,mod.full)
+  mod.full<-lm(broadconv ~ broaddiv*exp(dist) + as.factor(ratite==2), data=DF)
+  mod.noratite<-lm(broadconv ~ broaddiv*exp(dist), data=DF)
+  anova(mod.noratite,mod.full,test="LRT")
 }
+run_lm <- function(DF) {
+  #linear model
+  mod.full<-lm(broadconv ~ broaddiv*dist + as.factor(ratite==2), data=DF)
+  mod.noratite<-lm(broadconv ~ broaddiv*dist, data=DF)
+  anova(mod.noratite,mod.full,test="LRT")
+}
+run_lm_log <- function(DF) {
+  #linear model
+  mod.full<-lm(broadconv ~ broaddiv*log(dist) + as.factor(ratite==2), data=DF)
+  mod.noratite<-lm(broadconv ~ broaddiv*log(dist), data=DF)
+  anova(mod.noratite,mod.full,test="LRT")
+}
+
+#not used
 make_fig <- function(DF, file, distcut=0.15, pval=NA) {
   ancrec.1.sum <- DF
   pdf(file = file)
@@ -75,6 +89,7 @@ make_fig <- function(DF, file, distcut=0.15, pval=NA) {
   }
   dev.off()
 }
+
 get_conv_num<-function(DF) {
   ancrec.conv<-subset(DF, (mutclass=="convergent" | mutclass=="parallel"))
   ancrec.all<-DF
@@ -100,8 +115,12 @@ length(unique(ancrec.1$hog))
 ancrec.1.sum <- prep_data(ancrec.1, tipdist)
 #get lm
 run_lm(ancrec.1.sum)
+run_lm_exp(ancrec.1.sum)
+run_lm_log(ancrec.1.sum)
+
 #make fig
-make_fig(ancrec.1.sum, "Figure2A.pdf", pval=round(unlist(run_lm(ancrec.1.sum)[6][2,]),3))
+#not run
+#make_fig(ancrec.1.sum, "Figure2A.pdf", distcut=0.25, pval=round(unlist(run_lm(ancrec.1.sum)[6][2,]),3))
 #specific genes
 ratite.conv.genes<-get_conv_num(ancrec.1)
 table(ratite.conv.genes$qval < 0.05)
