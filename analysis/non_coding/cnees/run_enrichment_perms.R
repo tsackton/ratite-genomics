@@ -72,97 +72,44 @@ perm_mf <- mclapply(1:num_perms, get_one_perm_set, input=input_counts, DF=cnee, 
 #write out
 write_tsv(perm_bp, path="perm_bp_results.tsv")
 write_tsv(perm_mf, path="perm_mf_results.tsv")
+write_tsv(bp_res_real, path="obs_bp_results.tsv")
+write_tsv(mf_res_real, path="obs_mf_results.tsv")
+
+#end GO results#
 
 ### GENE ENRICHMENT HERE ###
 #for gene enrichment tests, the idea is to randomly permute each set and get count of CNEEs per gene
+#strategy here is to make an indicator variable, compute "real" T/F per gene, and then shuffle indicator variable
 
-
-
-
-
-#OLD CODE BELOW HERE -- NEEDS EDITING#
-
-#ready for analysis -- below code rought draft currently
-
-##basic numbers
-table(cnee$ratite_accel.1 & cnee$ratite_spec.1, cnee$ratite_accel.2 & cnee$ratite_spec.2)
-
-cnee %>% filter(ratite_accel.2, ratite_spec.2) %>% count(num=floor(ratite_loss_cons_min.prob)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-cnee %>% filter(ratite_accel.2, ratite_spec.2) %>% count(num=floor(ratite_loss_cons.prob)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-cnee %>% filter(ratite_accel.2, ratite_spec.2) %>% count(num=floor(ratite_loss.prob)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-cnee %>% filter(ratite_accel.2, ratite_spec.2) %>% count(num=floor(ratite_loss_cons_min.mat)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-cnee %>% filter(ratite_accel.2, ratite_spec.2) %>% count(num=floor(ratite_loss_cons.mat)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-cnee %>% filter(ratite_accel.2, ratite_spec.2) %>% count(num=floor(ratite_loss.mat)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-
-cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% count(num=floor(ratite_loss_cons_min.prob)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% count(num=floor(ratite_loss_cons.prob)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% count(num=floor(ratite_loss.prob)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% count(num=floor(ratite_loss_cons_min.mat)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% count(num=floor(ratite_loss_cons.mat)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% count(num=floor(ratite_loss.mat)) %>% summarise(total = sum(n), count = sum(n[num >= 2]), prop = sum(n[num >= 2])/sum(n))
-
-##PLOTS FOR TUFTS TALK##
-library(ggthemes)
-cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% ggplot(aes(x=floor(ratite_loss_cons.prob))) + geom_bar(fill="red") + coord_flip() + scale_x_reverse() + theme_classic() + theme(text=element_text(size=18))
-#raw counts
-cnee %>% filter(ratite_accel.2, ratite_spec.2) %>% count(floor(ratite_loss_cons_min.prob))
-
-
-#neognath distribution of convergent losses
-neo_losses <- postaccmat %>%
-  mutate(taeGut.loss = (taeGut - taeGut.ficAlb)) %>%
-  mutate(ficAlb.loss = (ficAlb - taeGut.pseHum)) %>%
-  mutate(pseHum.loss = (pseHum - taeGut.pseHum)) %>%
-  mutate(corBra.loss = (corBra - taeGut.corBra)) %>%
-  mutate(melUnd.loss = (melUnd - taeGut.melUnd)) %>%
-  mutate(falPer.loss = (falPer - taeGut.falPer)) %>%
-  mutate(picPub.loss = (picPub - picPub.lepDis)) %>%
-  mutate(lepDis.loss = (lepDis - picPub.lepDis)) %>%
-  mutate(halLeu.loss = (halLeu - picPub.halLeu)) %>%
-  mutate(aptFor.loss = (aptFor - aptFor.pygAde)) %>%
-  mutate(pygAde.loss = (pygAde - aptFor.pygAde)) %>%
-  mutate(fulGla.loss = (fulGla - aptFor.fulGla)) %>%
-  mutate(nipNip.loss = (nipNip - aptFor.nipNip)) %>%
-  mutate(balReg.loss = (balReg - balReg.chaVoc)) %>%
-  mutate(chaVoc.loss = (chaVoc - balReg.chaVoc)) %>%
-  mutate(calAnn.loss = (calAnn - calAnn.chaPel)) %>%
-  mutate(chaPel.loss = (chaPel - calAnn.chaPel)) %>%
-  mutate(cucCan.loss = (cucCan - calAnn.cucCan)) %>%
-  mutate(colLiv.loss = (colLiv - colLiv.mesUni)) %>%
-  mutate(mesUni.loss = (mesUni - colLiv.mesUni)) %>% select(taeGut.loss:mesUni.loss)
-
-#sample 10000 tips in batches of 5 and get convergence counts
-neo_rand_conv<-data.frame(rep=seq(1,10000), conv_ct_1=NA, conv_ct_2=NA, conv_ct_3=NA, conv_ct_4=NA, conv_ct_5=NA)
-for (i in 1:10001) {
-  targets <- sample(colnames(neo_losses), 5)
-  conv <- neo_losses %>% select(targets) %>% mutate(conv = rowSums(.)) %>% select(conv)
-  alllosses <- cbind(neo_losses %>% mutate(all_loss = rowSums(.)) %>% select(all_loss), conv)
-  neo_rand_conv$conv_ct_1[i] <- sum(alllosses$conv == 1 & alllosses$all_loss == alllosses$conv) 
-  neo_rand_conv$conv_ct_2[i] <- sum(alllosses$conv == 2 & alllosses$all_loss == alllosses$conv)
-  neo_rand_conv$conv_ct_3[i] <- sum(alllosses$conv == 3 & alllosses$all_loss == alllosses$conv)
-  neo_rand_conv$conv_ct_4[i] <- sum(alllosses$conv == 4 & alllosses$all_loss == alllosses$conv)
-  neo_rand_conv$conv_ct_5[i] <- sum(alllosses$conv == 5 & alllosses$all_loss == alllosses$conv)
+get_gene_counts <- function(DF, indicator) {
+#  indcol <- enquo(indicator)
+#  indcol <- indicator
+  DF %>% filter(gene != ".") %>% mutate(in_target = !!indicator) %>% count(gene, in_target) %>% filter(!is.na(in_target)) %>% spread(in_target, n, fill=0, drop=FALSE, sep="_")
 }
 
-#real ratite data
-sum(cnee$ratite_loss_cons.mat == 1 & cnee$tin_loss.mat == 0 & cnee$neo_loss.mat == 0)
-sum(cnee$ratite_loss_cons.mat == 2 & cnee$tin_loss.mat == 0 & cnee$neo_loss.mat == 0)
-sum(cnee$ratite_loss_cons.mat == 3 & cnee$tin_loss.mat == 0 & cnee$neo_loss.mat == 0)
-sum(cnee$ratite_loss_cons.mat == 4 & cnee$tin_loss.mat == 0 & cnee$neo_loss.mat == 0)
-sum(cnee$ratite_loss_cons.mat == 5 & cnee$tin_loss.mat == 0 & cnee$neo_loss.mat == 0)
+perm_gene_counts <- function(perm, DF, indicator) {
+#  indcol <- enquo(indicator)
+  DF %>% filter(gene != ".") %>% mutate(rand = sample(!!indicator)) %>% count(gene, rand) %>% filter(!is.na(rand)) %>% spread(rand, n, fill=0, drop=FALSE, sep="_")
+}
 
-#edit neo rand conv
-neo_rand_conv <- neo_rand_conv %>% mutate(conv_tot = conv_ct_2 + conv_ct_3 + conv_ct_4 + conv_ct_5, total_accel = conv_tot + conv_ct_1)
-neo_rand_conv <- neo_rand_conv %>% mutate(conv_prop = conv_tot / total_accel)
+#make real dataset
+#first add sets to cnee data frame
+cnee <- cnee %>% mutate(set1 = ratite_accel.1 & ratite_spec.1) %>% 
+  mutate(set2 = ratite_accel.2 & ratite_spec.2) %>% 
+  mutate(set3 = ratite_accel.1 & ratite_spec.1 & ratite_conv.1) %>% 
+  mutate(set4 = ratite_accel.1 & ratite_spec.1 & ratite_conv.1 & ratite_loss_cons_min.mat >= 2)
 
-neo_rand_conv %>% ggplot(aes(x=conv_ct_2)) + geom_histogram(binwidth = 150)
-neo_rand_conv %>% ggplot(aes(x=conv_ct_3)) + geom_histogram(binwidth = 10)
-neo_rand_conv %>% ggplot(aes(x=conv_ct_4)) + geom_histogram(binwidth = 2)
-neo_rand_conv %>% ggplot(aes(x=conv_ct_5)) + geom_histogram(binwidth = 1)
+gene_counts_obs <- lapply(c(quo(set1),quo(set2),quo(set3),quo(set4)), get_gene_counts, DF=cnee) %>% bind_rows(.id="set")
 
-neo_rand_conv %>% ggplot(aes(x=conv_prop)) + geom_histogram(binwidth=0.01, fill="steelblue") + geom_vline(xintercept = (6+118+777+3578)/((6+118+777+3578)+18218), col="red") + theme_classic() + theme(text=element_text(size=18))
-neo_rand_conv %>% 
-  mutate(conv_prop2 = (conv_ct_3 + conv_ct_4 + conv_ct_5) / (conv_ct_1 + conv_ct_3 + conv_ct_4 + conv_ct_5)) %>% 
-  ggplot(aes(x=conv_prop2)) + geom_histogram(binwidth=0.01, fill="steelblue") + geom_vline(xintercept = (6+118+777)/((6+118+777)+18218), col="red") + theme_classic() + theme(text=element_text(size=18))
+para_cores <- CORES
+num_perms <- PERMS
 
+gene_counts_perm <- bind_rows(list(set1 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set1), mc.preschedule = TRUE, mc.cores = para_cores) %>% bind_rows(.id="perm"),
+                                   set2 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set2), mc.preschedule = TRUE, mc.cores = para_cores) %>% bind_rows(.id="perm"),
+                                   set3 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set3), mc.preschedule = TRUE, mc.cores = para_cores) %>% bind_rows(.id="perm"),
+                                   set4 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set4), mc.preschedule = TRUE, mc.cores = para_cores) %>% bind_rows(.id="perm")), .id="set")
 
+write_tsv(gene_counts_perm, path="perm_gene_count_results.tsv")
+write_tsv(gene_counts_obs, path="obs_gene_count_results.tsv")
+
+#end GENE PERMUTATIONS#
