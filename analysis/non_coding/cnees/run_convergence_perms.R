@@ -50,6 +50,8 @@ conv_sample <- function(perm=1, DF, number, tips) {
 perm_conv <- mclapply(1:NPERM, conv_sample, DF=cnee, number=3, tips=neo_mat_tips, mc.preschedule = TRUE, mc.cores = CORES) %>% bind_rows(.id="perm")
 perm_conv_clean <- perm_conv %>% distinct(tips, .keep_all=TRUE)
 
+write_tsv(perm_conv_clean, path="perm_convergence.tsv")
+
 #get real ratite results
 get_ratite_count <- function(DF, species) {
   target = quo(paste0(species, ".mat", collapse=""))
@@ -61,3 +63,5 @@ get_ratite_count <- function(DF, species) {
 
 ratite_conv_counts <- data.frame(third_species = c("rheAme", "rhePen", "casCas", "droNov", "aptHaa", "aptOwe", "aptRow"), 
                                  conv_count = lapply(c("rheAme", "rhePen", "casCas", "droNov", "aptHaa", "aptOwe", "aptRow"), get_ratite_count, DF=cnee) %>% unlist)
+
+write_tsv(ratite_conv_counts, path="obs_convergence.tsv")
