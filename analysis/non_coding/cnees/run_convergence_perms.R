@@ -2,14 +2,14 @@
 library(tidyverse)
 library(parallel)
 library(ape)
-
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
-
+#
+#setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
+#
 #we'll work in trios as that is conservative, using either the .mat or .prob
 #for ratites, use neognaths as control
 
-CORES <- 4
-NPERM <- 1000
+CORES <- 32
+NPERM <- 20000
 
 cnee <- read_tsv("cnees.tsv")
 
@@ -22,7 +22,7 @@ cnee$neo_loss_mat_full <- cnee %>% dplyr::select(ficAlb.mat:anaPla.mat) %>% rowS
 cnee$neo_loss_prob_full <- cnee %>% dplyr::select(ficAlb.prob:anaPla.prob) %>% rowSums(.)
 
 #read tree
-phy<-read.tree(file="../../protein_coding/final_neut_tree.nwk")
+phy<-read.tree(file="final_neut_tree.nwk")
 
 count_sister_taxa <- function(tree, tips) {
   #set up pairs
