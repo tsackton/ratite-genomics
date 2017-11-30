@@ -1,8 +1,9 @@
 setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/protein_coding/paml_branch/")
 library(data.table)
 library(qvalue)
-library(tidyr)
-library(dplyr)
+library(tidyverse)
+library(clusterProfiler)
+library(org.Gg.eg.db)
 
 ##SETUP##
 
@@ -120,7 +121,7 @@ do_perms<-function(DF, nreps=1000, load="", write="") {
     return(dn.perm)
   }
   
-  dn.perm=dn.clean[,.(hog,desc.node,dn.norm)]
+  dn.perm=DF[,.(hog,desc.node,dn.norm)]
   dn.perm.desc_nodes=data.frame(desc.node=unique(dn.perm$desc.node),test_clade=F, stringsAsFactors = F)
   nreps=nreps
   for (i in 1:nreps) {
@@ -152,7 +153,7 @@ get_dir <- function(x, groupby) {
 
 ## ANALYSIS STARTS HERE ###
 
-dn<-prep_data(file="dn_parsed.csv.gz", ancrec.treekey = ancrec.treekey, hog_info = hog_info, check_missing = T)
+dn<-prep_data(file="aa_parsed.csv.gz", ancrec.treekey = ancrec.treekey, hog_info = hog_info, check_missing = T)
 
 
 dn.default<-subset_clean_data(dn)
@@ -173,17 +174,31 @@ dn.default$wb[grepl("-", dn.default$desc.node, fixed=T)]=FALSE
 
 
 dn.default<-normalize_branch_stat(dn.default)
-
-
-dn.pval<-dn.default[,.(ratite.p = compute_pval(dn.norm, ratite),vl.p=compute_pval(dn.norm, vl),wb.p=compute_pval(dn.norm, wb)), by=hog]
-dn.dir<-dn.default[,.(vl.dir = get_dir(dn.norm, vl)), by=hog]
-
+dn.pval<-dn.default[,.(ratite.p = compute_pval(dn.norm, ratite),ratite.dir = get_dir(dn.norm, ratite),wb.p=compute_pval(dn.norm, wb),wb.dir=get_dir(dn.norm, wb),vl.p=compute_pval(dn.norm, vl), vl.dir=get_dir(dn.norm,vl)), by=hog]
 length(dn.pval$hog)
 summary(qvalue(dn.pval$ratite.p))
-summary(qvalue(dn.pval$vl.p))
-summary(qvalue(dn.pval$wb.p))
 
-dn.perm.pval<-do_perms(dn.default, load="raw_dn_perm_out.csv")
+dn.pval %>% filter(ratite.dir > 0) %>% ggplot(aes(x=ratite.p)) + geom_histogram(bins=50)
+dn.pval %>% filter(ratite.dir > 0) %>% with(., summary(qvalue(ratite.p)))
+dn.pval %>% filter(ratite.dir < 0) %>% ggplot(aes(x=ratite.p)) + geom_histogram(bins=50)
+dn.pval %>% filter(ratite.dir < 0) %>% with(., summary(qvalue(ratite.p)))
+
+dn.pval %>% filter(wb.dir > 0) %>% ggplot(aes(x=wb.p)) + geom_histogram(bins=50)
+dn.pval %>% filter(wb.dir > 0) %>% with(., summary(qvalue(wb.p)))
+dn.pval %>% filter(wb.dir < 0) %>% ggplot(aes(x=wb.p)) + geom_histogram(bins=50)
+dn.pval %>% filter(wb.dir < 0) %>% with(., summary(qvalue(wb.p)))
+
+
+#go enrich
+
+accel_hogs <- dn.pval %>% filter(vl.dir > 0, vl.p < 0.01) %>% dplyr::select(hog) %>% left_join(hog_to_gene) %>% filter(!is.na(gene))
+all_hogs <- dn.pval %>% dplyr::select(hog) %>% left_join(hog_to_gene) %>% filter(!is.na(gene))
+
+enrichGO(accel_hogs$gene, 'org.Gg.eg.db', keytype = "SYMBOL", universe = all_hogs$gene, ont="MF")
+enrichGO(accel_hogs$gene, 'org.Gg.eg.db', keytype = "SYMBOL", universe = all_hogs$gene, ont="BP")
+enrichKEGG(bitr(accel_hogs$gene, fromType = "SYMBOL", toType="ENTREZID", OrgDb = "org.Gg.eg.db")$ENTREZID, organism="gga", keyType = "ncbi-geneid", universe = bitr(all_hogs$gene, fromType = "SYMBOL", toType="ENTREZID", OrgDb = "org.Gg.eg.db")$ENTREZID)
+
+dn.perm.pval<-do_perms(dn.default, nreps=5)
 
 #repeating subset and pval with different filtering
 for (missing in c(0,2,4)) {
@@ -301,12 +316,10 @@ dn.pval.merge %>% with(., table(zhang.sig05, sig05 == 1)) %>% fisher.test
 #based on symbol matching so should be good but not perfect orthology
 
 
-
-
 # PLOTTING BELOW ##
 
-hog_to_plot = 37178
-with(dn.default[dn.default$hog==hog_to_plot,], plot(sort(dn.norm), col=ifelse(wb[order(dn.norm)],"red", "gray50"), pch=16))
+hog_to_plot = 1293
+with(dn.default[dn.default$hog==hog_to_plot,], plot(sort(dn.norm), col=ifelse(ratite[order(dn.norm)],"red", "gray50"), pch=16))
 
 #FIGURE 2A
 

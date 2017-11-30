@@ -38,15 +38,15 @@ relax = as.data.table(relax)
 hog_counts<-relax[,.N,by=.(hog,set)]
 hogs_to_run = hog_info$hog[hog_info$has_species_tree]
 
-write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="Ratite" & hog_counts$N == 2])], file="ratite_reruns_Oct2017", quote=F, row.names = F, col.names = F)
-write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="VL" & hog_counts$N == 2])], file="vl_reruns_Oct2017", quote=F, row.names = F, col.names = F)
-write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="RND" & hog_counts$N == 2])], file="rand_reruns_Oct2017", quote=F, row.names = F, col.names = F)
+write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="Ratite" & hog_counts$N == 2])], file="ratite_reruns_Det2017", quote=F, row.names = F, col.names = F)
+write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="VL" & hog_counts$N == 2])], file="vl_reruns_Dec2017", quote=F, row.names = F, col.names = F)
+write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="RND" & hog_counts$N == 2])], file="rand_reruns_Dec2017", quote=F, row.names = F, col.names = F)
 
 ## ANALYSIS
 
 #make subset
 hog_counts_all <- relax[,.N,by=hog]
-hogs_to_use = hog_counts_all$hog[hog_counts_all$N == 8]
+hogs_to_use = hog_counts_all$hog
 
 relax<-merge(relax, hog_info, by="hog")
 missing_cutoff = 2
