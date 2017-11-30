@@ -6,11 +6,11 @@ library(parallel)
 library(rlist)
 
 #set working directory
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
+#setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
 
 #set cores and perms for whole run, can be individually modified later in code
-CORES <- 4
-PERMS <- 8
+CORES <- 32
+PERMS <- 12000
 
 #load data
 cnee <- read_tsv("cnees.tsv")
@@ -110,10 +110,12 @@ gene_counts_obs <- lapply(c(quo(set1),quo(set2),quo(set3),quo(set4)), get_gene_c
 para_cores <- CORES
 num_perms <- PERMS
 
-gene_counts_perm <- bind_rows(list(set1 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set1), mc.preschedule = FALSE, mc.cores = para_cores) %>% bind_rows(.id="perm"),
+gene_counts_perm_list <- list(set1 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set1), mc.preschedule = FALSE, mc.cores = para_cores) %>% bind_rows(.id="perm"),
                                    set2 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set2), mc.preschedule = FALSE, mc.cores = para_cores) %>% bind_rows(.id="perm"),
                                    set3 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set3), mc.preschedule = FALSE, mc.cores = para_cores) %>% bind_rows(.id="perm"),
-                                   set4 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set4), mc.preschedule = FALSE, mc.cores = para_cores) %>% bind_rows(.id="perm")), .id="set")
+                                   set4 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set4), mc.preschedule = FALSE, mc.cores = para_cores) %>% bind_rows(.id="perm"))
+
+gene_counts_perm <- gene_counts_perm_list %>% bind_rows(.id="set")
 
 write_tsv(gene_counts_perm, path="perm_gene_count_results.tsv")
 write_tsv(gene_counts_obs, path="obs_gene_count_results.tsv")
