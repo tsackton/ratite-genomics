@@ -60,19 +60,22 @@ run_lm_exp <- function(DF) {
   #linear model
   mod.full<-lm(broadconv ~ broaddiv*exp(dist) + as.factor(ratite==2), data=DF)
   mod.noratite<-lm(broadconv ~ broaddiv*exp(dist), data=DF)
-  anova(mod.noratite,mod.full,test="LRT")
+  print(anova(mod.noratite,mod.full,test="LRT"))
+  print(summary(mod.full))
 }
 run_lm <- function(DF) {
   #linear model
   mod.full<-lm(broadconv ~ broaddiv*dist + as.factor(ratite==2), data=DF)
   mod.noratite<-lm(broadconv ~ broaddiv*dist, data=DF)
-  anova(mod.noratite,mod.full,test="LRT")
+  print(anova(mod.noratite,mod.full,test="LRT"))
+  print(summary(mod.full))
 }
 run_lm_log <- function(DF) {
   #linear model
   mod.full<-lm(broadconv ~ broaddiv*log(dist) + as.factor(ratite==2), data=DF)
   mod.noratite<-lm(broadconv ~ broaddiv*log(dist), data=DF)
-  anova(mod.noratite,mod.full,test="LRT")
+  print(anova(mod.noratite,mod.full,test="LRT"))
+  print(summary(mod.full))
 }
 
 #not used
@@ -89,7 +92,6 @@ make_fig <- function(DF, file, distcut=0.15, pval=NA) {
   }
   dev.off()
 }
-
 get_conv_num<-function(DF) {
   ancrec.conv<-subset(DF, (mutclass=="convergent" | mutclass=="parallel"))
   ancrec.all<-DF
@@ -115,15 +117,8 @@ length(unique(ancrec.1$hog))
 ancrec.1.sum <- prep_data(ancrec.1, tipdist)
 #get lm
 run_lm(ancrec.1.sum)
-run_lm_exp(ancrec.1.sum)
 run_lm_log(ancrec.1.sum)
-
-#make fig
-#not run
-#make_fig(ancrec.1.sum, "Figure2A.pdf", distcut=0.25, pval=round(unlist(run_lm(ancrec.1.sum)[6][2,]),3))
-#specific genes
-ratite.conv.genes<-get_conv_num(ancrec.1)
-table(ratite.conv.genes$qval < 0.05)
+run_lm_exp(ancrec.1.sum)
 
 #gene tree, same filtering otherwise
 ancrec.2<-subset(ancrec.muts.merge, species_tree == FALSE & dup_ct_clean == 0 & clean=="clean" & type=="tip-tip" & missing_ct_clean<3, select=c("hog", "branchnames", "branchpair", "ratite", "mutclass"))
@@ -132,6 +127,30 @@ length(unique(ancrec.2$hog))
 ancrec.2.sum <- prep_data(ancrec.2, tipdist)
 #get lm
 run_lm(ancrec.2.sum)
+run_lm_log(ancrec.2.sum)
+run_lm_exp(ancrec.2.sum)
+
+#gene tree, strict filtering 
+ancrec.3<-subset(ancrec.muts.merge, species_tree == FALSE & dup_ct_clean == 0 & clean=="clean" & type=="tip-tip" & missing_ct_clean == 0, select=c("hog", "branchnames", "branchpair", "ratite", "mutclass"))
+length(unique(ancrec.3$hog))
+#prep data
+ancrec.3.sum <- prep_data(ancrec.3, tipdist)
+#get lm
+run_lm(ancrec.3.sum)
+run_lm_log(ancrec.3.sum)
+run_lm_exp(ancrec.3.sum)
+
+
+
+##BELOW HERE NOT RUN
+#make fig
+#not run
+#make_fig(ancrec.1.sum, "Figure2A.pdf", distcut=0.25, pval=round(unlist(run_lm(ancrec.1.sum)[6][2,]),3))
+#specific genes
+ratite.conv.genes<-get_conv_num(ancrec.1)
+table(ratite.conv.genes$qval < 0.05)
+
+
 #make fig
 make_fig(ancrec.2.sum, "Figure2A-genetree.pdf", pval=round(unlist(run_lm(ancrec.2.sum)[6][2,]),3))
 #specific genes
