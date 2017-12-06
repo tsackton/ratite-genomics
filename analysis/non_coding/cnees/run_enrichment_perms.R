@@ -43,9 +43,6 @@ input_counts<-list("set1" = cnee %>% filter(gene != ".", ratite_accel.1, ratite_
 #for each GO term in the merged go list, want to compute permutations: input is the merged term list and the counts
 
 get_go_perm <- function(DF, samples, golist, ont) {
-  if (sample(1:6) == 2) {
-    stop() 
-  }
   rand <- DF %>% sample_n(samples) %>% filter(gene != ".") %>% 
     dplyr::select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% 
     distinct(ncbi)

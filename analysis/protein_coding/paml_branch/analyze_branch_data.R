@@ -90,10 +90,10 @@ normalize_branch_stat <- function(DF, filter=TRUE) {
 }
 
 compute_pval <- function (x, groupvar) {
-  if (inherits(try(ans<-wilcox.test(x ~ groupvar)$p.value,silent=TRUE),"try-error"))
+  if (inherits(try(ans<-wilcox.test(x ~ groupvar, conf.int=TRUE),silent=TRUE),"try-error"))
     return(NA_real_)
   else
-    return(ans)
+    return(list(pval=ans$p.value, est=ans$estimate))
 }
 
 #qc checks of distributions
@@ -148,17 +148,28 @@ do_perms<-function(DF, nreps=1000, load="", write="") {
 }
 
 get_dir <- function(x, groupby) {
-  sign(cor(x=x, y=as.numeric(groupby), use="na.or.complete"))
+  cor(x=x, y=as.numeric(groupby), use="na.or.complete")
+}
+
+get_coef <- function(x, groupby, subset) {
+  group <- factor(groupby, levels=c("TRUE", "FALSE"))
+  if (length(levels(droplevels(group))) == 2) {
+    wilcox.test(x ~ group, conf.int=T)$estimate
+  }
+  else {
+    return(NA_real_)
+  }
 }
 
 ## ANALYSIS STARTS HERE ###
 
 dn<-prep_data(file="aa_parsed.csv.gz", ancrec.treekey = ancrec.treekey, hog_info = hog_info, check_missing = T)
-
-
 dn.default<-subset_clean_data(dn)
 #fix vl data, don't want to consider branches with descendant nodes that include the base of passerines/parrots as vocal learners
 dn.default$vl[grepl("-melUnd", dn.default$desc.node, fixed=T)]=FALSE
+dn.default$ratite[grepl("aptHaa-aptOwe-aptRow-casCas-droNov-rheAme-rhePen", dn.default$desc.node, fixed=T)]=FALSE
+dn.default$ratite[grepl("aptHaa-aptOwe-aptRow-casCas-droNov", dn.default$desc.node, fixed=T)]=FALSE
+
 #test out other convergences
 
 dn.default$wb=FALSE
@@ -170,15 +181,92 @@ dn.default$wb[grepl("nipNip", dn.default$desc.node, fixed=T)]=TRUE
 dn.default$wb[grepl("pygAde", dn.default$desc.node, fixed=T)]=TRUE
 dn.default$wb[grepl("balReg", dn.default$desc.node, fixed=T)]=TRUE
 dn.default$wb[grepl("fulGla", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$wb[grepl("-", dn.default$desc.node, fixed=T)]=FALSE
+dn.default$wb[grepl("pseHum", dn.default$desc.node, fixed=T)]=FALSE
+dn.default$wb[grepl("galGal-melGal-anaPla", dn.default$desc.node, fixed=T)]=FALSE
+dn.default$wb[grepl("aptFor-pygAde-fulGla-egrGar-nipNip", dn.default$desc.node, fixed=T)]=FALSE
 
+dn.default$tinamou=FALSE
+dn.default$tinamou[grepl("notPer", dn.default$desc.node, fixed=T)]=TRUE
+dn.default$tinamou[grepl("tinGut", dn.default$desc.node, fixed=T)]=TRUE
+dn.default$tinamou[grepl("cryCin", dn.default$desc.node, fixed=T)]=TRUE
+dn.default$tinamou[grepl("eudEle", dn.default$desc.node, fixed=T)]=TRUE
+dn.default$tinamou[grepl("aptHaa", dn.default$desc.node, fixed=T)]=FALSE
+dn.default$tinamou[grepl("cryCin-tinGut-eudEle-notPer", dn.default$desc.node, fixed=T)]=FALSE
 
 dn.default<-normalize_branch_stat(dn.default)
+
+dn.results<-dn.default[,.(ratite.coef = get_coef(dn.norm, ratite), 
+                          nrpalaeo.coef = get_coef(dn.norm, nrpalaeo), 
+                          ratite.pval = compute_pval(dn.norm, ratite), 
+                          nrpalaeo.pval = compute_pval(dn.norm, nrpalaeo), 
+                          wb.coef = get_coef(dn.norm, wb), 
+                          vl.coef = get_coef(dn.norm, vl), 
+                          wb.pval = compute_pval(dn.norm, wb), 
+                          vl.pval = compute_pval(dn.norm, vl)), 
+                       by=hog]
+length(unique(dn.results$hog))
+
+sum(dn.results$ratite.pval < 0.05 & dn.results$ratite.coef < 0) / sum(dn.results$ratite.coef < 0)
+sum(dn.results$ratite.pval < 0.05 & dn.results$ratite.coef > 0) / sum(dn.results$ratite.coef > 0)
+
+sum(dn.results$nrpalaeo.pval < 0.05 & dn.results$nrpalaeo.coef < 0, na.rm=T) / sum(dn.results$nrpalaeo.coef < 0, na.rm=T)
+sum(dn.results$nrpalaeo.pval < 0.05 & dn.results$nrpalaeo.coef > 0, na.rm=T) / sum(dn.results$nrpalaeo.coef > 0, na.rm=T)
+
+sum(dn.results$wb.pval < 0.05 & dn.results$wb.coef < 0) / sum(dn.results$wb.coef < 0)
+sum(dn.results$wb.pval < 0.05 & dn.results$wb.coef > 0) / sum(dn.results$wb.coef > 0)
+
+sum(dn.results$vl.pval < 0.05 & dn.results$vl.coef < 0, na.rm=T) / sum(dn.results$vl.coef < 0, na.rm=T)
+sum(dn.results$vl.pval < 0.05 & dn.results$vl.coef > 0, na.rm=T) / sum(dn.results$vl.coef > 0, na.rm=T)
+
+#simple perm
+simple_perm <- function(perm, DF) {
+  key<-DF %>% dplyr::select(desc.node, ratite) %>% distinct()
+  key$perm = sample(key$ratite)
+  dn.perm <- inner_join(key, dn.default) %>% as.data.table
+  dn.perm<-dn.perm[,compute_pval(dn.norm, perm), by=hog] %>% dplyr::select(est, pval)
+}
+
+test_perm <- lapply(1:3, simple_perm, DF=dn.default)
+
+#ratite, vocal learning, tinamou, waterbirds
+#need to think of a better way of quantifying the signal in the data somehow
+
+###TESTING
+
+test_hog = 1293
+test_df <- dn.default %>% filter(hog==test_hog)
+
+test_df %>% arrange(dn.norm) %>% mutate(rank=rank(dn.norm), index=as.factor(ratite+nrpalaeo+tinamou)) %>% ggplot(aes(x=rank, y=dn.norm, col=index)) + geom_point() 
+
+cor(test_df$dn.norm, test_df$ratite, method="sp")
+
+mean(test_df$dn.norm[test_df$ratite]) - mean(test_df$dn.norm[!test_df$ratite])
+
+library("boot")
+
+boot_coef <- function(formula, data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  fit <- rfit(formula, data=d)
+  return(coef(fit)[2])
+}
+
+test_boot <- boot(data=test_df, statistic = boot_coef, R=1000, formula = dn.norm ~ ratite)
+
+library("coin")
+
+oneway_test(dn.norm ~ factor(, levels=c("TRUE", "FALSE")), data=test_df, distribution=approximate(B=9999))
+
+library("Rfit")
+fit<-rfit(dn.norm ~ ratite, data=test_df)
+
+#below here needs editing
+
+
 dn.pval<-dn.default[,.(ratite.p = compute_pval(dn.norm, ratite),ratite.dir = get_dir(dn.norm, ratite),wb.p=compute_pval(dn.norm, wb),wb.dir=get_dir(dn.norm, wb),vl.p=compute_pval(dn.norm, vl), vl.dir=get_dir(dn.norm,vl)), by=hog]
 length(dn.pval$hog)
 summary(qvalue(dn.pval$ratite.p))
 
-dn.pval %>% filter(ratite.dir > 0) %>% ggplot(aes(x=ratite.p)) + geom_histogram(bins=50)
+dn.pval %>% filter(ratite.dir > 0) %>% ggplot(aes(x=ratite.p)) + geom_density(bins=50)
 dn.pval %>% filter(ratite.dir > 0) %>% with(., summary(qvalue(ratite.p)))
 dn.pval %>% filter(ratite.dir < 0) %>% ggplot(aes(x=ratite.p)) + geom_histogram(bins=50)
 dn.pval %>% filter(ratite.dir < 0) %>% with(., summary(qvalue(ratite.p)))
@@ -187,6 +275,11 @@ dn.pval %>% filter(wb.dir > 0) %>% ggplot(aes(x=wb.p)) + geom_histogram(bins=50)
 dn.pval %>% filter(wb.dir > 0) %>% with(., summary(qvalue(wb.p)))
 dn.pval %>% filter(wb.dir < 0) %>% ggplot(aes(x=wb.p)) + geom_histogram(bins=50)
 dn.pval %>% filter(wb.dir < 0) %>% with(., summary(qvalue(wb.p)))
+
+dn.pval %>% filter(vl.dir > 0) %>% ggplot(aes(x=vl.p)) + geom_histogram(bins=50)
+dn.pval %>% filter(vl.dir > 0) %>% with(., summary(qvalue(vl.p)))
+dn.pval %>% filter(vl.dir < 0) %>% ggplot(aes(x=vl.p)) + geom_histogram(bins=50)
+dn.pval %>% filter(vl.dir < 0) %>% with(., summary(qvalue(vl.p)))
 
 
 #go enrich
@@ -318,7 +411,7 @@ dn.pval.merge %>% with(., table(zhang.sig05, sig05 == 1)) %>% fisher.test
 
 # PLOTTING BELOW ##
 
-hog_to_plot = 1293
+hog_to_plot = 11147
 with(dn.default[dn.default$hog==hog_to_plot,], plot(sort(dn.norm), col=ifelse(ratite[order(dn.norm)],"red", "gray50"), pch=16))
 
 #FIGURE 2A
