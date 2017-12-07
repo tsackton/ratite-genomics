@@ -3,7 +3,7 @@ library(tidyverse)
 library(parallel)
 library(ape)
 #
-#setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
 #
 #we'll work in trios as that is conservative, using either the .mat or .prob
 #for ratites, use neognaths as control
