@@ -16,7 +16,7 @@ while (<$acc>) {
 
 my $bed = shift;
 open my $infile, $bed or die;
-my $fixed = "$bed.fixed";
+my $fixed = "$bed.ncbi_chrs";
 open my $outfile, ">$fixed" or die;
 
 while (<$infile>) {

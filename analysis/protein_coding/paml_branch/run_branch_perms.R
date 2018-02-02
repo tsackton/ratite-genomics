@@ -126,10 +126,14 @@ get_targets <- function(number, tips, tree) {
   return(targets)
 }
 
-random_species <- function(perm, DF, count, tips, tree) {
+random_species <- function(perm, DF, count, tips, tree, exclude = FALSE) {
   tips_to_use <- sort(get_targets(count, tips, tree))
   key<-DF %>% dplyr::select(desc.node) %>% distinct()
   key$perm = key$desc.node %in% tips_to_use
+  if (exclude) {
+    tips_to_exclude = tips[!tips %in% tips_to_use]
+    key <- filter(key, !desc.node %in% tips_to_exclude)
+  }
   tip_string <- paste0(tips_to_use, collapse = "-")
   dn.perm <- inner_join(key, dn.default) %>% as.data.table
   dn.perm[,compute_results(dn.norm, perm), by=hog] %>% dplyr::select(est, pval, hog) %>% mutate(tips = tip_string)
@@ -170,6 +174,10 @@ dn.default$tinamou[grepl("aptHaa", dn.default$desc.node, fixed=T)]=FALSE
 dn.default$tinamou[grepl("cryCin-tinGut-eudEle-notPer", dn.default$desc.node, fixed=T)]=FALSE
 
 dn.default<-normalize_branch_stat(dn.default)
+
+#real results
+dn.default[,compute_results(dn.norm, ratite), by=hog] %>% dplyr::select(est, pval, hog) %>% write_tsv("ratite.real")
+dn.default[,compute_results(dn.norm, vl), by=hog] %>% dplyr::select(est, pval, hog) %>% write_tsv("vl.real")
 
 ## PERMS ##
 #do permutations in parallel

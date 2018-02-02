@@ -53,17 +53,30 @@ write.table(unique(rerun$hog), col.names = F, row.names = F, quote=F, file="hogs
 bsrel<-merged %>% filter(dup_ct == 0, species_tree == TRUE, totbranch > 0, missing_ct <= 5)
 bsrel %>% distinct(hog) %>% summarize(count=n())
 
+#test whether ratite-specific selection has functional enrichments
+ratite_spec_genes <- bsrel %>% filter(tsel.s >= 1, nsel.s == 0) %>% dplyr::select(hog) %>% inner_join(., hog_to_gene) %>% dplyr::select(gene)
+ratite_conv_genes <- bsrel %>% filter(tsel.s > 1) %>% dplyr::select(hog) %>% inner_join(., hog_to_gene) %>% dplyr::select(gene)
+ratite_conv_spec_genes <- ratite_conv_genes %>% filter(gene %in% ratite_spec_genes$gene)
+background <- bsrel %>% dplyr::select(hog) %>% inner_join(., hog_to_gene) %>% dplyr::select(gene)
+
+bsrel_sc_mf <- enrichGO(ratite_conv_spec_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="MF")
+bsrel_sc_bp <- enrichGO(ratite_conv_spec_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="BP")
+
+bsrel_c_mf <- enrichGO(ratite_conv_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="MF")
+bsrel_c_bp <- enrichGO(ratite_conv_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="BP")
+
+bsrel_s_mf <- enrichGO(ratite_spec_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="MF")
+bsrel_s_bp <- enrichGO(ratite_spec_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="BP")
+
+bsrel_sc_mf 
+bsrel_sc_bp
+bsrel_c_mf 
+bsrel_c_bp
+bsrel_s_mf
+bsrel_s_bp
+
+#convergence testing
 barplot(table(bsrel$tsel.s[bsrel$nsel.s == 0 & bsrel$tsel.s >= 1]), ylab="Number of Genes Uniquely Selected in >1 Target Lineages", legend=T)
-
-ratite_genes <- bsrel %>% filter(tsel.s > 1, nsel.s == 0) %>% dplyr::select(hog) %>% inner_join(., hog_to_gene) %>% dplyr::select(gene)
-bsrel %>% filter(tsel.s > 1, nsel.s == 0) %>% dplyr::select(hog) %>% inner_join(., hog_to_gene) %>% print.data.frame
-
-all_genes <- bsrel %>% select(hog) %>% inner_join(., hog_to_gene) %>% select(gene)
-write.table(ratite_genes, file="ratite_specific_selection_sp_relaxed", sep="\t", quote=F, row.names=F, col.names=F)
-write.table(all_genes, file="bsrel_hyphy_background_sp_relaxed", sep="\t", quote=F, row.names=F, col.names=F)
-
-#thinking about ways to test for excess selection in ratites
-
 bsrel$prob_sel = (bsrel$total_sel.s / bsrel$totbranch)
 
 compute_convergence <- function(prob = prob, target = target, total = total) {
@@ -79,7 +92,7 @@ compute_convergence <- function(prob = prob, target = target, total = total) {
 
 exp_multiratite<-list()
 
-for (i in 1:100) {
+for (i in 1:1000) {
   res<-mapply(compute_convergence, bsrel$prob_sel, bsrel$target_lin, bsrel$totbranch)
 exp_multiratite[[i]]<-as.data.frame(table(res), stringsAsFactors = F)
 }
@@ -88,15 +101,17 @@ perm_res <- bind_rows(exp_multiratite, .id="rep") %>% spread(res, Freq, fill=0, 
   dplyr::rename(ct0 = `0`, ct1 = `1`, ct2 = `2`, ct3 = `3`, ct4=`4`, ct5=`5`) %>%
   mutate(selected = ct1+ct2+ct3+ct4+ct5, convergent = ct2+ct3+ct4+ct5, rel_conv = convergent/selected) %>% tbl_df
 
-
 real_res <- as.data.frame(table(bsrel$tsel.s[bsrel$nsel.s==0])) %>% tbl_df %>% spread(Var1, Freq) %>%
   dplyr::rename(ct0 = `0`, ct1 = `1`, ct2 = `2`, ct3 = `3`) %>%
   mutate(ct4=0, ct5=0, selected = ct1+ct2+ct3+ct4+ct5, convergent = ct2+ct3+ct4+ct5, rel_conv = convergent/selected) %>% tbl_df
 
-
-1-(sum(real_res$selected > perm_res$selected)/100)
-1-(sum(real_res$convergent > perm_res$convergent)/100)
-1-(sum(real_res$rel_conv > perm_res$rel_conv)/100)
-
+1-(sum(real_res$selected > perm_res$selected)/1000)
+1-(sum(real_res$convergent > perm_res$convergent)/1000)
+1-(sum(real_res$rel_conv > perm_res$rel_conv)/1000)
 
 bsrel %>% filter(tsel.s > 2, nsel.s == 0) %>% dplyr::select(hog) %>% inner_join(., hog_to_gene) %>% arrange(gene) %>% print.data.frame
+
+library(ggthemes)
+#figure 2b
+perm_res %>% ggplot(aes(x=rel_conv)) + theme_tufte() + geom_density() + labs(x="Proportion with convergent selection") +
+  geom_vline(xintercept=real_res$rel_conv, col="red")
