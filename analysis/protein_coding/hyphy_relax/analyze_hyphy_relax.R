@@ -38,7 +38,7 @@ relax = as.data.table(relax)
 hog_counts<-relax[,.N,by=.(hog,set)]
 hogs_to_run = hog_info$hog[hog_info$has_species_tree]
 
-write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="Ratite" & hog_counts$N == 2])], file="ratite_reruns_Det2017", quote=F, row.names = F, col.names = F)
+write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="Ratite" & hog_counts$N == 2])], file="ratite_reruns_Dec2017", quote=F, row.names = F, col.names = F)
 write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="VL" & hog_counts$N == 2])], file="vl_reruns_Dec2017", quote=F, row.names = F, col.names = F)
 write.table(hogs_to_run[!(hogs_to_run %in% hog_counts$hog[hog_counts$set=="RND" & hog_counts$N == 2])], file="rand_reruns_Dec2017", quote=F, row.names = F, col.names = F)
 
@@ -55,21 +55,31 @@ relax.clean = subset(relax, (hog %in% hogs_to_use) & dup_ct == 0 & missing_ct <=
 #add qvalues
 relax.clean[,qval := p.adjust(pval, method="fdr"), by=.(set, type)]
 relax.clean$sample = paste0(relax.clean$set, ".", relax.clean$type)
-table(relax.clean$qval < 0.01, relax.clean$sample)
+table(relax.clean$qval < 0.05, relax.clean$sample)
 
 #add sig key
-relax.clean$sig = as.numeric(relax.clean$qval < 0.01) * sign(1 - relax.clean$K)
+relax.clean$sig = as.numeric(relax.clean$qval < 0.05) * sign(1 - relax.clean$K)
 #positive is increased selection, negative is relaxed selection
 
 table(relax.clean$sig, relax.clean$sample)
 
-tin.pos = relax.clean$hog[relax.clean$sig == 1 & relax.clean$sample == "Tinamou.tips"]
-tin.neg = relax.clean$hog[relax.clean$sig == -1 & relax.clean$sample == "Tinamou.tips"]
+#compare with other branch tests
+vl.cmp = relax.clean %>% filter(sample == "VL.all") %>% inner_join(vl_epval, by=c("hog"="hog"), suffix=c(".relax", ".btest"))
+vl.cmp <- vl.cmp %>% mutate(qval.down = p.adjust(p.down, method="fdr"), qval.up = p.adjust(p.up, method = "fdr"))
+ratite.cmp = relax.clean %>% filter(sample == "Ratite.all") %>% inner_join(ratite_epval, by=c("hog"="hog"), suffix=c(".relax", ".btest"))
+ratite.cmp <- ratite.cmp %>% mutate(qval.down = p.adjust(p.down, method="fdr"), qval.up = p.adjust(p.up, method = "fdr"))
 
-ratite.pos = relax.clean$hog[relax.clean$sig == 1 & relax.clean$sample == "Ratite.tips"]
-ratite.neg = relax.clean$hog[relax.clean$sig == -1 & relax.clean$sample == "Ratite.tips"]
+#extended figure 6
+vl.cmp %>% mutate(hy_rank = rank(1-K), bt_rank = rank(est)) %>% ggplot(aes(x=hy_rank, y=bt_rank)) +
+  geom_hex(bins=50) + geom_hex(bins=50) + labs(x="HyPhy RELAX (rank transformed)", y="Chikina et al (rank transformed)")
+cor.test((1-vl.cmp$K), vl.cmp$est, method="sp")
 
-relax.cmp = merge(relax.clean[sample=="VL.tips"], dn.pval, by="hog")
-relax.cmp$vl.q = p.adjust(relax.cmp$vl.p, method="fdr")
-fisher.test(table(relax.cmp$qval<0.01, relax.cmp$vl.q < 0.01))
+ratite.cmp %>% mutate(hy_rank = rank(1-K), bt_rank = rank(est)) %>% ggplot(aes(x=hy_rank, y=bt_rank)) +
+  geom_hex(bins=50) + geom_hex(bins=50) + labs(x="HyPhy RELAX (rank transformed)", y="Chikina et al (rank transformed)")
+
+cor.test((1-ratite.cmp$K), ratite.cmp$est, method="sp")
+
+#extended table 6
+table(vl.cmp$qval.down < 0.05, vl.cmp$sig == -1) %>% fisher.test
+table(vl.cmp$qval.up < 0.05, vl.cmp$sig == 1) %>% fisher.test
 

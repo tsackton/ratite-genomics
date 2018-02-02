@@ -32,11 +32,27 @@ conv_counts<-list("set1" = cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% co
                    "set4" = cnee %>% filter(ratite_accel.1, ratite_spec.1, ratite_conv.1, ratite_loss_cons_min.mat >= 2) %>% count  %>% pull(n))
 
 #plots [extended figure XX]
-cnee %>% filter(ratite_spec.1, ratite_accel.1) %>% ggplot(aes(x=ratite_loss_cons.prob)) + geom_density()
-cnee %>% filter(ratite_spec.1, ratite_accel.1) %>% ggplot(aes(x=ratite_loss_cons_min.mat)) + geom_histogram()
+cnee %>% filter(ratite_spec.1, ratite_accel.1) %>% ggplot(aes(x=ratite_loss_cons.prob)) + 
+  theme_classic() + geom_histogram(binwidth=0.1, center=2.05, closed="left") + labs(x="Posterior Number of Independent Ratite Accelerations") + 
+  geom_vline(xintercept=2, col="red") + annotate("text", x=2.6, y=150, label = "839 convergent elements")
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ver5/ExtendedFigure7A.pdf")
+cnee %>% filter(ratite_spec.1, ratite_accel.1) %>% ggplot(aes(x=ratite_loss_cons_min.prob)) + 
+  theme_classic() + geom_histogram(binwidth=0.1, center=2.05, closed="left") + labs(x="Posterior Number of Independent Ratite Accelerations (Parsimony-restricted)") + 
+  geom_vline(xintercept=2, col="red") + annotate("text", x=2.35, y=550, label = "521 convergent elements")
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ver5/ExtendedFigure7B.pdf")
 
-cnee %>% filter(ratite_spec.1, ratite_accel.1, ratite_loss_cons_min.prob >= 2) %>% count() 
+cnee %>% filter(ratite_spec.1, ratite_accel.1) %>% ggplot(aes(x=ratite_loss_cons.mat)) + 
+  theme_classic() + geom_histogram(binwidth=0.1, center=2.05, closed="left") + labs(x="Discrete Number of Independent Ratite Accelerations") + 
+  geom_vline(xintercept=2, col="red") + annotate("text", x=2.65, y=1300, label = "586 convergent elements")
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ver5/ExtendedFigure7C.pdf")
+cnee %>% filter(ratite_spec.1, ratite_accel.1) %>% ggplot(aes(x=ratite_loss_cons_min.mat)) + 
+  theme_classic() + geom_histogram(binwidth=0.1, center=2.05, closed="left") + labs(x="Discrete Number of Independent Ratite Accelerations (Parsimony-restricted)") + 
+  geom_vline(xintercept=2, col="red") + annotate("text", x=2.5, y=1400, label = "399 convergent elements")
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ver5/ExtendedFigure7D.pdf")
+
+cnee %>% filter(ratite_spec.1, ratite_accel.1, ratite_loss_cons.prob >= 2) %>% count() 
 cnee %>% filter(ratite_spec.1, ratite_accel.1, ratite_loss_cons.mat >= 2) %>% count() 
+cnee %>% filter(ratite_spec.1, ratite_accel.1, ratite_loss_cons_min.prob >= 2) %>% count() 
 cnee %>% filter(ratite_spec.1, ratite_accel.1, ratite_loss_cons_min.mat >= 2) %>% count() 
 
 
@@ -46,5 +62,5 @@ ggplot() + coord_cartesian(xlim=c(0,80)) + theme_classic() +
   geom_segment(aes(x=mean(obs_conv$conv_count), xend=mean(obs_conv$conv_count), y=50, yend=0), arrow=arrow(length=unit(0.5, "cm")), colour="red") +
   geom_jitter(data=obs_conv, aes(conv_count, y=1), colour="red", width=0, height=3, size=2) +
   annotate("text", x = mean(obs_conv$conv_count), y = 60, label = "Ratite mean")
-
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ver5/Figure3A.pdf")
 

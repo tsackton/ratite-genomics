@@ -1,19 +1,29 @@
-load("~/Downloads/models.Rdata")
-load("~/Downloads/modelscores.Rdata")
+#THIS CODE IS RATHER OUT OF DATE....
+
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/protein_coding/hmm_diverge/")
+
+library(tidyverse)
+load("models.Rdata")
+load("modelscores.Rdata")
 
 birds <- c("mesUni","pygAde","aptFor","nipNip","aptHaa","aptOwe","aptRow","casCas","droNov","rheAme","rhePen","strCam", "galGal","melGal","taeGut","melUnd","ficAlb","pseHum","colLiv","falPer","anaPla","fulGla","lepDis","corBra","picPub","calAnn","chaVoc","cucCan","balReg","halLeu","chaPel","cryCin","tinGut","eudEle","notPer")
 ratites    <-c("aptHaa","aptOwe","aptRow","casCas","droNov","rheAme","rhePen","strCam")  # flightless only
-flightless <- c("mesUni","pygAde","aptFor","nipNip","aptHaa","aptOwe","aptRow","casCas","droNov","rheAme","rhePen","strCam")
-flight <- c("galGal","melGal","taeGut","melUnd","ficAlb","pseHum","colLiv","falPer","anaPla","fulGla","lepDis","corBra","picPub","calAnn","chaVoc","cucCan","balReg","halLeu","chaPel","cryCin","tinGut","eudEle","notPer")
+flightless <- c("pygAde","aptFor","aptHaa","aptOwe","aptRow","casCas","droNov","rheAme","rhePen","strCam")
+flight <- birds[!(birds %in% flightless)]
 ancestral <- c("croPor", "gavGan", "anoCar","chrPic","allMis","cheMyd","allSin")
-
 vocal <- c('calAnn', 'corBra', 'serCan', 'geoFor', 'melUnd', 'pseHum', 'taeGut', 'ficAlb')
 
-sdata <- data.frame(taxa=c(ratites, birds[is.na(match(birds, ratites))]), is.flightless=c(rep(1, length(ratites)), rep(0, length(birds[is.na(match(birds, ratites))]))))
-
+sdata <- data.frame(taxa=birds)
 sdata <- cbind.data.frame(sdata, modelscores[!is.na(match(row.names(modelscores), sdata[,1])),])
 
-sdata$is.vl <- as.numeric(sdata$taxa %in% vocal)
+#fix up sdata into tidy data
+sdata_tidy <- sdata %>% gather(key="model", value="score", -taxa) %>% as_tibble %>%
+  mutate(is.flightless = as.integer(taxa %in% flightless), is.ratite = as.integer(taxa %in% ratites), is.vl = as.integer(taxa %in% vocal))
+
+sdata_tidy
+
+###below to edit
+
 pvals<-numeric(length(modelset))
 coef<-numeric(length(modelset))
 

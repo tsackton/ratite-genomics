@@ -92,11 +92,3 @@ se_slide$window_size = "1000kb_100kb_slide"
 se_results <- rbind(se_100kb, se_500kb, se_1000kb, se_slide) %>% as.tibble
 write_tsv(se_results, path="spatial_enrichment.results")
 
-se_results %>% filter(rar.1.qval < 0.01, window_size == "1000kb_100kb_slide") %>% arrange(chr, start) %>% select(window_size, chr, start, end, rar.1, rar.1.pval) %>%print.data.frame
-se_results %>% filter(crar.1.qval < 0.1, window_size == "1000kb_100kb_slide") %>% arrange(chr, start) %>% select(window_size, chr, start, end, crar.1, crar.1.pval) %>%print.data.frame
-
-
-se_results %>% filter(chr=="chr1", window_size == "1000kb_100kb_slide") %>% mutate(logp = -1 * log10(crar.1.pval)) %>% ggplot(aes(x=start, y=logp)) + theme_classic() + geom_line()
-
-se_results %>% filter(crar.1.qval < 0.05, window_size == "1000kb") %>% select(chr, start, end) %>% arrange(chr, start) %>% print.data.frame
-se_results %>% filter(rar.1.qval < 0.05, window_size == "1000kb") %>% select(chr, start, end) %>% arrange(chr, start) %>% print.data.frame

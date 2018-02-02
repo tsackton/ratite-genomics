@@ -141,7 +141,6 @@ run_lm_log(ancrec.3.sum)
 run_lm_exp(ancrec.3.sum)
 
 
-
 ##BELOW HERE NOT RUN
 #make fig
 #not run
