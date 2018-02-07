@@ -1,0 +1,32 @@
+WARNING	An augustus species is mentioned in the config file, dataset default species (human) will be ignored
+INFO	****************** Start a BUSCO 3.0.2 analysis, current time: 10/12/2017 18:47:36 ******************
+INFO	Configuration loaded from /n/holylfs/LABS/informatics/tsackton/bird_genomes/config.ini
+INFO	Init tools...
+INFO	Check dependencies...
+INFO	Check input file...
+INFO	To reproduce this run: python /n/sw/fasrcsw/apps/Core/BUSCO/3.0.2-fasrc01/bin/run_BUSCO.py -i aptRow.genome.all.maker.proteins.fasta -o aptRow.genome.all.maker.proteins.fasta-vertebrata_odb9 -l vertebrata_odb9/ -m proteins -c 16
+INFO	Mode is: proteins
+INFO	The lineage dataset is: vertebrata_odb9 (eukaryota)
+INFO	Temp directory is ./tmp/
+INFO	Running HMMER on the proteins:
+INFO	[hmmsearch]	259 of 2586 task(s) completed at 10/12/2017 18:49:14
+INFO	[hmmsearch]	518 of 2586 task(s) completed at 10/12/2017 18:50:11
+INFO	[hmmsearch]	776 of 2586 task(s) completed at 10/12/2017 18:50:53
+INFO	[hmmsearch]	1035 of 2586 task(s) completed at 10/12/2017 18:51:23
+INFO	[hmmsearch]	1294 of 2586 task(s) completed at 10/12/2017 18:51:48
+INFO	[hmmsearch]	1552 of 2586 task(s) completed at 10/12/2017 18:52:08
+INFO	[hmmsearch]	1811 of 2586 task(s) completed at 10/12/2017 18:52:28
+INFO	[hmmsearch]	2069 of 2586 task(s) completed at 10/12/2017 18:52:42
+INFO	[hmmsearch]	2328 of 2586 task(s) completed at 10/12/2017 18:52:55
+INFO	[hmmsearch]	2586 of 2586 task(s) completed at 10/12/2017 18:53:14
+INFO	Results:
+INFO	C:95.1%[S:54.8%,D:40.3%],F:3.6%,M:1.3%,n:2586
+INFO	2458 Complete BUSCOs (C)
+INFO	1417 Complete and single-copy BUSCOs (S)
+INFO	1041 Complete and duplicated BUSCOs (D)
+INFO	94 Fragmented BUSCOs (F)
+INFO	34 Missing BUSCOs (M)
+INFO	2586 Total BUSCO groups searched
+INFO	BUSCO analysis done with WARNING(s). Total running time: 355.35343766212463 seconds
+INFO	Results written in /n/holylfs/LABS/informatics/tsackton/bird_genomes/run_aptRow.genome.all.maker.proteins.fasta-vertebrata_odb9/
+

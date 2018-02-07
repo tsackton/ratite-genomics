@@ -1,0 +1,108 @@
+WARNING	An augustus species is mentioned in the config file, dataset default species (human) will be ignored
+INFO	****************** Start a BUSCO 3.0.2 analysis, current time: 10/15/2017 22:50:34 ******************
+INFO	Configuration loaded from /n/holylfs/LABS/informatics/tsackton/bird_genomes/config.ini
+INFO	Init tools...
+INFO	Check dependencies...
+INFO	Check input file...
+INFO	To reproduce this run: python /n/sw/fasrcsw/apps/Core/BUSCO/3.0.2-fasrc01/bin/run_BUSCO.py -i droNov.fa -o droNov.fa-aves_odb9 -l aves_odb9/ -m genome -c 16 -sp chicken
+INFO	Mode is: genome
+INFO	The lineage dataset is: aves_odb9 (eukaryota)
+INFO	Temp directory is ./tmp/
+INFO	****** Phase 1 of 2, initial predictions ******
+INFO	****** Step 1/3, current time: 10/15/2017 22:51:33 ******
+INFO	Create blast database...
+INFO	[makeblastdb]	Building a new DB, current time: 10/15/2017 22:51:33
+INFO	[makeblastdb]	New DB name:   /n/holylfs/LABS/informatics/tsackton/bird_genomes/tmp/droNov.fa-aves_odb9_2224882993
+INFO	[makeblastdb]	New DB title:  droNov.fa
+INFO	[makeblastdb]	Sequence type: Nucleotide
+INFO	[makeblastdb]	Keep Linkouts: T
+INFO	[makeblastdb]	Keep MBits: T
+INFO	[makeblastdb]	Maximum file size: 1000000000B
+INFO	[makeblastdb]	Adding sequences from FASTA; added 2882 sequences in 32.2274 seconds.
+INFO	[makeblastdb]	1 of 1 task(s) completed at 10/15/2017 22:52:05
+INFO	Running tblastn, writing output to /n/holylfs/LABS/informatics/tsackton/bird_genomes/run_droNov.fa-aves_odb9/blast_output/tblastn_droNov.fa-aves_odb9.tsv...
+INFO	[tblastn]	1 of 1 task(s) completed at 10/15/2017 23:53:21
+INFO	****** Step 2/3, current time: 10/15/2017 23:53:21 ******
+INFO	Maximum number of candidate contig per BUSCO limited to: 3
+INFO	Getting coordinates for candidate regions...
+INFO	Pre-Augustus scaffold extraction...
+INFO	Running Augustus prediction using chicken as species:
+INFO	[augustus]	Please find all logs related to Augustus errors here: /n/holylfs/LABS/informatics/tsackton/bird_genomes/run_droNov.fa-aves_odb9/augustus_output/augustus.log
+INFO	[augustus]	696 of 6959 task(s) completed at 10/16/2017 00:09:58
+INFO	[augustus]	1392 of 6959 task(s) completed at 10/16/2017 00:26:19
+INFO	[augustus]	2088 of 6959 task(s) completed at 10/16/2017 00:42:29
+INFO	[augustus]	2784 of 6959 task(s) completed at 10/16/2017 00:58:45
+INFO	[augustus]	3480 of 6959 task(s) completed at 10/16/2017 01:15:04
+INFO	[augustus]	4176 of 6959 task(s) completed at 10/16/2017 01:31:34
+INFO	[augustus]	4872 of 6959 task(s) completed at 10/16/2017 01:47:18
+INFO	[augustus]	5568 of 6959 task(s) completed at 10/16/2017 02:03:40
+INFO	[augustus]	6264 of 6959 task(s) completed at 10/16/2017 02:18:54
+INFO	[augustus]	6959 of 6959 task(s) completed at 10/16/2017 02:33:30
+INFO	Extracting predicted proteins...
+INFO	****** Step 3/3, current time: 10/16/2017 02:46:09 ******
+INFO	Running HMMER to confirm orthology of predicted proteins:
+INFO	[hmmsearch]	694 of 6939 task(s) completed at 10/16/2017 02:46:23
+INFO	[hmmsearch]	1388 of 6939 task(s) completed at 10/16/2017 02:46:36
+INFO	[hmmsearch]	2082 of 6939 task(s) completed at 10/16/2017 02:46:48
+INFO	[hmmsearch]	2776 of 6939 task(s) completed at 10/16/2017 02:47:01
+INFO	[hmmsearch]	3470 of 6939 task(s) completed at 10/16/2017 02:47:13
+INFO	[hmmsearch]	4164 of 6939 task(s) completed at 10/16/2017 02:47:25
+INFO	[hmmsearch]	4858 of 6939 task(s) completed at 10/16/2017 02:47:38
+INFO	[hmmsearch]	5552 of 6939 task(s) completed at 10/16/2017 02:47:50
+INFO	[hmmsearch]	6246 of 6939 task(s) completed at 10/16/2017 02:48:02
+INFO	[hmmsearch]	6939 of 6939 task(s) completed at 10/16/2017 02:48:15
+INFO	Results:
+INFO	C:91.7%[S:90.6%,D:1.1%],F:5.1%,M:3.2%,n:4915
+INFO	4504 Complete BUSCOs (C)
+INFO	4452 Complete and single-copy BUSCOs (S)
+INFO	52 Complete and duplicated BUSCOs (D)
+INFO	252 Fragmented BUSCOs (F)
+INFO	159 Missing BUSCOs (M)
+INFO	4915 Total BUSCO groups searched
+INFO	****** Phase 2 of 2, predictions using species specific training ******
+INFO	****** Step 1/3, current time: 10/16/2017 02:48:54 ******
+INFO	Extracting missing and fragmented buscos from the ancestral_variants file...
+INFO	Running tblastn, writing output to /n/holylfs/LABS/informatics/tsackton/bird_genomes/run_droNov.fa-aves_odb9/blast_output/tblastn_droNov.fa-aves_odb9_missing_and_frag_rerun.tsv...
+INFO	[tblastn]	1 of 1 task(s) completed at 10/16/2017 03:29:02
+INFO	Maximum number of candidate contig per BUSCO limited to: 3
+INFO	Getting coordinates for candidate regions...
+INFO	****** Step 2/3, current time: 10/16/2017 03:29:04 ******
+INFO	Training Augustus using Single-Copy Complete BUSCOs:
+INFO	Converting predicted genes to short genbank files at 10/16/2017 03:29:04...
+INFO	All files converted to short genbank files, now running the training scripts at 10/16/2017 06:36:35...
+INFO	Pre-Augustus scaffold extraction...
+INFO	Re-running Augustus with the new metaparameters, number of target BUSCOs: 411
+INFO	[augustus]	66 of 653 task(s) completed at 10/16/2017 06:39:24
+INFO	[augustus]	131 of 653 task(s) completed at 10/16/2017 06:40:58
+INFO	[augustus]	196 of 653 task(s) completed at 10/16/2017 06:42:42
+INFO	[augustus]	262 of 653 task(s) completed at 10/16/2017 06:44:16
+INFO	[augustus]	327 of 653 task(s) completed at 10/16/2017 06:46:01
+INFO	[augustus]	392 of 653 task(s) completed at 10/16/2017 06:47:43
+INFO	[augustus]	458 of 653 task(s) completed at 10/16/2017 06:49:39
+INFO	[augustus]	523 of 653 task(s) completed at 10/16/2017 06:51:06
+INFO	[augustus]	588 of 653 task(s) completed at 10/16/2017 06:52:42
+INFO	[augustus]	653 of 653 task(s) completed at 10/16/2017 06:54:30
+INFO	Extracting predicted proteins...
+INFO	****** Step 3/3, current time: 10/16/2017 06:55:37 ******
+INFO	Running HMMER to confirm orthology of predicted proteins:
+INFO	[hmmsearch]	65 of 650 task(s) completed at 10/16/2017 06:55:38
+INFO	[hmmsearch]	130 of 650 task(s) completed at 10/16/2017 06:55:39
+INFO	[hmmsearch]	195 of 650 task(s) completed at 10/16/2017 06:55:41
+INFO	[hmmsearch]	260 of 650 task(s) completed at 10/16/2017 06:55:42
+INFO	[hmmsearch]	325 of 650 task(s) completed at 10/16/2017 06:55:43
+INFO	[hmmsearch]	390 of 650 task(s) completed at 10/16/2017 06:55:44
+INFO	[hmmsearch]	455 of 650 task(s) completed at 10/16/2017 06:55:45
+INFO	[hmmsearch]	520 of 650 task(s) completed at 10/16/2017 06:55:46
+INFO	[hmmsearch]	585 of 650 task(s) completed at 10/16/2017 06:55:48
+INFO	[hmmsearch]	650 of 650 task(s) completed at 10/16/2017 06:55:49
+INFO	Results:
+INFO	C:94.2%[S:93.1%,D:1.1%],F:3.5%,M:2.3%,n:4915
+INFO	4628 Complete BUSCOs (C)
+INFO	4576 Complete and single-copy BUSCOs (S)
+INFO	52 Complete and duplicated BUSCOs (D)
+INFO	170 Fragmented BUSCOs (F)
+INFO	117 Missing BUSCOs (M)
+INFO	4915 Total BUSCO groups searched
+INFO	BUSCO analysis done with WARNING(s). Total running time: 29335.876186847687 seconds
+INFO	Results written in /n/holylfs/LABS/informatics/tsackton/bird_genomes/run_droNov.fa-aves_odb9/
+
