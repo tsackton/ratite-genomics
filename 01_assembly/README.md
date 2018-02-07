@@ -10,4 +10,4 @@ Subdirectories:
 - kmer: contains the output of the ALLPATHS-LG kmer analysis
 - libraries: contains ALLPATHS-LG libs.csv and groups.csv files for each species
 - logs: contains ALLPATHS-LG output logs for each species we assembled
-- qc: contains scripts and other materials for running QC on the assemblies
+- busco: contains scripts and other materials for running BUSCO on the assemblies, as well as summary outputs
