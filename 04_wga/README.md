@@ -26,3 +26,7 @@ Note about ostrich
 
 We used the superscaffolds produced by BGI for our whole genome alignment. All other species are either from NCBI or newly assembled for this project.
 
+CNEEs
+--------
+
+We identified CNEEs using PHAST (02_cnee_id). These were then loosely assigned to genes based on the nearest transcription start site (03_cnee_annotation).
