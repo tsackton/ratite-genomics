@@ -1,0 +1,4 @@
+#File	GSK_R1_220demultiplex2.fastq	GSK_R2_220demultiplex2.fastq
+#Total	19189008
+#Matched	10050163	52.37458%
+phix	10050163	52.37458%
