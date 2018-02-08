@@ -8,6 +8,12 @@ models, and then annotated all 10 species using the improved models. For the spe
 same-species RNA-seq data, we use the closest appropriate alternate-species RNA-seq as 
 evidence, but we do not retrain gene models for these species. 
 
+RNA-seq data
+------------
+
+All code to process RNA-seq data is included in this subdirectory. This includes mapping and Trinity assemblies.
+
+
 Initial MAKER run.
 ------------------
 
