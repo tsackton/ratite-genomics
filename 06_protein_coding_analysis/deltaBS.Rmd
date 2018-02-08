@@ -1,0 +1,540 @@
+---
+title: "Ratites"
+author: "Nicole Wheeler"
+date: "2 September 2016"
+output: html_document
+---
+
+```{r, compare top model hits}
+files <- list.files("~/Documents/ratites/abacus_search/")
+length(files)
+models <- vector()
+trimmedmodels <- vector()
+
+for (i in files) {
+  read <- read.delim(paste("~/Documents/ratites/abacus_search/", i, sep=""), header=F, stringsAsFactors = FALSE)
+  read$evalue <- lapply(read[,9], function (x) strsplit(x, ";")[[1]][1])
+  read$evalue <- sub("E-value=", "", read$evalue)
+  read$evalue <- as.numeric(read$evalue)
+  read <- read[read$evalue<0.0001,]
+  read <- read[order(read$V6, decreasing=T),]
+  read <- read[!duplicated(read$V3),]
+  read <- read[!duplicated(read$V1),]
+  models <- c(models, read[,3])
+  if (i == files[1]) {
+    trimmedmodels <- models
+  } else {
+      trimmedmodels <- trimmedmodels[trimmedmodels %in% read[,3]]
+  }
+  print(length(trimmedmodels))
+}
+
+save(models, file="~/Documents/ratites/models.Rdata")
+
+load("~/Documents/ratites/models.Rdata")
+```
+
+
+```{r, working set}
+modelset <- names(table(models)[table(models)>=30])
+files <- list.files("~/Documents/ratites/abacus_search/")
+modelscores <- data.frame()
+
+for (i in files) {
+  read <- read.delim(paste("~/Documents/ratites/abacus_search/", i, sep=""), header=F, stringsAsFactors = FALSE, comment.char="#")
+  read$evalue <- lapply(read[,9], function (x) strsplit(x, ";")[[1]][1])
+  read$evalue <- sub("E-value=", "", read$evalue)
+  read$evalue <- as.numeric(read$evalue)
+  read <- read[read$evalue<0.0001,]
+  read <- read[order(read$V6, decreasing=T),]
+  read <- read[!duplicated(read$V3),]
+  read <- read[!duplicated(read$V1),]
+  modelscores <- rbind(modelscores, read[match(modelset, read[,3]),6])
+  names(modelscores) <- modelset
+}
+
+row.names(modelscores) <- sub(".search", "", files)
+
+```
+
+```{r, check variance}
+# look at variance in scores for each model included
+
+variances <- vector()
+range <- vector()
+
+for(i in 1:ncol(modelscores)) {
+  variances <- c(variances, mad(modelscores[,i], na.rm=T))
+  range <- c(range, (range(modelscores[,i], na.rm=T)[2]-range(modelscores[,i], na.rm=T)[1]))
+}
+
+hist(variances)
+hist(range)
+
+length(variances[variances==0])
+```
+
+There are some high variance values in this dataset, suggesting mis-called orthologs, or truncated sequences. These may be truly truncated or it may be a sequencing issue since some of these annotations are "partial". 
+I will trim off the families with the high variance. 
+
+```{r, trim}
+hist(variances[variances<quantile(variances, 0.95, na.rm=T)])
+#this looks much better
+
+library(caret)
+dim(modelscores)
+modelscores <- modelscores[,variances!=0&variances<quantile(variances, 0.95)]
+modelset <- modelset[variances!=0&variances<quantile(variances, 0.95)]
+dim(modelscores)
+
+save(modelscores, modelset, file= "~/Documents/ratites/modelscores.Rdata")
+
+load("~/Documents/ratites/modelscores.Rdata")
+
+```
+
+```{r, analysis, cache=T}
+library(caper)
+
+birds <- c("mesUni","pygAde","aptFor","nipNip","aptHaa","aptOwe","aptRow","casCas","droNov","rheAme","rhePen","strCam", "galGal","melGal","taeGut","melUnd","ficAlb","pseHum","colLiv","falPer","anaPla","fulGla","lepDis","corBra","picPub","calAnn","chaVoc","cucCan","balReg","halLeu","chaPel","cryCin","tinGut","eudEle","notPer")
+ratites    <-c("aptHaa","aptOwe","aptRow","casCas","droNov","rheAme","rhePen","strCam")
+flightless <- c("mesUni","pygAde","aptFor","nipNip","aptHaa","aptOwe","aptRow","casCas","droNov","rheAme","rhePen","strCam")
+flight <- c("galGal","melGal","taeGut","melUnd","ficAlb","pseHum","colLiv","falPer","anaPla","fulGla","lepDis","corBra","picPub","calAnn","chaVoc","cucCan","balReg","halLeu","chaPel","cryCin","tinGut","eudEle","notPer")
+ancestral <- c("croPor", "gavGan", "anoCar","chrPic","allMis","cheMyd","allSin")
+
+tree <- read.tree("~/Documents/ratites/final_tree_reorder.tre")
+
+sdata <- data.frame(taxa=c(ratites, birds[is.na(match(birds, ratites))]), is.flightless=c(rep(1, length(ratites)), rep(0, length(birds[is.na(match(birds, ratites))]))))
+
+sdata <- cbind.data.frame(sdata, modelscores[!is.na(match(row.names(modelscores), sdata[,1])),])
+
+cdat <- comparative.data(data=sdata, phy=tree, names.col="taxa", na.omit=F, force.root=T, vcv=T)
+
+pvals <- vector()
+coefficients <- vector()
+lambdas <- vector()
+stderror <- vector()
+var <- vector()
+skippedgenes <- vector()
+
+# have set this up with error handling, so if a gene fails ML lambda estimation, the script will report the gene then proceed
+for(i in modelset) {
+  error <- tryCatch(summary(pgls(get(i) ~ is.flightless, cdat, lambda="ML")), error=function(e) e)
+  if(inherits(error, "error")) {
+    skippedgenes <- c(skippedgenes, i)
+    pvals <- c(pvals, NA)
+    coefficients <- c(coefficients, NA)
+    next
+  }
+  
+  test <- summary(pgls(get(i) ~ is.flightless, cdat, lambda="ML"))
+  pvals <- c(pvals, test$coefficients[2,4])
+  coefficients <- c(coefficients, test$coefficients[2,1])
+  stderror <- c(stderror, test$coefficients[2,2])
+  lambdas <- c(lambdas, test$param[2])
+}
+
+pdf("~/Documents/ratites/ratite_pvals.pdf",width=5, height = 4)
+hist(pvals, breaks=20, main="", xlab="", ylab="", col="red")
+dev.off()
+png("~/Documents/ratites/ratite_pvals.png",width=450, height = 350)
+hist(pvals, breaks=20, main="P-values for phylogenetic regression using\n flightless_ratites~DBS", xlab="Nominal P-value", ylab="Frequency", col="red")
+dev.off()
+
+save(pvals, coefficients, skippedgenes, file="~/Dropbox/Ratites/flightlessness_ratites.Rdata")
+
+load("~/Documents/ratites/flightlessness_ratites.Rdata")
+
+write.table(cbind.data.frame(Model=modelset, Coefficient=coefficients, P_value=pvals, Adj_P_value=p.adjust(pvals, method="BH")), file="flightless_ratites.csv", col.names=T, row.names=F, sep=",")
+```
+
+```{r, visualising top and bottom results}
+i <- modelset[order(pvals)[1]]
+test <- pgls(get(i) ~ is.flightless, cdat)
+plot(test)
+
+i <- modelset[order(pvals)[11219]]
+test <- pgls(get(i) ~ is.flightless, cdat)
+plot(test)
+
+boxplot(modelscores[ratites,grep(modelset[order(pvals)[1]], colnames(modelscores))], modelscores[birds[!birds %in% ratites],grep(modelset[order(pvals)[1]], colnames(modelscores))])
+
+boxplot(get(modelset[order(pvals)[10]])~is.flightless, data=sdata)
+boxplot(veNOG.ENOG411CV7C.meta_raw~is.flightless, data=sdata)
+
+topgenes <- sdata[,colnames(sdata) %in% c("is.flightless", modelset[order(pvals)[1:20]])]
+topgenes$is.flightless[topgenes$is.flightless==1] <- "Ratite NF"
+topgenes$is.flightless[topgenes$is.flightless==0] <- "Flying"
+
+topgenes2 <- melt(topgenes, id.vars="is.flightless")
+topgenes2$variable <- sub("veNOG.", "", topgenes2$variable)
+topgenes2$variable <- sub(".meta_raw", "", topgenes2$variable)
+modelset2 <- modelset
+modelset2 <- sub("veNOG.", "", modelset2)
+modelset2 <- sub(".meta_raw", "", modelset2)
+
+png("~/Documents/ratites/topgenes.png", width=800, height=500)
+ggplot(topgenes2, aes(x=is.flightless, y=value)) + geom_jitter(width=0.2) + facet_wrap(~factor(variable, levels=modelset2[order(pvals)[1:20]]), scales="free") + theme_classic(14) + xlab("Class") + ylab("Bitscore")
+dev.off()
+
+skip <- sdata[,colnames(sdata) %in% c("is.flightless", skippedgenes[1:20])]
+skip$is.flightless[skip$is.flightless==1] <- "Ratite NF"
+skip$is.flightless[skip$is.flightless==0] <- "Flying"
+
+skip2 <- melt(skip, id.vars="is.flightless")
+skip2$variable <- sub("veNOG.", "", skip2$variable)
+skip2$variable <- sub(".meta_raw", "", skip2$variable)
+skippedgenes2 <- skippedgenes
+skippedgenes2 <- sub("veNOG.", "", skippedgenes2)
+skippedgenes2 <- sub(".meta_raw", "", skippedgenes2)
+
+png("~/Documents/ratites/skippedgenes.png", width=800, height=500)
+ggplot(skip2, aes(x=is.flightless, y=value)) + geom_jitter(width=0.2) + facet_wrap(~factor(variable, levels=skippedgenes2[1:20]), scales="free") + theme_classic(14) + xlab("Class") + ylab("Bitscore")
+dev.off()
+
+```
+
+
+```{r}
+pvals2 <- p.adjust(pvals, method="BH")
+min(pvals2)
+sum(pvals2<0.05, na.rm=T)
+
+annotations <- read.delim("~/Documents/ratites/veNOG.annotations.tsv", stringsAsFactors=F, header=F)
+
+models <- colnames(modelscores)[pvals2<0.1 & !is.na(pvals2)]
+models <- sub("veNOG.", "", models)
+models <- sub(".meta_raw", "", models)
+
+info <- annotations[match(models, annotations[,2]),]
+
+write.table(cbind(info[,c(2,5,6)], coefficients[pvals2<0.1 & !is.na(pvals2)], pvals[pvals2<0.1 & !is.na(pvals2)], pvals2[pvals2<0.1 & !is.na(pvals2)]), file="~/Documents/ratites/top_genes_ratties.tsv", quote=F, col.names=F, row.names=F, sep="\t")
+
+hist(coefficients[pvals<0.1], breaks=30)
+```
+
+# Positive control
+
+How about another case where we're more confident there are significant changes associated with lifestyle?
+
+Looking into vocal learning in birds this time. For this analysis, I'm running vocal learners against all others, while in the flightlessness case I was just looking at birds. 
+
+```{r, analysis, cache=T}
+library(caper)
+
+vocal <- c('calAnn', 'corBra', 'serCan', 'geoFor', 'melUnd', 'pseHum', 'taeGut', 'ficAlb')
+nonvocal <- row.names(modelscores)[-match(vocal, row.names(modelscores))]
+
+tree <- read.tree("~/Documents/ratites/final_tree.txt")
+sdata <- data.frame(taxa=c(vocal, nonvocal), is.flightless=c(rep(1, length(vocal)), rep(0, length(nonvocal))))
+
+sdata <- cbind.data.frame(sdata, modelscores[match(sdata[,1], row.names(modelscores)),])
+
+cdat <- comparative.data(data=sdata, phy=tree, names.col="taxa", na.omit=F, force.root=T, vcv=T, vcv.dim=3)
+
+pvals <- vector()
+coefficients <- vector()
+skippedgenes <- vector()
+
+for(i in modelset) {
+  error <- tryCatch(summary(pgls(get(i) ~ is.flightless, cdat, lambda="ML")), error=function(e) e)
+  if(inherits(error, "error")) {
+    skippedgenes <- c(skippedgenes, i)
+    pvals <- c(pvals, NA)
+    coefficients <- c(coefficients, NA)
+    next
+  }
+
+  test <- summary(pgls(get(i) ~ is.flightless, cdat, lambda="ML"))
+  pvals <- c(pvals, test$coefficients[2,4])
+  coefficients <- c(coefficients, test$coefficients[2,1])
+}
+
+png("~/Documents/ratites/nominal_pvals_pos_control.png", width=450, height=350)
+hist(pvals, breaks=20, main="P-values for phylogenetic regression\n using vocal_learning~DBS", xlab="Nominal P-value", ylab="Frequency", col="red")
+dev.off()
+
+save(pvals, coefficients, skippedgenes, file="~/Dropbox/Ratites/vocal_learning.Rdata")
+
+load("~/Documents/ratites/vocal_learning.Rdata")
+
+write.table(cbind.data.frame(Model=modelset, Coefficient=coefficients, P_value=pvals, Adj_P_value=p.adjust(pvals, method="BH")), file="vocal_learning.csv", col.names=T, row.names=F, sep=",")
+```
+
+```{r, siggenes}
+pvals2 <- p.adjust(pvals, method="BH")
+min(pvals2)
+
+siggenes <- modelscores[,pvals2<0.05&!is.na(pvals)]
+
+annotations <- read.delim("~/Documents/ratites/veNOG.annotations.tsv", stringsAsFactors=F, header=F)
+
+models <- colnames(siggenes)
+models <- sub("veNOG.", "", models)
+models <- sub(".meta_raw", "", models)
+
+info <- annotations[match(models, annotations[,2]),]
+
+write.table(cbind(info[,c(2,5,6)], coefficients[pvals2<0.05&!is.na(pvals)], pvals[pvals2<0.05&!is.na(pvals)], pvals2[pvals2<0.05&!is.na(pvals)]), file="~/Documents/ratites/top_control_genes.tsv", quote=F, col.names=F, row.names=F, sep="\t")
+
+hist(coefficients[pvals<0.1], breaks=30)
+
+boxplot(modelscores[,grep("ENOG411CQ01", colnames(sdata))]~sdata$is.flightless)
+boxplot(modelscores[,grep(modelset[order(pvals2)[1]], colnames(sdata))]~sdata$is.flightless)
+
+topgenes <- sdata[,colnames(sdata) %in% c("is.flightless", modelset[order(pvals)[1:20]])]
+topgenes$is.flightless[topgenes$is.flightless==1] <- "Vocal learning"
+topgenes$is.flightless[topgenes$is.flightless==0] <- "Nonvocal"
+
+topgenes2 <- melt(topgenes, id.vars="is.flightless")
+topgenes2$variable <- sub("veNOG.", "", topgenes2$variable)
+topgenes2$variable <- sub(".meta_raw", "", topgenes2$variable)
+modelset2 <- modelset
+modelset2 <- sub("veNOG.", "", modelset2)
+modelset2 <- sub(".meta_raw", "", modelset2)
+
+png("~/Documents/ratites/topgenes_vocal.png", width=800, height=500)
+ggplot(topgenes2, aes(x=is.flightless, y=value)) + geom_jitter(width=0.2) + facet_wrap(~factor(variable, levels=modelset2[order(pvals)[1:20]]), scales="free") + theme_classic(12) + xlab("Class") + ylab("Bitscore")
+dev.off()
+
+```
+
+How many significant changes do we see in a particular lineage of birds compared to the other birds in our study?
+
+```{r}
+lineage_pvals <- data.frame()
+lineage_coeff <- data.frame()
+
+group1 <- c("pseHum", "taeGut", "ficAlb", "corBra", "melUnd", "falPer", "picPub", "lepDis", "halLeu")
+group2 <- birds[!birds %in% group1]
+
+tree <- read.tree("~/Documents/ratites/final_tree.txt")
+sdata <- data.frame(taxa=c(group1, group2), is.flightless=c(rep(1, length(group1)), rep(0, length(group2))))
+
+sdata <- cbind.data.frame(sdata, modelscores[match(sdata[,1], row.names(modelscores)),])
+cdat <- comparative.data(data=sdata, phy=tree, names.col="taxa", na.omit=F, force.root=T, vcv=T, vcv.dim=3)
+
+pvals <- vector()
+coefficients <- vector()
+skippedgenes <- vector()
+
+for(i in modelset) {
+  error <- tryCatch(summary(pgls(get(i) ~ is.flightless, cdat, lambda="ML")), error=function(e) e)
+  if(inherits(error, "error")) {
+    skippedgenes <- c(skippedgenes, i)
+    pvals <- c(pvals, NA)
+    coefficients <- c(coefficients, NA)
+    next
+  }
+
+    test <- summary(pgls(get(i) ~ is.flightless, cdat, lambda="ML"))
+  pvals <- c(pvals, test$coefficients[2,4])
+  coefficients <- c(coefficients, test$coefficients[2,1])
+}
+
+png("~/Documents/ratites/pvals_random_lineage.png", width=450, height=350)
+hist(pvals, breaks=20, main="P-values for phylogenetic regression\n using random_lineage~DBS", xlab="Nominal P-value", ylab="Frequency", col="red")
+dev.off()
+
+save(pvals, coefficients, skippedgenes, file="~/Dropbox/Ratites/random_lineage.Rdata")
+load("~/Documents/ratites/random_lineage.Rdata")
+
+write.table(cbind.data.frame(Model=modelset, Coefficient=coefficients, P_value=pvals, Adj_P_value=p.adjust(pvals, method="BH")), file="negative_control.csv", col.names=T, row.names=F, sep=",")
+```
+
+```{r, figures}
+o_r = -log10(sort(ratite_p,decreasing=F))
+o_v = -log10(sort(vocal_p,decreasing=F))
+o_l = -log10(sort(lineage_p,decreasing=F))
+
+pdf("~/Documents/ratites/Q-Qplot.pdf", width=5, height=5)
+e = -log10( 1:length(o_l)/length(o_l) )
+plot(e,o_l,pch=16,cex=0.5, main="", xlab=expression(Expected~~-log[10](italic(p))), ylab=expression(Observed~~-log[10](italic(p))), xlim=c(0,max(e)), ylim=c(0,max(o_r)), col="grey40")
+abline(0,1, col='grey')
+e = -log10( 1:length(o_v)/length(o_v) )
+points(e, o_v, col="red", pch=16, cex=0.5)
+e = -log10( 1:length(o_r)/length(o_r) )
+points(e, o_r, col="blue", pch=16, cex=0.5)
+legend(x=0, y=5, legend=c("monophyletic", "ratite", "vocal learners"), fill=c("grey40", "blue", "red"), bty="n")
+dev.off()
+
+r_dens <- density(ratite_p, na.rm=T)
+plot(x=r_dens$x[r_dens$x>=0&r_dens$x<=1], y=r_dens$y[r_dens$x>=0&r_dens$x<=1])
+
+r_hist <- hist(ratite_p, breaks=100)
+v_hist <- hist(vocal_p, breaks=100)
+l_hist <- hist(lineage_p, breaks=100)
+
+pdf("~/Documents/ratites/P-hist.pdf", width=6, height=4.5)
+plot(x=r_hist$mids, y=r_hist$counts, ylim=c(0,400), type="l", col="blue", xlab="P-value", ylab="Counts")
+lines(x=v_hist$mids, y=v_hist$counts, col="red")
+lines(x=l_hist$mids, y=l_hist$counts, col="grey40")
+legend(x=0.6, y=350, legend=c("monophyletic", "ratite", "vocal learners"), col=c("grey40", "blue", "red"), lty=c(1,1,1), bty="n")
+dev.off()
+```
+
+
+```{r}
+# background distribution sampling
+
+# need random trios of non-sister birds
+
+library(ape)
+tree <- read.tree("~/Documents/ratites/final_tree_reorder.tre")
+
+library(dplyr)
+count_sister_taxa <- function(tree, tips) {
+  #set up pairs
+  pairs<-combn(tips, 2, simplify = FALSE)
+  lapply(pairs, is.monophyletic, phy=tree) %>% unlist %>% sum
+}
+
+get_targets <- function(number, tips, tree) {
+  num_sister = 10
+  while (num_sister > 0) {
+    targets<-sample(tips, number)
+    num_sister = count_sister_taxa(tree, targets)  
+  }
+  return(targets)
+}
+
+library(caper)
+
+for (i in 1:2000) {
+  trio <- get_targets(3, birds, tree)
+  
+  sdata <- data.frame(taxa=c(trio, birds[!birds %in% trio]), is.flightless=c(rep(1, 3), rep(0, length(birds)-3)))
+  sdata <- cbind.data.frame(sdata, modelscores[match(sdata[,1], row.names(modelscores)),])
+  cdat <- comparative.data(data=sdata, phy=tree, names.col="taxa", na.omit=F, force.root=T, vcv=T, vcv.dim=3)
+
+  pvals <- vector()
+  coefficients <- vector()
+  skippedgenes <- vector()
+
+for(i in modelset) {
+  error <- tryCatch(summary(pgls(get(i) ~ is.flightless, cdat, lambda="ML")), error=function(e) e)
+  if(inherits(error, "error")) {
+    skippedgenes <- c(skippedgenes, i)
+    pvals <- c(pvals, NA)
+    coefficients <- c(coefficients, NA)
+    next
+  }
+
+    test <- summary(pgls(get(i) ~ is.flightless, cdat, lambda="ML"))
+  pvals <- c(pvals, test$coefficients[2,4])
+  coefficients <- c(coefficients, test$coefficients[2,1])
+}
+
+}
+
+
+```
+
+```{r}
+# control with random trios
+
+rat_down <- vector()
+rat_up <- vector()
+rat_down_cor <- vector()
+rat_up_cor <- vector()
+
+ratite_trios <- list.files("~/Documents/ratites/ratite_trios/")
+ratite_trios_exclude <- list.files("~/Documents/ratites/ratite_trios/", pattern="coeff.txt")
+ratite_trios <- ratite_trios[!ratite_trios %in% ratite_trios_exclude]
+all_ratite_p <- data.frame()
+
+seen_ratite <- vector()
+
+for(i in ratite_trios) {
+  trio <- sub("ratite_trio_", "", i)
+  trio <- sub(".txt", "", trio)
+  trio <- c(substr(trio, 1,6), substr(trio, 7,12), substr(trio, 13,19))
+  trio <- paste(trio[order(trio)], collapse="")
+  if(trio %in% seen_ratite) {next}
+  pvals <- read.delim(paste("~/Documents/ratites/ratite_trios/", i, sep=""), header=F)
+  coeff <- read.delim(paste("~/Documents/ratites/ratite_trios/", sub(".txt", "_coeff.txt", sub("ratite_trio_", "ratite_trio", i)), sep=""), header=F)
+  all_ratite_p <- rbind(all_ratite_p, t(pvals))
+
+  rat_down <- c(rat_down, sum(pvals[,1]<0.01 & coeff[,1]<0, na.rm=T))
+  rat_up <- c(rat_up, sum(pvals[,1]<0.01 & coeff[,1]>0, na.rm=T))
+  rat_down_cor <- c(rat_down_cor, sum(p.adjust(pvals[,1])<0.01 & coeff[,1]<0, na.rm=T))
+  rat_up_cor <- c(rat_up_cor, sum(p.adjust(pvals[,1])<0.01 & coeff[,1]>0, na.rm=T))
+}
+
+# are significant genes correlated across trios?
+library(lattice)
+splom(t(all_ratite_p[1:4,]), col=rgb(1,0,0,0.1))
+
+vocal_down <- vector()
+vocal_up <- vector()
+vocal_down_cor <- vector()
+vocal_up_cor <- vector()
+all_vocal_p <- data.frame()
+
+vocal_trios <- list.files("~/Documents/ratites/vocal_trios/")
+vocal_trios_exclude <- list.files("~/Documents/ratites/vocal_trios/", pattern="coeff.txt")
+vocal_trios <- vocal_trios[!vocal_trios %in% vocal_trios_exclude]
+
+seen_vocal <- vector()
+for(i in vocal_trios) {
+  trio <- sub("vocal_trio_", "", i)
+  trio <- sub(".txt", "", trio)
+  trio <- c(substr(trio, 1,6), substr(trio, 7,12), substr(trio, 13,19))
+  trio <- paste(trio[order(trio)], collapse="")
+  if(trio %in% seen_vocal) {next}
+  seen_vocal <- c(seen_vocal, trio)
+  pvals <- read.delim(paste("~/Documents/ratites/vocal_trios/", i, sep=""), header=F)
+  coeff <- read.delim(paste("~/Documents/ratites/vocal_trios/", sub(".txt", "_coeff.txt", i), sep=""), header=F)
+  all_vocal_p <- rbind(all_vocal_p, t(pvals))
+  
+  vocal_down <- c(vocal_down, sum(pvals[,1]<0.01 & coeff[,1]<0, na.rm=T))
+  vocal_up <- c(vocal_up, sum(pvals[,1]<0.01 & coeff[,1]>0, na.rm=T))
+  vocal_down_cor <- c(vocal_down_cor, sum(p.adjust(pvals[,1])<0.01 & coeff[,1]<0, na.rm=T))
+  vocal_up_cor <- c(vocal_up_cor, sum(p.adjust(pvals[,1])<0.01 & coeff[,1]>0, na.rm=T))
+}
+
+seen_random <- vector()
+
+random_trios <- list.files("~/Documents/ratites/random_trios/")
+random_trios_exclude <- list.files("~/Documents/ratites/random_trios/", pattern="coeff.txt")
+random_trios_exclude <- c(random_trios_exclude, list.files("~/Documents/ratites/random_trios/", pattern="\\d+"))
+random_trios <- random_trios[!random_trios %in% random_trios_exclude]
+
+bigLoss <- vector()
+sig_down <- vector()
+sig_up <- vector()
+sig_down_cor <- vector()
+sig_up_cor <- vector()
+
+for(i in random_trios) {
+  trio <- sub("random_trio", "", i)
+  trio <- sub(".txt", "", trio)
+  trio <- c(substr(trio, 1,6), substr(trio, 7,12), substr(trio, 13,19))
+  trio <- paste(trio[order(trio)], collapse="")
+  if(trio %in% seen_vocal | trio %in% seen_ratite | trio %in% seen_random) {next}
+  seen_random <- c(seen_random, trio)
+  pvals <- read.delim(paste("~/Documents/ratites/random_trios/", i, sep=""), header=F)
+  coeff <- read.delim(paste("~/Documents/ratites/random_trios/", sub(".txt", "_coeff.txt", i), sep=""), header=F)
+  
+  sig_down <- c(sig_down, sum(pvals[,1]<0.01 & coeff[,1]<0, na.rm=T))
+  sig_up <- c(sig_up, sum(pvals[,1]<0.01 & coeff[,1]>0, na.rm=T))
+  sig_down_cor <- c(sig_down_cor, sum(p.adjust(pvals[,1])<0.01 & coeff[,1]<0, na.rm=T))
+  sig_up_cor <- c(sig_up_cor, sum(p.adjust(pvals[,1])<0.01 & coeff[,1]>0, na.rm=T))
+  
+  if (sum(pvals[,1]<0.01 & coeff[,1]<0, na.rm=T) > 1500) {
+    bigLoss <- c(bigLoss, trio)
+  }
+}
+
+# anaPlabalRegfulGla, balRegcorBrafulGla, balRegfulGlapicPub, balRegfulGlanotPer, balRegcorBrafulGla, balRegcryCinfulGla, balRegfulGlamesUni, balRegeudElefulGla, eudElefulGlalepDis, fulGlalepDismelGal, fulGlamesUnirheAme, fulGlamesUnitaeGut, lepDismesUnitinGut all have >1500 genes looking degraded
+
+hist(c(sig_up_cor, sig_down_cor*(-1)), breaks=100)
+
+random_trios <- cbind.data.frame(Direction=c(rep("Up", 1697), rep("Down", 1697)), Nominal=c(sig_up, sig_down*(-1)), Corrected=c(sig_up_cor, sig_down_cor*(-1)))
+
+ggplot(random_trios, aes(x=Nominal)) + geom_histogram(bins=100, fill="grey80") + theme_classic() + 
+geom_segment(aes(x=mean(rat_up), xend=mean(rat_up), y=50, yend=0), arrow = arrow(length=unit(0.1,"cm"), type = "closed"), col="red") + geom_segment(aes(x=mean(rat_down)*(-1), xend=mean(rat_down)*(-1), y=50, yend=0), arrow = arrow(length=unit(0.1,"cm"), type = "closed"), col="red") + geom_segment(aes(x=mean(vocal_up), xend=mean(vocal_up), y=50, yend=0), arrow = arrow(length=unit(0.1,"cm"), type = "closed"), col="purple") + geom_segment(aes(x=mean(vocal_down)*(-1), xend=mean(vocal_down)*(-1), y=50, yend=0), arrow = arrow(length=unit(0.1,"cm"), type = "closed"), col="purple") + ylab("Count") + xlab("Number of genes significant at nominal P < 0.01") + geom_segment(aes(x=-2400, xend=-2400, y=240, yend=225), arrow = arrow(length=unit(0.1,"cm")), col="red") + geom_segment(aes(x=-2400, xend=-2400, y=265, yend=250), arrow = arrow(length=unit(0.1,"cm")), col="purple") + theme(legend.position = c(0.1,0.8)) + annotate("text", x = -2350, y = 232.5, label = "ratite means", hjust=0) + annotate("text", x = -2350, y = 257.5, label = "vocal learner means", hjust=0) + theme(legend.position = c(0.15,0.85)) + geom_segment(aes(x=-100, xend=-500, y=250, yend=250), arrow = arrow(length=unit(0.4,"cm"), type="closed")) + annotate("text", x = -100, y = 200, label = "more underrepresented\nmutations in target species", hjust=1) + geom_segment(aes(x=200, xend=600, y=250, yend=250), arrow = arrow(length=unit(0.4,"cm"), type="closed")) + annotate("text", x = 200, y = 200, label = "fewer underrepresented\nmutations in target species", hjust=0) + xlim(min(random_trios$Nominal)-100, 1200)
+ggsave("~/Documents/ratites/nominal.pdf", width=9, height=8)
+
+```
+
