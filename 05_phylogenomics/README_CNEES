@@ -1,0 +1,263 @@
+README - PALAEOGNATH PHYLOGENY - CNEEs
+===============
+
+PURPOSE: infer palaeognath phylogenetic relationships using conserved non-exonic elements (CNEEs) 
+identified de novo from a whole-genome alignment (WGA)
+
+Note that scripts were written for the Odyssey Cluster at Harvard University, and therefore might 
+include code to account for program stops/restarts on Odyssey's serial_requeue partition, and/or 
+hard-coded paths to software installations and user directories.
+
+---------------
+
+1. DATASET COMPILATION
+
+File: dataset_compilation/input_annotations/final_ces.intersection.bed from Tim Sackton lists chicken
+(galGal4) coordinates for 1,949,832 CEs [N.B. CEs, rather than CNEEs, because not yet filtered as 
+'non-exonic' (see below)].  Note also that this represents the set of CEs that were consistent 
+irrespective of the phylogenetic placement of rheas when calling conserved elements from the 
+whole-genome alignment, and should therefore not bias phylogenetic reconstructions toward any 
+particular hypothesis.
+
+
+a) Remove CEs that overlap with chicken (galGal4) annotated exons, genes, or CDS features
+   [N.B. intronic CEs are also omitted by including 'gene' features, which is desired to make this
+   dataset independent of the palaeognath intron phylogeny]
+
+   Input file: dataset_compilation/input_annotations/galGal_combined_annot.bed concatenates files
+   galGal_exons.bed, galGal_gene.bed, and galGal_CDS.bed annotation files obtained from Tim Sackton 
+
+   Bedtools v. 2.26.0 (Quinlan and Hall 2010, Bioinformatics 26:841-842) was used to sort:
+
+   sortBed -i galGal_combined_annot.bed > galGal_combined_annot.sorted.bed
+
+   ...and then to remove CEs that overlap with any annotation:
+
+   subtractBed -A -a final_ces.intersection.bed -b galGal_combined_annot.sorted.bed \
+   > galGal_intergenic_cnees.bed
+   Output: dataset_compilation/input_annotations/galGal_intergenic_cnees.bed [N= 811,695 CNEEs]
+
+   Results were filtered for a minimum locus length of 250 bp
+   Output: dataset_compilation/input_annotations/galGal_candidate_cnees.bed [N= 16,852 CNEEs]
+
+
+b) Liftover galGal reference CNEE coordinates to each palaeognath species in the whole-genome
+   alignment (WGA) with halLiftover v2.1 (from HAL Tools, Hickey et al. 2013 Bioinformatics 29:1341-
+   1342, https://github.com/glennhickey/hal)
+
+   e.g. halLiftover --outPSLWithName ratiteAlign.hal galGal galGal_candidate_cnees.bed \
+        droNov galGal-droNov_cnees_halLiftover.psl 
+   Output: .psl format file for each target species
+           e.g. dataset_compilation/halLiftover/galGal-droNov_cnees_halLiftover.psl
+
+
+c) Parse liftover .psl output to retain cases where a reference galGal CNEE lifts over to a 
+   unique region in the target species
+   Script: parse_halLiftover.pl
+   Output: e.g. dataset_compilation/halLiftover/droNov_cnees_parsed_liftover.bed
+
+   Output CNEE coordinates to retrieve, retaining loci with sequence for all target species
+   Script: write_cnee_dataset_coords.pl   
+   Output: e.g. dataset_compilation/halLiftover/droNov_cnees_to_use.bed
+   [N= 14,528 CNEEs, listed in dataset_compilation/input_annotations/candidate_cnees_list]
+
+   Compile sequences in fasta format (1 file per CNEE locus):
+   Script: write_input_fastas.pl
+
+   Omit CNEEs that overlap with ultraconserved elements (UCE) (for independence of datasets)
+   File: dataset_compilation/input_annotations/uces_to_omit_from_cnees.bed lists galGal4 coordinates 
+   for the 3158 UCEs used
+
+   subtractBed -A -a galGal_candidate_cnees.bed -b uces_to_omit_from_cnees.bed \
+   > cnees_no_uce_overlap.bed
+   Output: dataset_compilation/input_annotations/cnees_no_uce_overlap.bed [N= 12,917 CNEEs]
+
+
+d) Add sequence for North Island brown kiwi (Apteryx mantelli [aptMan]; Le Duc et al. 2015, Genome
+   Biol 16:147)
+   This genome was released after computation of the whole-genome alignment, so the liftover
+   approach above could not be used.  Instead, sequences were identified from blastn searches using
+   the other 3 kiwi species as queries.
+
+   Script: write_aptMan_blastn_queries.pl
+   Output: dataset_compilation/aptMan_blastn/aptHaa_blastn_queries.fasta, 
+   aptOwe_blastn_queries.fasta, aptRow_blastn_queries.fasta; e.g. in each case, a fasta with all 
+   CNEE seqs for each of the 3 kiwi from WGA
+
+   Script: aptMan_blastn_template.pl 
+   Wrapper to run blastn search using NCBI's 'somewhat similar' parameters: evalue 1e-10, 
+   perc_identity 10, penalty -3, reward 2, gapopen 5, gapextend 2, word_size 11
+   Output: e.g. dataset_compilation/aptMan_blastn/aptHaa-aptMan_blastn_results, a tab-delimited 
+   text file with the top hit for each locus for a given query species
+
+   Script: write_aptMan_seqs_to_retrieve.pl
+   Output: dataset_compilation/aptMan_blastn/aptMan_seqs_to_retrieve, a tab-delimited text file 
+   with 1-based coordinates for blastn hits that are consistent across query species,
+   and had a single target HSP covering at least 50% of query sequence, with minimum 80% identity
+
+   Script: add_aptMan_cnee_seqs.pl to append sequences to single-locus fastas
+
+
+e) Add sequence for little bush moa (Anomalopteryx didiformis [anoDid], a reference-based genome 
+   assembly mapping reads to the emu [droNov] genome).
+   This approach used the emu (droNov) CNEE coordinates lifted over from the chicken (galGal) 
+   reference, and mapped them to their corresponding moa coordinates using whole-scaffold emu-moa
+   alignments produced during the creation of the moa genome assembly.  The moa genome assembly is 
+   described in Cloutier et al. 20XX (REF), with the nuclear genome deposited under NCBI accession
+   XXXX, and accompanying data (including emu-moa scaffold alignments) available under Dryad digital
+   repository DOI:XXXX.  Moa sequence was appended to existing alignments if it covered at least
+   30% of the reference emu length, or was at least 200 bp (excluding uncalled bases, Ns).
+
+
+f) Add chicken (galGal4) outgroup sequence
+
+   Script: add_galGal_cnee_seqs.pl to append sequences to single-locus fastas
+
+
+g) Final marker set: some CNEEs have very low numbers of variable sites, therefore only loci with
+   at least as many variable sites (from mafft alignment [below]) as there are alignment species 
+   were retained (the minimum requirement to allow a fully bifurcating gene tree).
+   [retains 12,676 loci, listed in dataset_compilation/cnees_12676_loci_list]
+   
+---------------
+
+2. ALIGNMENTS & ALIGNMENT TRIMMING/FILTERING
+
+a) Sequences were aligned with MAFFT v. 7.245 (Katoh and Standley 2013, Mol Biol Evol 30:772-780) and 
+   default options for global, iterative progressive alignment
+   e.g. ginsi in.fasta > out.fasta
+   [DATASET: alignments/single_locus_fastas/CNEEs_mafft.tar.gz, N= 12,676 loci]
+
+
+b) Column-based filtering of MAFFT alignments used trimAl v. 1.2rev59 (Capella-Gutierrez et al. 2009,
+   Bioinformatics 25:1972-1973) and the 'automated1' option to heuristically choose trimming 
+   parameters based on input alignment characteristics
+   e.g. trimAl -in in.fasta -out out.fasta -automated1
+   [DATASET: alignments/single_locus_fastas/CNEEs_mafft_trimAl.tar.gz, N= 12,676 loci]
+
+
+c) MAFFT alignments were filtered to retain loci with no missing species, and alignment 
+   columns with no gaps, Ns, or ambiguity characters, and setting a minimum alignment length of 
+   200 bp after removal of missing data.
+   Script: write_no_missing_data_alignments.pl
+   [DATASET: alignments/single_locus_fastas/CNEEs_mafft_no_missing_data.tar.gz, N= 11,125 loci]
+
+
+d) FINAL ALIGNMENT PROCESSING:
+   Script: write_raxml_input.pl
+   Final processing step for all datasets; removes any gap/N-only alignment columns and converts
+   to all uppercase.
+
+---------------
+
+3. ADDITIONAL DATASET: ALTERNATIVE OUTGROUP CHOICE
+
+   An additional dataset was compiled to test for robustness of the inferred topology to the choice 
+   of a chicken outgroup.
+
+   'ALLSPECIES': includes all avian species present in the whole-genome alignment, in addition to 
+   the North Island brown kiwi and little bush moa (N= 37 avian taxa), and with the American 
+   alligator as an outgroup.  Alignments were compiled using the strategy outlined above [part 1b,c] 
+   for liftover, parsing, and sequence retrieval of the full dataset of 12,676 CNEEs to all species
+   not included in the palaeognath+chicken datasets.  Loci with no missing species and a minimum 
+   250 bp input sequence length per species were retained [N= 6931 loci], and were aligned de novo 
+   with MAFFT as in part 2a, above.
+
+   [DATASET: alignments/single_locus_fastas/CNEEs_mafft_allspecies.tar.gz, N= 6,931 loci]
+---------------
+
+4. PHYLOGENETIC INFERENCE: COALESCENT-BASED
+
+   MP-EST v. 1.5 (Liu et al. 2010, BMC Evol Biol 10:302) was used for coalescent-based phylogenetic 
+   tree inference from input maximum-likelihood (single-locus) genetrees built using RAxML v. 8.1.5 
+   (Stamatakis 2014, Bioinformatics 30:1312-1313).  The MP-EST species tree topology and branch 
+   lengths (in coalescent units) were calculated from input RAxML best maximum likelihood trees, 
+   and support values were calculated by running MP-EST on input RAxML bootstrap replicates.   
+
+a) RAxML genetrees: 
+
+   Best maximum likelihood gene trees were inferred for each locus from the unpartitioned DNA 
+   alignment using a GTR + GAMMA substitution model and 20 independent tree searches beginning 
+   from random starting tree topologies.
+
+   e.g. raxmlHPC-SSE3 -k -s in.fasta -p $RANDOM -N 20 -d -n [locusname] -w [/path/to/output/dir/]
+   Output for each dataset is provided in: gene_trees/RAxML_bestML_trees
+
+
+   500 bootstrap replicates were inferred for each locus from the unpartitioned DNA 
+   alignment using a GTR + GAMMA substitution model.
+
+   e.g. raxmlHPC-SSE3 -k -s in.fasta -p $RANDOM -b $RANDOM -N 500 -m GTRGAMMA -n [locusname] \
+        -w [/path/to/output/directory/]
+   Output for each dataset is provided in: gene_trees/RAxML_bootstraps
+
+b) RAxML gene trees were rooted on the chicken outgroup using ETE v. 3 (Huerta-Cepas et al. 2016,
+   Mol Biol Evol 33:1635-1638).
+
+c) For both best maximum likelihood RAxML trees and RAxML bootstrap tree input, 3 independent 
+   replicates of MP-EST were performed for each dataset, with a different starting seed specified
+   each time, and with a random starting tree and 10 independent tree searches per input genetree.
+
+   Input to MP-EST consists of 'genetree' files containing 1 RAxML tree per locus and a control 
+   file specifying run parameters for each 'genetree'.  Creation of input files for the bootstrap
+   replicate runs was automated:
+   Script: create_mpest_input.pl
+   Outputs a directory structure holding all MP-EST input for a run
+
+   Each 'genetree' replicate is then run with a call to its control file:
+   e.g. mpest control_1
+
+   Output was parsed to retain the highest scoring tree from amongst the 10 tree searches per 
+   input 'genetree'
+   Script: parse_mpest_output.pl
+   MP-EST output is provided in: species_trees/MP-EST
+
+---------------
+
+5. PHYLOGENETIC INFERENCE: MAXIMUM-LIKELIHOOD OF CONCATENATED DATASETS
+
+   ExaML v. 3.0.16 (Kozlov et al. 2015, Bioinformatics 31:2577-2579) was used to infer 
+   maximum-likelihood toplogies from fully partitioned (1 partition/locus), concatenated datasets.
+
+a) Concatenated alignments & partition files were compiled for each data set:
+
+   Script: write_concat_alignment.pl
+   Outputs a concatenated alignment in .phylip format
+   e.g. alignments/concatenated_datasets/CNEEs_mafft.phylip.gz
+
+   Script: write_concat_partitionfile.pl
+   Outputs a list of 1 partition/locus for the alignment file above
+   e.g. alignments/concatenated_datasets/CNEEs_mafft_partitions
+
+
+b) Best ML tree search
+
+   Script: ExaML_concat_best_ML_tree_input.pl
+   Perl wrapper that converts the alignment+partition files into ExaML binary format, and generates
+   20 complete random starting trees, and 1 random stepwise addition order parsimony starting tree.
+   N.B. with relatively few taxa, identical parsimony starting trees were almost always generated
+   & therefore only one was used in tree searches
+
+   ExaML was then run separately for each starting tree:
+   e.g. mpirun -np 2 examl-AVX -m GAMMA -s in.binary -t StartingTree -n [output_filename]
+
+c) Bootstrapping
+
+   Script: ExaML_concat_bootstrap_input.pl
+   Perl wrapper to create bootstrap replicates from the input concatenated alignment, convert each
+   bootstrap+partition file into ExaML binary input format, and generate a random starting 
+   tree to run each bootstrap replicate.  Each bootstrap replicate was then run in ExaML as per the 
+   full ML tree search above.
+
+   Convergence was assessed after every 50 bootstrap replicates with the extended majority-rule 
+   consensus tree criterion a posteriori bootstopping analysis in RAxML:
+
+   cat ExaML_result.* > bootstraps
+   raxmlHPC-SSE3 -m GTRGAMMA -p $RANDOM -z bootstraps -I autoMRE -n check_bs
+  
+   After convergence (or, after > 200 replicates if bootstraps failed to converge), bootstrap 
+   support values were placed on the best-scoring maximum likelihood tree with RAxML:
+
+   raxmlHPC-SSE3 -m GTRGAMMA -f b -z bootstraps -t best_ML_tree -n [output_name]
+   Output of ExaML tree searches is provided in: species_trees/ExaML
+
