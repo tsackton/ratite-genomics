@@ -1,6 +1,7 @@
 #This is code to load the conserved elements into R and process the associated bed files
 #Takes a path and a bed file and then processes associated files to produce an annotation file
 #We focus on the Mitchell et al tree (ce2)
+#REQUIRES A NUMBER OF LARGE FILES NOT ON GITHUB (WILL BE AVAILABLE ON DRYAD)
 
 bedfile<-"final_ces_noratite.tree2.bed"
 filepath<-"/Volumes/LaCie/Projects/Current/ratites/final/ce_final/"
