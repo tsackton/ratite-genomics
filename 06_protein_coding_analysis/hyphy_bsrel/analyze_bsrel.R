@@ -22,7 +22,7 @@ hog_to_gene <- hog_to_gene %>% tbl_df %>%
   dplyr::select(-Gene)
 
 ##LOAD DATA## 
-merged = read.table("bsrel_res_parsed_ratites_2017-11-01.txt", fill=T)
+merged = read.table("bsrel_res_parsed_ratites_2017-11-20.txt", fill=T)
 names(merged)=c("class", "tree", "hog", "tsel.s", "nsel.s", "tsel.n", "nsel.n", "tnon", "nnon", "strict_branches", "nom_branches")
 merged=merge(merged, ancrec.treekey, by.x=c("hog", "tree"), by.y=c("hog", "tree"), all=T)
 
