@@ -1,4 +1,0 @@
-Problem getting gene for YP_007890942 at HOGFasta/HOG1.fa line: >pygAde|NA|YP_007890942 [pygAde]
-104386117 has multiple isoforms in different HOGS: HOG6163.fa	HOG17888.fa
-103618147 has multiple isoforms in different HOGS: HOG17664.fa	HOG7711.fa
-105405088 has multiple isoforms in different HOGS: HOG23522.fa	HOG8386.fa
