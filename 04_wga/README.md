@@ -20,3 +20,9 @@ generate our final branch lengths.
 
 3. Whole-genome alignment: the code in the progressiveCactus subdirectory includes our configuration files and
 scripts to run progressiveCactus. For more details about progressiveCactus, please see [here](https://github.com/glennhickey/progressiveCactus).
+
+Note about ostrich
+--------------
+
+We used the superscaffolds produced by BGI for our whole genome alignment. All other species are either from NCBI or newly assembled for this project.
+
