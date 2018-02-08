@@ -1,0 +1,45 @@
+code,species,Common name,annotation release,GFF link
+anaPla,Anas platyrhynchos,mallard,101,ftp://ftp.ncbi.nlm.nih.gov/genomes/Anas_platyrhynchos/GFF/ref_BGI_duck_1.0_top_level.gff3.gz
+aptFor,Aptenodytes forsteri,emperor penguin,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Aptenodytes_forsteri/GFF/ref_ASM69914v1_top_level.gff3.gz
+aquChr,Aquila chrysaetos canadensis,golden eagle,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Aquila_chrysaetos_canadensis/GFF/ref_Aquila_chrysaetos-1.0.2_top_level.gff3.gz
+calAnn,Calypte anna,Anna's hummingbird,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Calypte_anna/GFF/ref_ASM69908v1_top_level.gff3.gz
+chaPel,Chaetura pelagica,chimney swift,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Chaetura_pelagica/GFF/ref_ChaPel_1.0_top_level.gff3.gz
+chaVoc,Charadrisu vociferus,killdeer,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Charadrius_vociferus/GFF/ref_ASM70802v2_top_level.gff3.gz
+colLiv,Columba livia,rock dove,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Columba_livia/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_Cliv_1.0_top_level.gff3.gz
+corBra,Corvus brachyrhynchos,American crow,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Corvus_brachyrhynchos/GFF/ref_ASM69197v1_top_level.gff3.gz
+cucCan,Cuculus canorus,common cuckoo,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Cuculus_canorus/GFF/ref_ASM70932v1_top_level.gff3.gz
+egrGar,Egretta garzetta,little egret,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Egretta_garzetta/GFF/ref_ASM68718v1_top_level.gff3.gz
+falPer,Falco peregrinus,peregrine falcon,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Falco_peregrinus/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_F_peregrinus_v1.0_top_level.gff3.gz
+ficAlb,Ficedula albicollis,collared flycatcher,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Ficedula_albicollis/GFF/ref_FicAlb1.5_top_level.gff3.gz
+galGal,Gallus gallus,chicken,102,ftp://ftp.ncbi.nlm.nih.gov/genomes/Gallus_gallus/GFF/ref_Gallus_gallus-4.0_top_level.gff3.gz
+geoFor,Geospiza fortis,medium ground-finch,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Geospiza_fortis/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_GeoFor_1.0_top_level.gff3.gz
+halLeu,Haliaeetus leucocephalus,bald eagle,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Haliaeetus_leucocephalus/GFF/ref_Haliaeetus_leucocephalus-4.0_top_level.gff3.gz
+melGal,Meleagris gallopavo,turkey,101,ftp://ftp.ncbi.nlm.nih.gov/genomes/Meleagris_gallopavo/GFF/ref_Turkey_5.0_top_level.gff3.gz
+melUnd,Melopsittacus undulatus,budgerigar,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Melopsittacus_undulatus/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_Melopsittacus_undulatus_6.3_top_level.gff3.gz
+nipNip,Nipponia nippon,crested ibis,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Nipponia_nippon/GFF/ref_ASM70822v1_top_level.gff3.gz
+picPub,Picoides pubescens,downy woodpecker,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Picoides_pubescens/GFF/ref_ASM69900v1_top_level.gff3.gz
+pseHum,Pseudopodoces humilis,Tibetan ground-tit,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Pseudopodoces_humilis/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_PseHum1.0_top_level.gff3.gz
+pygAde,Pygoscelis adeliae,Adelie penguin,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Pygoscelis_adeliae/GFF/ref_ASM69910v1_top_level.gff3.gz
+serCan,Serinus canaria,common canary,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Serinus_canaria/GFF/ref_SCA1_top_level.gff3.gz
+strCam,Struthio camelus australis,ostrich,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Struthio_camelus_australis/GFF/ref_ASM69896v1_top_level.gff3.gz
+taeGut,Taeniopygia gutta,zebra finch,103,ftp://ftp.ncbi.nlm.nih.gov/genomes/Taeniopygia_guttata/GFF/ref_Taeniopygia_guttata-3.2.4_top_level.gff3.gz
+tinGut,Tinamus guttatus,white-throated tinamou,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Tinamus_guttatus/GFF/ref_ASM70537v2_top_level.gff3.gz
+balReg,Balearica regulorum,grey crowned crane,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Balearica_regulorum_gibbericeps/GFF/ref_ASM70989v1_top_level.gff3.gz
+fulGla,Fulmarus glacialis,northern fulmar,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Fulmarus_glacialis/GFF/ref_ASM69083v1_top_level.gff3.gz
+lepDis,Leptosomus discolor,Cuckoo roller,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Leptosomus_discolor/GFF/ref_ASM69178v1_top_level.gff3.gz
+mesUni,Mesitornis unicolor,Brown mesite,100,ftp://ftp.ncbi.nlm.nih.gov/genomes/Mesitornis_unicolor/GFF/ref_ASM69576v1_top_level.gff3.gz
+Outgroups:,,,,
+allMis,Alligator mississippiensis,american alligator,100,ftp://ftp.ncbi.nih.gov/genomes/Alligator_mississippiensis/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_allMis0.2_top_level.gff3.gz
+anoCar,Anolis carolinensis,green anole,101,ftp://ftp.ncbi.nlm.nih.gov/genomes/Anolis_carolinensis/GFF/ref_AnoCar2.0_top_level.gff3.gz
+chrPic,Chrysemys picta,painted turtle,101,ftp://ftp.ncbi.nlm.nih.gov/genomes/Chrysemys_picta/GFF/ref_Chrysemys_picta_bellii-3.0.3_top_level.gff3.gz
+New ratites:,,,,
+droNov,Dromaius novaehollandiae,emu,,
+rheAme,Rhea americana,greater rhea,,
+rhePen,Rhea pennata,lesser rhea,,
+aptOwe,Apteryx owenii,little spotted kiwi,,
+aptHaa,Apteryx haastii,great spotted kiwi,,
+aptRow,Apteryx rowi,Okarito brown kiwi,,
+casCas,Casuarius casuarius,southern cassowary,,
+cryCin,Crypturellus cinnamomeus,thicket tinamou,,
+notPer,Nothoprocta perdicaria,chilean tinamou,,
+eudEle,Eudromia elegans,elegant crested tinamou,,
