@@ -1,0 +1,4 @@
+#File	TT_R1_220demultiplex2.fastq	TT_R2_220demultiplex2.fastq
+#Total	18610100
+#Matched	10447453	56.13862%
+phix	10447453	56.13862%
