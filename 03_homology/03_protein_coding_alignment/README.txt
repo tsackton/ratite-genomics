@@ -1,4 +1,4 @@
-README: OMA HOMOLOGY
+README: OMA HOMOLOGY - PROTEIN-CODING ALIGNMENTS
 ===============
 
 PURPOSE: compile datasets to run PAML inference of positive selection on HOGs [hierarchical orthologous groups]
@@ -68,7 +68,7 @@ To retain a HOG, we:
 - AND if there is < 1 gap per bp aligned sequence in the filtered sequence
 Failure to meet these criteria resulted in the entire sequence being removed from the HOG
 
-These criteria resulted in the retention fo 11,274 HOGs for PAML analyses
+These criteria resulted in the retention of 11,274 HOGs for PAML analyses
 
 ---------------
 
@@ -81,8 +81,8 @@ Script: get_oma_rna_genbank.sh
 Script: parse_cds_from_rna_genbank.pl
 Parse GenBank rna annotation file for each species & output all CDS sequences, with ends padded so all sequences begin in phase0 and end as a multiple of 3.
 
-#####FOR 'TEAM RATITE' GENOMES:
-Use Cufflinks v. 2.2.1 gffread utility, together with team ratite genomes & maker annotation GFFs to output all CDS for each species.
+#####FOR NEW PALAEOGNATH GENOMES:
+Use Cufflinks v. 2.2.1 gffread utility, together with new palaeognath genomes from Sackton et al. (2018) & maker annotation GFFs to output all CDS for each species.
 e.g. gffread input.gff -g /path/to/genome/fasta -x output_cds.fa
 
 #####ALL GENOMES:
@@ -101,7 +101,8 @@ HOG CDS alignments were filtered with the Jarvis et al. 2014 DNA filtering scrip
 Script: filter_alignment_fasta_v1.3B.pl (acessed from ftp://climb.genomics.cn/pub/10.5524.101001_102000/10/041/ on Sept. 30, 2015).
 Output to: PAML_filtered_PRANK_fastas/ (contains the filtered alignments, plus the output 'stats' file)
 
-An additional step was added to remove gap-only (and non-ACGT only) columns prior to tree-building.
+An additional step was added to remove gap-only (and non-ACGT only) codons prior to tree-building.
+(i.e. removal of alignment columns for codons with no ACGT bases, retaining reading frame)
 Output to: PAML_final_PRANK_fastas/
 
 Both the Jarvis et al. filtering & final column removal were performed with the perl wrapper script: filter_prank_alignments.pl
