@@ -3,7 +3,7 @@
 library("tidyverse")
 library(qqman)
 
-se_results <- read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/spatial_enrichment.results")
+se_results <- read_tsv("spatial_enrichment.results", guess_max = 10000)
 
 se_results %>% filter(rar.1.qval < 0.01, window_size == "1000kb_100kb_slide") %>% arrange(chr, start) %>% select(window_size, chr, start, end, rar.1, rar.1.pval) %>%print.data.frame
 se_results %>% filter(crar.1.qval < 0.1, window_size == "1000kb_100kb_slide") %>% arrange(chr, start) %>% select(window_size, chr, start, end, crar.1, crar.1.pval) %>%print.data.frame
@@ -13,13 +13,14 @@ se_results %>% filter(crar.1.qval < 0.01, window_size == "1000kb_100kb_slide") %
 se_results %>% filter(crar.1.qval < 0.05, window_size == "1000kb_100kb_slide") %>% summarize(max(crar.1.pval))
 
 #convert to format for qqman
-se_manh <- se_results %>% filter(window_size == "1000kb_100kb_slide") %>% 
+se_manh <- se_results %>% filter(window_size == "1000kb_100kb_slide") %>% select(chr, start, end, crar.1.pval, window) %>%
   mutate(chr = sub("chr", "", chr)) %>% 
   mutate(CHR = as.numeric(sub("Z", 29, chr))) %>%
   mutate(BP = start+((end+1-start)/2)) %>% 
-  rename(SNP = window, P=crar.1.pval) %>% select(SNP, CHR, BP, P)
+  dplyr::rename(SNP = window) %>%
+  dplyr::rename(P = crar.1.pval) %>% select(SNP, CHR, BP, P)
 
-pdf("~/Projects/birds/ratite_compgen/manuscript/ver7/Figure3E_2.pdf")
+pdf("~/Projects/birds/ratite_compgen/manuscript/ver7/Figure3E_2_2.pdf")
 manhattan(se_manh, chrlabs=c(1:15, 17:24, 26, 27, 28, "Z"), suggestiveline=-log10(0.000552), genomewideline = -log10(0.0000654), type="l", col=c("blue4", "orange3")) 
 dev.off()
 

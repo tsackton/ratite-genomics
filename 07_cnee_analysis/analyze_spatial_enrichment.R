@@ -1,9 +1,9 @@
 #this needs some work...?
 
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
 library(tidyverse)
 
-cnee <- read_tsv("cnees.tsv")
+cnee <- read_tsv("cnees.tsv.gz")
 
 #filter
 
@@ -47,10 +47,10 @@ get_stats_for_window <- function(query_ranges, window_to_test) {
   subsetByOverlaps(query_ranges, window_to_test) %>% 
     as.data.frame %>% 
     summarize(rar.1 = sum(ratite_accel.1 & ratite_spec.1, na.rm=T), rar.2=sum(ratite_accel.2 & ratite_spec.2, na.rm=T), crar.1 = sum(ratite_accel.1 & ratite_spec.1 & ratite_conv.1, na.rm=T), crar.2 = sum(ratite_accel.1 & ratite_spec.1 & ratite_conv.1 & ratite_loss_cons_min.mat >= 2, na.rm=T), total=n()) %>%
-    mutate(rar.1.pval = pbinom(q=rar.1, size=total, prob=rar.1.prob, lower.tail=FALSE)) %>%
-    mutate(crar.1.pval = pbinom(q=crar.1, size=total, prob=crar.1.prob, lower.tail=FALSE)) %>%
-    mutate(rar.2.pval = pbinom(q=rar.2, size=total, prob=rar.2.prob, lower.tail=FALSE)) %>%
-    mutate(crar.2.pval = pbinom(q=crar.2, size=total, prob=crar.2.prob, lower.tail=FALSE)) %>%
+    mutate(rar.1.pval = pbinom(q=rar.1, size=total, prob=rar.1.prob, lower.tail=FALSE) + dbinom(x=rar.1, size=total, prob=rar.1.prob)) %>%
+    mutate(crar.1.pval = pbinom(q=crar.1, size=total, prob=crar.1.prob, lower.tail=FALSE) + dbinom(x=crar.1, size=total, prob=crar.1.prob)) %>%
+    mutate(rar.2.pval = pbinom(q=rar.2, size=total, prob=rar.2.prob, lower.tail=FALSE) + dbinom(x=rar.2, size=total, prob=rar.2.prob)) %>%
+    mutate(crar.2.pval = pbinom(q=crar.2, size=total, prob=crar.2.prob, lower.tail=FALSE) + dbinom(x=crar.2, size=total, prob=crar.2.prob)) %>%
     mutate(chr = window_df$seqnames, start=window_df$start, end=window_df$end) %>% 
     select(chr, start, end, rar.1, rar.2, crar.1, crar.2, total, rar.1.pval, crar.1.pval, rar.2.pval, crar.2.pval)
 }
