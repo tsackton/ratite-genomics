@@ -1,14 +1,10 @@
 README: MOA CONSERVED ELEMENTS
 ===============
 
-PURPOSE: extract sequence from the moa reference-based genome assembly for a subset of 
-conserved non-exonic elements (CNEEs) identified from the 'team ratite' whole-genome alignment (wga), and
-align with sequences from all other speces in wga.
-Second, to use a similar approach to compile an alignment of fourfould degenerate (4d) sites 
-for all species including moa (used for estimating the neutral substitution rate).
-
-'Moa': little bush moa (Anomalopteryx didformis, species code anoDid) reference-based assembly 
-mapped to the 'team ratite' emu (droNov) genome
+PURPOSE: extract sequence from the little bush moa reference-based genome assembly for a subset of 
+conserved non-exonic elements (CNEEs) identified from the palaeognath project whole-genome alignment (wga), 
+and align with sequences from all other speces in wga.
+Additionally, compile an alignment of fourfould degenerate (4d) sites for all species including moa.
 
 Note that scripts were written for the Odyssey Cluster at Harvard University, and therefore might include code
 to account for program stops/restarts on Odyssey's serial_requeue partition, and/or hard-coded paths
@@ -17,14 +13,14 @@ to e.g. software installations and user directories.
 ===============
 
 CNEEs:
-Step 1: Lift over coordinates from chicken (galGal) reference to each other species in wga using HAL Tools
-(https://github.com/glennhickey/hal).
+Step 1: Lift over coordinates from chicken (galGal) reference to each other species in wga using 
+halLiftover v2.1 (from HAL Tools Hickey et al. 2013 Bioinformatics 29:1341-1342, https://github.com/glennhickey/hal).
 
 Input file of galGal CNEE coordinates: final_cnees_long.bed from Tim Sackton lists coordinates for 284,001 cnees.
 
-Script: preprocess_beds_for_moa.sh (by Tim Sackton; archived as https://github.com/tsackton/ratite-genomics/tree/master/alignment/moa/preprocess_beds_for_moa.sh)
+Script: preprocess_beds_for_moa.sh (by Tim Sackton, archived at:  https://github.com/tsackton/ratite-genomics/blob/master/07_cnee_analysis/01_phyloP/)
 
-Output: .psl format file for each species (e.g. droNov.psl) stored in directory moa_cnees/cnees/halLiftover/
+Output: .psl format file for each species (e.g. droNov.psl)
 
 ---------------
 
@@ -34,7 +30,7 @@ Also note if a particular CNEE is 'missing' (no target liftover region), or is '
 omit short CNEEs.
 
 Script: parse_cnee_halLiftover.pl
-Output: a .bed format file for each species, (e.g. droNov_cnees_parsed_liftover.bed) in moa_cnees/cnees/halLiftover/
+Output: a .bed format file for each species, (e.g. droNov_cnees_parsed_liftover.bed)
 Additionally, a logfile (final_cnees_long_liftover_parsing_log) that records missing/multiple/long/short CNEEs in each target species
 
 ---------------
@@ -42,48 +38,27 @@ Additionally, a logfile (final_cnees_long_liftover_parsing_log) that records mis
 Step 3: Compile .fasta file for each CNEE (e.g. sequence for that CNEE from all species).
 
 Script: write_de_novo_align_fastas.pl
-Output: moa_cnees/cnees/input_fastas_allspecies_cnees.tar.gz (split into 57 subdirectory 'batches' of ~5000 loci; text file 'cnee_alignment_batches' lists CNEEs
+Output: input_fastas_allspecies_cnees.tar.gz (split into 57 subdirectory 'batches' of ~5000 loci; text file 'cnee_alignment_batches' lists CNEEs
 contained in each batch)
-
-[NB- for versions of publicly available genome assemblies used, refer to: 
-https://github.com/tsackton/ratite-genomics/blob/master/alignment/progressiveCactus/get_genomes.sh]
 
 ---------------
 
-Step 4: Add moa sequence.  Uses the emu (droNov) CNEE coordinates lifted over from chicken, then maps emu coordinates to 
-their corresponding moa coordinates.
-
-This approach uses text files mapping coordinates between: emu (droNov) reference assembly, 1st reference-based 
-moa assembly mapping reads to emu with Stampy, and 2nd reference-based moa assembly remapping moa reads to 
-1st round moa assembly with Bowtie2.  
-
-Coordinate mappings are provided as 1 tab-delimited text file per reference scaffold.
-[in /n/edwards_lab/Users/acloutier/moa_genome/moa-droNov_bowtie_remapping/individual_scaffold_coordinates_final.tar.gz]
-
-Script: write_droNov-anoDid_cnee_coordinates.pl converts emu-> moa coordinates
-Output: moa-droNov_coordinates_to_retrieve (tab-delimited text file, uses 1-based genome coordinates)
-
-Script: write_anoDid_cnee_seqs.pl retrieves sequence for all CNEE coordinates output from above script 
-Output: anoDid_cnees.fa
-
-Script: write_anoDid_cnee_coverage.pl outputs summary stats of sequence lengths in chicken (galGal), emu (droNov) & moa (anoDid).
-These values are used to determine whether moa sequences are 'too long/too short' as done for other target species in step 2 above.
-Output: anoDid_cnee_coverage (tab-delimited text file)
-
-Script: write_moa_coordinates_to_retrieve.pl outputs coordinates for the subset of loci to be used (minus those deemed 'too long')
-Output: moa-droNov_coordinates_to_retrieve_final (tab-delimited text file, 1-based coordinates)
-Logfile of missing/too long/short moa cnees output as: moa_final_cnees_long_liftover_parsing_log
-
-Script: add_anoDid_cnee_seqs.pl appends moa sequence to existing input fastas
-[moa sequences retrieved from: moa_genome/moa-droNov_bowtie_remapping/moa-droNov_bowtie_reampping_consensus_genome_final.fasta] 
+Step 4: Add sequence for little bush moa (Anomalopteryx didiformis [anoDid], a reference-based genome assembly mapping reads to the emu [droNov] genome).
+   
+This approach used the emu (droNov) CNEE coordinates lifted over from the chicken (galGal) 
+reference, and mapped them to their corresponding moa coordinates using whole-scaffold emu-moa
+alignments produced during the creation of the moa genome assembly.  The moa genome assembly is 
+described in Cloutier et al. 2018 (Bioarchive doi:https://doi.org/10.1101/262816 ), with the nuclear 
+genome deposited under NCBI accession (pending), and accompanying data (including emu-moa scaffold 
+alignments) available under Dryad digital repository DOI:(pending).  
 
 ---------------
 
 Step 5: Align individual CNEEs
 
 Script: mafft_cnee_align_template.pl
-Align with mafft v. 7.245 and default options for high sensitivity alignment with
-global pairwise alignment during the consistency scoring step ('ginsi' option)
+Align with mafft v. 7.245 (Katoh and Standley 2013, Mol Biol Evol 30:772-780) and default options 
+for high sensitivity alignment with global pairwise alignment during the consistency scoring step ('ginsi' option)
 
 Output: input_fastas_allspecies_cnees_aligned.tar.gz [subdirectory 'batches' as listed in cnee_alignment_batches]
 
@@ -116,7 +91,7 @@ Output: allspecies_cnee_concat_partitions & allspecies_cnee_concat_partitions.be
 
 ---------------
 
-Step 8: Per-partition branch length estimation (in cnees/branchlengths/)
+Step 8: Per-partition branch length estimation
 
 Estimate branch lengths for each CNEE, constrained to each of 3 topologies (allowing placement of rheas to differ).
 [Constraint trees: ratiteTree_WithMoa.ver1.nh, ratiteTree_WithMoa.ver2.nh, ratiteTree_WithMoa.ver3.nh from Tim Sackton]
@@ -145,33 +120,21 @@ Used a similar approach to compilation of CNEE dataset above, but no alignment s
 Step 1: 
 Input file of galGal 4d coordinates: galGal4_4d_bed6_withid.bed from Tim Sackton lists coordinates for 5,739,749 4d sites
 
-Script: preprocess_beds_for_moa.sh (by Tim Sackton; archived as https://github.com/tsackton/ratite-genomics/tree/master/alignment/moa/preprocess_beds_for_moa.sh)
+Script: preprocess_beds_for_moa.sh (by Tim Sackton, archived at:  https://github.com/tsackton/ratite-genomics/blob/master/07_cnee_analysis/01_phyloP/)
 
-Output: .bed format file for each species (e.g. droNov.bed, in moa_cnees/4d_sites/halLiftover/)
+Output: .bed format file for each species (e.g. droNov.bed)
 
 ---------------
 
 Step 2: Parse liftover .bed files
 
 Script: parse_neutMods_4d_bed.pl
-Outputs a .bed file for each (non-moa) target species (in moa_cnees/4d_sites/halLiftover/), with an entry for each chicken reference base.  
+Outputs a .bed file for each (non-moa) target species, with an entry for each chicken reference base.  
 Placeholder lines are output for missing or multiple liftover sites.
 
 ---------------
 
-Step 3: Write moa .bed file
-
-Script: write_droNov-anoDid_4d_coordinates.pl
-Maps emu 4d coordinates to their corresponding value in moa [using mapping files outlined in CNEE section above]
-Output: 4d_sites/halLiftover/moa/moa-droNov_coordinates_to_retrieve_1-23 [input emu .bed file of liftover 4d sites was split to run emu-> moa mapping in parallel]
-
-Script: output_moa_4d_coordinates.pl
-(to compile data from running mapping script above & output a single .bed annotation line for each 4d site)
-Output: anoDid.4dparsed.bed
-
----------------
-
-Step 4: Concatenate 4d sites into a single file
+Step 3: Concatenate 4d sites into a single file
 
 Script: write_4d_spp_concatenated_seq.pl
 Uses parsed .bed annotation files to retrieve 4d sites, and concatenates sites for a given species into a single fasta.  
