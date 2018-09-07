@@ -1,0 +1,233 @@
+Workflow for fixing errors in genomes:
+
+#tools
+samtools/1.5-fasrc01
+ncbi-blast/2.2.29+-fasrc01
+bedtools2/2.26.0-fasrc01
+kentUtilities
+
+Fix mitochondrial sequence, duplicated sequence, and other exclusions somewhat manually
+
+#If you want to include the mitochondrial sequences in the genome submission,
+#label them as mitochondrial. To do this, add a source qualifier in the fasta
+#definition line [location=mitochondrion] and indicate that they are mitochondrial
+#in the Assignment tab of the submission portal. In addition, it is recommended
+#either to move these sequences to the end of your submission or put them in a separate
+#file so that they are clustered together.
+
+aptHaa:
+scaffold_2019   15266   mitochondrion
+
+faSomeRecords aptHaa.fa <(echo "scaffold_2019") aptHaa_mt.fa
+faSomeRecords -exclude aptHaa.fa <(echo "scaffold_2019") aptHaa_nt.fa
+
+echo -e "scaffold_2019\t0\t15266\tmtDNA" > aptHaa_mask.bed
+
+aptOwe:
+scaffold_1934   15124   mitochondrion
+scaffold_3705   1702    mitochondrion
+
+faSomeRecords aptOwe.fa <(echo -e "scaffold_1934\nscaffold_3705") aptOwe_mt.fa
+faSomeRecords -exclude aptOwe.fa <(echo -e "scaffold_1934\nscaffold_3705") aptOwe_nt.fa
+
+echo -e "scaffold_1934\t0\t15124\tmtDNA\nscaffold_3705\t0\t1702\tmtDNA" > aptOwe_mask.bed
+
+aptRow:
+no mt
+
+mv aptRow.fa aptRow_nt.fa
+
+casCas:
+no mt
+
+mv casCas.fa casCas_nt.fa
+
+cryCin:
+no mt
+
+mv cryCin.fa cryCin_nt.fa
+
+droNov:
+scaffold_1981   1572    Akkermansia muciniphila ATCC BAA-835
+scaffold_2219   1404    Akkermansia muciniphila ATCC BAA-835
+
+faSomeRecords -exclude droNov.fa <(echo -e "scaffold_1981\nscaffold_2219") droNov_nt.fa
+
+echo -e "scaffold_1981\t0\t1572\tcontaminant\nscaffold_2219\t0\t1404\tcontaminant" > droNov_mask.bed
+
+eudEle:
+scaffold_1226   4854    mitochondrion
+scaffold_927    10312   mitochondrion
+
+faSomeRecords eudEle.fa <(echo -e "scaffold_1226\nscaffold_927") eudEle_mt.fa
+faSomeRecords -exclude eudEle.fa <(echo -e "scaffold_1226\nscaffold_927") eudEle_nt.fa
+
+echo -e "scaffold_1226\t0\t4854\tmtDNA\nscaffold_927\t0\t10312\tmtDNA" > eudEle_mask.bed
+
+notPer:
+no mt
+
+mv notPer.fa notPer_nt.fa
+
+rheAme:
+scaffold_857    14986   mitochondrion
+
+faSomeRecords rheAme.fa <(echo "scaffold_857") rheAme_mt.fa
+faSomeRecords -exclude rheAme.fa <(echo "scaffold_857") rheAme_nt.fa
+
+echo -e "scaffold_857\t0\t14986\tmtDNA" > rheAme_mask.bed
+
+rhePen:
+scaffold_1008   14606   Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1055   13998   Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1058   12356   Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1067   12010   Enterobacter hormaechei
+scaffold_1073   11900   Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1081   11658   Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1084   11571   Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1174   9212    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1245   7681    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1295   6703    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1438   5142    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1454   5150    vector/etc
+scaffold_1678   3017    Enterobacter mori
+scaffold_1689   2922    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1749   2518    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1762   2410    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1767   2390    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1773   2418    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1779   2357    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1786   2340    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1801   2252    vector/etc
+scaffold_1914   1842    vector/etc
+scaffold_2049   1668    vector/etc
+scaffold_2210   1458    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_2234   1480    vector/etc
+scaffold_2260   1464    vector/etc
+scaffold_2486   1245    Klebsiella aerogenes
+scaffold_256    1324747 Klebsiella aerogenes
+scaffold_2591   1194    vector/etc
+scaffold_2611   1238    Klebsiella aerogenes
+scaffold_2638   1222    Klebsiella aerogenes
+scaffold_2707   1184    Enterobacter hormaechei subsp. steigerwaltii
+scaffold_2769   1091    Escherichia coli O103:H2 str. 12009
+scaffold_2949   1073    mitochondrion
+scaffold_367    666299  Klebsiella aerogenes
+scaffold_394    515720  Klebsiella aerogenes
+scaffold_399    507383  Klebsiella aerogenes
+scaffold_451    340495  Klebsiella aerogenes
+scaffold_458    327218  Klebsiella aerogenes
+scaffold_470    300841  Klebsiella aerogenes
+scaffold_492    252309  Klebsiella aerogenes
+scaffold_505    234158  Klebsiella aerogenes
+scaffold_519    208542  Klebsiella aerogenes
+scaffold_595    109403  Enterobacter hormaechei subsp. steigerwaltii
+scaffold_601    105599  Klebsiella aerogenes
+scaffold_624    87848   Klebsiella aerogenes
+scaffold_630    85673   Klebsiella aerogenes
+scaffold_674    65012   Enterobacter mori,Enterobacter hormaechei subsp. steigerwaltii
+scaffold_698    49898   Enterobacter mori
+scaffold_715    43967   Klebsiella aerogenes
+scaffold_733    40351   Klebsiella aerogenes EA1509E
+scaffold_793    29603   vector/etc
+scaffold_795    31142   Enterobacter hormaechei subsp. steigerwaltii
+scaffold_800    28578   Enterobacter hormaechei subsp. steigerwaltii
+scaffold_928    18190   Enterobacter hormaechei subsp. steigerwaltii
+scaffold_974    15865   Enterobacter hormaechei subsp. steigerwaltii
+scaffold_993    15150   Enterobacter hormaechei subsp. steigerwaltii
+scaffold_1797   2265	Duplicated
+
+
+
+cut -f1,1 -d ' ' rhePen-remove.txt > rhePen.badScaffolds (ncb_screen dir)
+
+#adding scaffold_994, scaffold_868, scaffold_749 to rhePen bad scaffolds
+
+
+faSomeRecords -exclude rhePen.fa rhePen.badScaffolds rhePen_nt.fa
+
+#make browser mask for removed scaffolds (label = mtDNA, contaminant, assembly error)
+
+awk 'BEGIN {FS = "[ \t\n]+"; OFS="\t"}{print $1, "0", $2, "contaminant"}' rhePen-remove.txt > rhePen_mask.bed
+#manually change scaffolds 1797 and 2949
+
+#remove original fa files as unneeded, all further screening will happen on nt files, then mt will be modified and catted on to end
+rm ??????.fa
+
+#now dealing with trim
+#to convert to bed --> 
+#step 1: just get column 1 and column 3, and replace , with "\n(column1)"
+#step 2: replace .. with tab
+#step 3: convert to bed coordinates
+#all in one line of horrible awk:
+#cut -f1,3 test.txt | awk '{gsub(/,/, "\n"$1"\t");print $0}' | awk '{gsub(/\.\./, "\t");print $0}' | awk 'BEGIN {OFS="\t"} {print $1, $2-1, $3}'
+
+###NOTE ADDED LATER: in most cases can deal with 2nd round screen by just adding trims together (independent)
+###FOR RHEPEN THIS IS NOT THE CASE -- HAD TO MODIFY THE FOLLOWING:
+#rhePen-trim-2.txt:scaffold_1186	4381	4285..4381	vector/etc (+40)
+#4285..4421
+#rhePen-trim-2.txt:scaffold_662	53386	2011..2372,2406..2510	vector/etc (+14706)
+#16717..17216
+
+#done manually in rhePen-trim-2 file
+
+#now as a loop:
+for SP in aptHaa aptRow aptOwe cryCin casCas droNov notPer eudEle rheAme rhePen;
+do
+	cut -f1,3 $SP-trim.txt |
+	sed '/^$/d' |
+	awk '{gsub(/,/, "\n"$1"\t");print $0}' |
+	awk '{gsub(/\.\./, "\t");print $0}' |
+	awk 'BEGIN {OFS="\t"} {print $1, $2-1, $3, "contaminant"}' > ${SP}_trim.bed;
+done
+
+#add sort, clean, copy
+for SP in aptHaa aptRow aptOwe cryCin casCas droNov notPer eudEle rheAme rhePen;
+do
+	bedtools sort -i ${SP}_trim.bed | bedtools merge -i - -c 4 -o distinct > ../processing/${SP}_trim.bed 
+done
+
+
+#now use trim bed files to convert to NNN with bedtools
+for SP in aptHaa aptRow aptOwe cryCin casCas droNov notPer eudEle rheAme rhePen;
+do
+	bedtools maskfasta -fi ${SP}_nt.fa -fo ${SP}_nt_masked.fa -bed ${SP}_trim.bed &
+done
+
+#finally need to remove leading or trailing ends from fasta records, and then remove any scaffolds that are shorter than 200 nt (although actually I think I will go with 1kb here)
+#will need to add complete length of scaffolds removed for length to mask file and do another sort/merge
+#these are the new fasta records for NCBI and the new complete mask files for browser, etc
+
+#we'll use bioawk for this I hope
+#testing:
+bioawk -c fastx '{sub(/^N+/, "", $seq); sub(/N+$/, "", $seq); print ">"$name; print $seq}' test.fa
+cat test.fa test2.fa | bioawk -c fastx '{sub(/^N+/, "", $seq); sub(/N+$/, "", $seq); if(length($seq) > 1000) print ">"$name; print $seq}'
+cat test.fa test2.fa | bioawk -c fastx '{sub(/^N+/, "", $seq); sub(/N+$/, "", $seq); if(length($seq) > 999)print ">"$name"\n"$seq}'
+
+#real thing
+for SP in aptHaa aptRow aptOwe cryCin casCas droNov notPer eudEle rheAme rhePen;
+do
+ bioawk -c fastx '{sub(/^N+/, "", $seq); sub(/N+$/, "", $seq); if(length($seq) > 999)print ">"$name"\n"$seq}' ${SP}_nt_masked.fa > ${SP}_nt_masked_trimmed.fa &
+ bioawk -t -c fastx '{orig_length=length($seq); sub(/^N+/, "", $seq); sub(/N+$/, "", $seq); sub(">", "", $name); if(length($seq) < 1000)print $name, 0, orig_length, "length_filtered"}' ${SP}_nt_masked.fa > ${SP}_removed.bed &
+done
+
+#merge mask files
+for SP in aptHaa aptRow aptOwe cryCin casCas droNov notPer eudEle rheAme rhePen; do cat ${SP}_*.bed | bedtools sort -i - | bedtools merge -i - -c 4 -o distinct > ../ver1_masks/${SP}_ncbi_mask.bed; done
+
+#make final fasta files
+for SP in aptHaa aptRow aptOwe cryCin casCas droNov notPer eudEle rheAme rhePen;
+do
+  cat ${SP}_nt_masked_trimmed.fa ${SP}_mt.fa > ../../assemblies_ver1.2/$SP.fa
+done
+
+#reupload
+~/.aspera/connect/bin/ascp -i /n/home12/tsackton/.aspera/connect/etc/asperaweb_id_dsa.openssh -QT -l100m -k1 -d assemblies_ver1.1 subasp@upload.ncbi.nlm.nih.gov:uploads/tsackton@oeb.harvard.edu_kDOcvVqP
+
+
+#subsequently, will need to:
+#liftOver masks to galGal4 chicken via alignment and check overlap with CNEEs
+#check overlap with GFFs and flag possible bad gene models
+#make liftOvers / convert GFF coordinates for annotation submission
+
+
+
