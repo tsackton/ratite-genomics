@@ -1,10 +1,10 @@
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/protein_coding/paml_branch/")
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/06_protein_coding_analysis/paml_branch/")
 library(data.table)
 library(tidyverse)
 library(ape)
 
 #set cores and perms for whole run, can be individually modified later in code
-PERMS <- 10
+PERMS <- 1
 
 ##SETUP##
 
@@ -16,13 +16,13 @@ phy<-read.tree(file="../final_neut_tree.nwk")
 
 ancrec.parsed<-fread("gunzip -c ../paml_ancrec/paml_M0_parsed.txt.gz")
 ancrec.treekey<-ancrec.parsed[,c("hog", "treenum", "species_tree"), with=FALSE]
-hog_info<-read.table("../all_hog_info.tsv", sep="\t", header=T)
+hog_info<-read.table("../../03_homology/all_hog_info.tsv", sep="\t", header=T)
 
 hog_info$has_species_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$species_tree]
 hog_info$has_gene_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$species_tree == F]
 
 #load hog <-> chicken info
-hog_to_gene <- read.table("../HOG_final_alignment_seqids", header=T, stringsAsFactors =F)
+hog_to_gene <- read.table("../../03_homology/HOG_final_alignment_seqids", header=T, stringsAsFactors =F)
 hog_to_gene <- hog_to_gene %>% tbl_df %>%
   mutate(hog = as.integer(sub("HOG2_", "", HOG, fixed=T))) %>% 
   filter(Taxon == "galGal") %>%
@@ -31,17 +31,6 @@ hog_to_gene <- hog_to_gene %>% tbl_df %>%
   mutate(gene = paste0(Gene, sep="", collapse=";")) %>%
   dplyr::select(-Gene)
 
-#define clades -- fixed (vocal learners, palaeognaths, tinamous, ratites)
-all_clades<-names(hog_info)[2:40]
-ratite_clades<-c("aptHaa", "aptOwe", "aptRow", "rheAme", "rhePen", "strCam", "casCas", "droNov")
-vl_clades<-c('calAnn', 'corBra', 'serCan', 'geoFor', 'melUnd', 'pseHum', 'taeGut', 'ficAlb')
-tin_clades<-c("tinGut", "cryCin", "notPer", "eudEle")
-wb_clades<-c("anaPla","aptFor", "chaVoc", "egrGar", "nipNip", "pygAde", "balReg", "fulGla")
-
-palaeo_clades<-c(ratite_clades, tin_clades)
-non_ratite_clades<-all_clades[!(all_clades %in% ratite_clades)]
-non_ratite_palaeo<-palaeo_clades[!(palaeo_clades) %in% ratite_clades]
-
 ##ANALYSIS - FUNCTIONS##
 
 #setup - load and clean data
@@ -49,7 +38,7 @@ prep_data <- function(file, ancrec.treekey, hog_info, check_missing = F) {
   #load data -- dn
   read_line = paste0("gunzip -c ", file)
   dn<-fread(read_line, header=F, sep=",")
-  names(dn)<-c("hog", "tree", "parent.node", "desc.node", "branch.id", "dn", "ratite", "vl")
+  names(dn)<-c("hog", "tree", "parent.node", "desc.node", "branch.id", "dn", "target")
   
   #add hog_info
   dn$tree = sub("tree", "", dn$tree, fixed=T)
@@ -66,10 +55,7 @@ prep_data <- function(file, ancrec.treekey, hog_info, check_missing = F) {
 }
 
 subset_clean_data <- function(DF, missing_cutoff = 2, dup_cutoff = 0, use_sptree = TRUE) {
-  dn.clean = subset(DF, dup_ct <= dup_cutoff & missing_ct <= missing_cutoff  & species_tree == use_sptree, select=c("hog", "parent.node", "desc.node", "branch.id", "dn"))
-  dn.clean$ratite=sapply(strsplit(dn.clean$desc.node, "-"), function(x) sum(x %in% ratite_clades)/length(x) == 1)
-  dn.clean$vl=sapply(strsplit(dn.clean$desc.node, "-"), function(x) sum(x %in% vl_clades)/length(x) == 1)
-  dn.clean$nrpalaeo=sapply(strsplit(dn.clean$desc.node, "-"), function(x) sum(x %in% non_ratite_palaeo)/length(x) == 1)
+  dn.clean = subset(DF, dup_ct <= dup_cutoff & missing_ct <= missing_cutoff  & species_tree == use_sptree, select=c("hog", "parent.node", "desc.node", "branch.id", "dn", "target"))
   return(dn.clean)
 }
 
@@ -143,41 +129,16 @@ random_species <- function(perm, DF, count, tips, tree, exclude = FALSE) {
 
 ## DATA PREP ##
 
-dn<-prep_data(file="aa_parsed.csv.gz", ancrec.treekey = ancrec.treekey, hog_info = hog_info, check_missing = T)
+dn<-prep_data(file="aa_extended_withcorm_flightless.parsed.csv.gz", ancrec.treekey = ancrec.treekey, hog_info = hog_info, check_missing = T)
 dn.default<-subset_clean_data(dn)
-#fix vl data, don't want to consider branches with descendant nodes that include the base of passerines/parrots as vocal learners
-dn.default$vl[grepl("-melUnd", dn.default$desc.node, fixed=T)]=FALSE
-dn.default$ratite[grepl("aptHaa-aptOwe-aptRow-casCas-droNov-rheAme-rhePen", dn.default$desc.node, fixed=T)]=FALSE
-dn.default$ratite[grepl("aptHaa-aptOwe-aptRow-casCas-droNov", dn.default$desc.node, fixed=T)]=FALSE
-
-#test out other convergences
-
-dn.default$wb=FALSE
-dn.default$wb[grepl("anaPla", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$wb[grepl("aptFor", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$wb[grepl("chaVoc", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$wb[grepl("egrGar", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$wb[grepl("nipNip", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$wb[grepl("pygAde", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$wb[grepl("balReg", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$wb[grepl("fulGla", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$wb[grepl("pseHum", dn.default$desc.node, fixed=T)]=FALSE
-dn.default$wb[grepl("galGal-melGal-anaPla", dn.default$desc.node, fixed=T)]=FALSE
-dn.default$wb[grepl("aptFor-pygAde-fulGla-egrGar-nipNip", dn.default$desc.node, fixed=T)]=FALSE
-
-dn.default$tinamou=FALSE
-dn.default$tinamou[grepl("notPer", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$tinamou[grepl("tinGut", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$tinamou[grepl("cryCin", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$tinamou[grepl("eudEle", dn.default$desc.node, fixed=T)]=TRUE
-dn.default$tinamou[grepl("aptHaa", dn.default$desc.node, fixed=T)]=FALSE
-dn.default$tinamou[grepl("cryCin-tinGut-eudEle-notPer", dn.default$desc.node, fixed=T)]=FALSE
+dn.default$target[grepl("aptHaa-aptOwe-aptRow-casCas-droNov-rheAme-rhePen", dn.default$desc.node, fixed=T)]=FALSE
+dn.default$target[grepl("aptHaa-aptOwe-aptRow-casCas-droNov", dn.default$desc.node, fixed=T)]=FALSE
+dn.default %>% filter(target==TRUE) %>% count(desc.node)
 
 dn.default<-normalize_branch_stat(dn.default)
 
 #real results
-dn.default[,compute_results(dn.norm, ratite), by=hog] %>% dplyr::select(est, pval, hog) %>% write_tsv("ratite.real")
-dn.default[,compute_results(dn.norm, vl), by=hog] %>% dplyr::select(est, pval, hog) %>% write_tsv("vl.real")
+dn.default[,compute_results(dn.norm, target), by=hog] %>% dplyr::select(est, pval, hog) %>% write_tsv("target.real")
 
 ## PERMS ##
 #do permutations in parallel
