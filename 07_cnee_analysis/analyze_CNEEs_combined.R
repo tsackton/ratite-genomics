@@ -1,40 +1,123 @@
+## CODE TO ANALYZE CNEES ##
+## UPDATED OCT 2018 FOR MANUSCRIPT REVISIONS ##
+
 library(tidyverse)
 
 #master script to run phyloAcc and phyloP parsing and merge
 
-
 #get phylop and phyloacc
-source("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/analyze_phyloP.R")
-source("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/analyze_phyloAcc.R")
+source("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/analyze_phyloAcc.R")
+source("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/analyze_phyloP.R")
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
 
-#merge
-cnee <- phyloacc %>% mutate(phylop.ratite = cnee %in% allRatite$name[allRatite$qval <= 0.05])
-cnee <- cnee %>% mutate(phylop.kiwi = cnee %in% kiwi$name[kiwi$qval <= 0.05]) %>%
-  mutate(phylop.moa = cnee %in% anoDid$name[anoDid$qval <= 0.05]) %>%
-  mutate(phylop.cas = cnee %in% casuar$name[casuar$qval <= 0.05]) %>%
-  mutate(phylop.ost = cnee %in% strCam$name[strCam$qval <= 0.05]) %>%
-  mutate(phylop.rhea = cnee %in% rhea$name[rhea$qval <= 0.05]) %>%
-  mutate(phylop.tin = cnee %in% tinamou$name[tinamou$qval <= 0.05]) %>%
-  mutate(phylop.rcount = as.numeric(phylop.cas) + as.numeric(phylop.kiwi) + as.numeric(phylop.rhea) + as.numeric(phylop.moa) + as.numeric(phylop.ost))
-  
-#reminder: 
-#ratite_loss = allow as many losses as are estimated by model
-#ratite_loss_cons = max 1 loss per kiwi / rhea / emu cas / ostrich / moa 
-#ratite_loss_cons_min = max 1 loss per kiwk rhea emu cas / ostrich / moa
-# .prob suffix = uses raw posterior probabilities
-# .mat suffix rounds < 0.95 to 0 and >= 0.95 to 1
+#add phlyoP results to each cnee set as appropriate
 
-#define properties
-cnee <- cnee %>% mutate(ratite_accel.1 = bf1 >= 10 & ratite_loss.prob >= 1, ratite_accel.2 = ratite_accel.1 & phylop.ratite) %>%
-  mutate(ratite_spec.1 = bf2 > 1 & nonratite_loss.prob < 1 & nonratite_loss.mat == 0, ratite_spec.2 = ratite_spec.1 & !phylop.tin) %>%
-  mutate(ratite_conv.1 = ratite_loss_cons.prob > 2, ratite_conv.2 = ratite_conv.1 & ratite_loss_cons_min.mat >= 2 & phylop.rcount > 1)
+final_extended <- cnee_phyloP %>% select(name, contains("qval")) %>%
+  mutate_at(vars(contains("qval")), ctb, cutoff=0.05, lower=TRUE) %>%
+  rename_at(vars(contains("qval")), gsub, pattern="qval", replacement="phylop", fixed=TRUE) %>%
+  full_join(cnee_ext_final, ., by=c("cnee" = "name")) %>% 
+  mutate(floss_cl_phylop = phylop.mo + phylop.cd + phylop.ki + phylop.rh + phylop.os) %>%
+  mutate(floss_cl_phylop_dollo = phylop.mo + tto(phylop.cd + phylop.ki + phylop.rh) + phylop.os)  
+
+final_reduced <- cnee_phyloP %>% select(name, contains("qval")) %>%
+  mutate_at(vars(contains("qval")), ctb, cutoff=0.05, lower=TRUE) %>%
+  rename_at(vars(contains("qval")), gsub, pattern="qval", replacement="phylop", fixed=TRUE) %>%
+  select(-phylop.mo) %>%
+  full_join(cnee_red_final, ., by=c("cnee" = "name"))  %>% 
+  mutate(floss_cl_phylop = phylop.cd + phylop.ki + phylop.rh + phylop.os) %>%
+  mutate(floss_cl_phylop_dollo = tto(phylop.cd + phylop.ki + phylop.rh) + phylop.os)  
+
+final_original <- cnee_phyloP %>% select(name, contains("qval")) %>%
+  mutate_at(vars(contains("qval")), ctb, cutoff=0.05, lower=TRUE) %>%
+  rename_at(vars(contains("qval")), gsub, pattern="qval", replacement="phylop", fixed=TRUE) %>%
+  full_join(cnee_orig_final, ., by=c("cnee" = "name")) %>% 
+  mutate(floss_cl_phylop = phylop.mo + phylop.cd + phylop.ki + phylop.rh + phylop.os) %>%
+  mutate(floss_cl_phylop_dollo = phylop.mo + tto(phylop.cd + phylop.ki + phylop.rh) + phylop.os)
 
 #load annotation
-gene<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/annotation/cnee/cnees.galgal4.annotation", header=F, stringsAsFactors = F) %>% tbl_df %>% rename(gene=V2)
+gene_gg4 <-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/04_wga/03_ce_annotation/cnees.galgal4.annotation", col_names=c("cnee", "gene"))
+gene_gg5 <-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/04_wga/03_ce_annotation/cnees.galgal5.annotation", col_names=c("cnee", "gene"))
+pos_gg4<-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/04_wga/03_ce_annotation/cnees.galGal4UCSC.bed", col_names = c("chr", "start", "end", "cnee"))
+pos_gg4_ncbi<-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/04_wga/03_ce_annotation/cnees.galGal4NCBI.bed", col_names = c("chr", "start", "end", "cnee"))
+pos_gg5<-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/04_wga/03_ce_annotation/cnees.galGal5UCSC.bed", col_names = c("chr", "start", "end", "cnee"))
+pos_gg5_ncbi<-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/04_wga/03_ce_annotation/cnees.galGal5NCBI.bed", col_names = c("chr", "start", "end", "cnee"))
 
-#load bed
-bed<-read.table("~/Projects/birds/ratite_compgen/ratite-genomics/annotation/cnee/cnees.galGal4UCSC.bed", stringsAsFactors = F) %>% tbl_df %>% rename(chr=V1, start=V2, end=V3, ID=V4)
 
-cnee <- full_join(cnee, gene, by=c("cnee" = "V1")) %>% full_join(bed, by=c("cnee" = "ID"))
+#define groups
 
-write_tsv(cnee, "~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/cnees.tsv") 
+define_groups <- function(x) {
+  x %>%   
+    mutate(accelerated = ifelse(bf1 >= 10 & bf2 >= 1, TRUE, FALSE)) %>%
+    mutate(conv = ifelse(floss_cl_pp >= 2, TRUE, FALSE)) %>%
+    mutate(phylop = as.logical(phylop)) %>% 
+    mutate(dollo = ifelse(floss_cl_pp_dollo >= 2, TRUE, FALSE)) %>%
+    mutate(score = case_when(
+      accelerated & conv & phylop & dollo ~ "Dollo_Conv_Acc_PhyloP",
+      accelerated & conv & !phylop & !dollo ~ "Conv_Acc",
+      accelerated & conv & phylop & !dollo ~ "Conv_Acc_PhyloP",
+      accelerated & conv & !phylop & dollo ~ "Dollo_Conv_Acc",
+      accelerated & !conv & phylop ~ "Acc_PhyloP",
+      accelerated & !conv & !phylop ~ "Acc",
+      TRUE ~ "none"
+    ))
+}
+
+define_groups_corm <- function(x) {
+  x %>%
+    mutate(accelerated = ifelse(bf1 >= 10 & bf2 >= 1, TRUE, FALSE)) %>%
+    mutate(conv = ifelse(floss_cl_pp >= 2, TRUE, FALSE)) %>%
+    mutate(ratite = ifelse((floss_cl_pp - gc_pp_loss) >= 0.90, TRUE, FALSE)) %>%
+    mutate(corm = ifelse(gc_pp_loss >= 0.90, TRUE, FALSE)) %>%
+    mutate(score = case_when(
+      accelerated & conv & ratite & corm ~ "Conv_Acc_Both",
+      accelerated & conv & ratite & !corm ~ "Conv_Acc_Ratite",
+      accelerated & conv & !ratite & corm ~ "Conv_Acc_Corm",
+      accelerated & conv & !ratite & !corm ~ "Conv_Acc_Neither",
+      accelerated & !conv & ratite & corm ~ "Acc_Both",
+      accelerated & !conv & ratite & !corm ~ "Acc_Ratite",
+      accelerated & !conv & !ratite & corm ~ "Acc_Corm",
+      accelerated & !conv & !ratite & !corm ~ "Acc_Neither",
+      TRUE ~ "none"
+    ))
+}
+
+pos_gg4 %>% 
+  inner_join(final_original) %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_scored_original_ucsc_galgal4.bed", col_names = FALSE)
+  
+pos_gg4_ncbi %>% 
+  inner_join(final_original) %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_scored_original_ncbi_galgal4.bed", col_names = FALSE)
+
+pos_gg4 %>% 
+  inner_join(final_reduced) %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_scored_reduced_ucsc_galgal4.bed", col_names = FALSE)
+
+pos_gg4_ncbi %>% 
+  inner_join(final_reduced) %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_scored_reduced_ncbi_galgal4.bed", col_names = FALSE)
+
+
+pos_gg5 %>% 
+  inner_join(final_original) %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_scored_original_ucsc_galgal5.bed", col_names = FALSE)
+
+pos_gg5_ncbi %>% 
+  inner_join(final_original) %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_scored_original_ncbi_galgal5.bed", col_names = FALSE)
+
+pos_gg5 %>% 
+  inner_join(final_reduced) %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_scored_reduced_ucsc_galgal5.bed", col_names = FALSE)
+
+pos_gg5_ncbi %>% 
+  inner_join(final_reduced) %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_scored_reduced_ncbi_galgal5.bed", col_names = FALSE)

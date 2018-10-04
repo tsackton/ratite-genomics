@@ -1,85 +1,156 @@
-#new CNEE analysis
-library(tidyr)
-library(dplyr)
-library(ggplot2)
-setwd("~/Projects/birds/ratite_compgen/data/phyloAcc_May2017/")
+## CODE TO PARSE PHYLOACC OUTPUT ##
+## UPDATED OCT 2018 FOR MANUSCRIPT REVISIONS ##
+
+library(tidyverse)
+setwd("~/Projects/birds/ratite_compgen/data/2018-09-FINAL/CNEE/cnee_results/")
 
 #functions
-trunc_to_one <- function(x) {
+tto <- function(x) {
   ifelse(x > 1, 1, x)
 }
 
+ctb <- function(x, cutoff=0.90, lower=FALSE) {
+  if (lower) {
+    ifelse(x <= cutoff, 1, 0)
+  }
+  else {
+    ifelse(x >= cutoff, 1, 0)
+  }
+}
 
-#read in data and clean up
-lik<-read.table("Combined_elem_lik2.txt", header=T, stringsAsFactors = F) %>% tbl_df %>%
-  mutate(bf1 = loglik_RES - loglik_NUll, bf2 = loglik_RES - loglik_all) %>%
-  select(cnee = ID, bf1, bf2, loglik.null = loglik_NUll, loglik.ratite = loglik_RES, loglik.full = loglik_all)
+input_lik <- function(file, dataset) {
+  read_delim(file=file, delim="\t") %>% 
+    mutate(bf1 = loglik_RES - loglik_NUll, bf2 = loglik_RES - loglik_all) %>%
+    mutate(dataset = dataset) %>%
+    select(dataset, cnee = ID, bf1, bf2, ll_null = loglik_NUll, ll_target = loglik_RES, ll_full = loglik_all)
+}
 
-#compare to old run
-#lik_orig<-read.table("Combined_elem_lik_061.txt", header=T, stringsAsFactors = F) %>% tbl_df %>%
-#  mutate(bf1 = loglik_RES - loglik_NUll, bf2 = loglik_RES - loglik_all) %>%
-#  dplyr::select(cnee = ID, bf1, bf2, loglik.null = loglik_NUll, loglik.ratite = loglik_RES, loglik.full = #loglik_all)
-#lik_comp <- inner_join(lik, lik_orig, by=c("cnee" = "cnee"), suffix = c(".new", ".orig"))
-#ggplot(lik_comp, aes(x=bf1.new, y=bf1.orig)) + stat_binhex(bins=100)
-#ggplot(lik_comp, aes(x=bf2.new, y=bf2.orig)) + stat_binhex(bins=100)
-#lik_comp %>% filter(bf2.new <= 0, bf2.orig > 10)
+input_states <- function(file, dataset, datatype) {
+  #hacky but hopefully works
+  
+  #get column names:
+  col_names <- read_delim(file, delim="\t", n_max=1, col_names=FALSE) %>% slice(1:1) %>% unlist() %>% unname %>% c("cnee", .)
+  
+  #col types depends on whether this is posterior probabilty matrix (double) or maxium posterior state (integer)
+  if (datatype == "postprob") {
+    col_types <- paste0(c("c", rep("d", length(col_names)-1)), collapse="")
+  }
+  else if (datatype == "maxpost") {
+    col_types <- paste0(c("c", rep("i", length(col_names)-1)), collapse="")
+  }
+  else {
+    stop("need to specify posterior probabilities (datatype=postprob) or maxium a posteriori state (datatyp=maxpost) with datatype argument")
+  }
+  read_delim(file=file, delim="\t", skip=1, col_names = col_names, col_types = col_types) %>% 
+    mutate(dataset = dataset)
+}
 
-zpost<-read.table("Combined_post_Z_06_2.txt", header=T, stringsAsFactors = F) %>% tbl_df %>%
-  mutate(cnee = lik$cnee)
+merge_phyloAcc <- function(dataset) {
+  posteriors[[dataset]] %>% 
+  select(cnee, n_rate, c_rate, g_rate, l_rate, l2_rate, ends_with("_3")) %>%
+  rename_at(vars(ends_with("_3")), gsub, pattern="_3", replacement="", fixed=TRUE) %>% 
+  inner_join(likelihoods[[dataset]], ., by=c("cnee" = "cnee")) %>% 
+  select(-dataset) %>%
+  inner_join(postmat[[dataset]], by=c("cnee" = "cnee"), suffix = c("", ".max")) %>%
+  select(dataset, cnee, everything())
+}
 
-zmat<-read.table("Combined_max_Z_06_2.txt", header=T, stringsAsFactors = F) %>% tbl_df
+## END FUNCTIONS ##
 
-#posterior prob acceleration
-postacc<-zpost %>% select(contains("_3"))
-colnames(postacc)<-colnames(zmat)
-postacc$cnee = zpost$cnee
+likelihoods <- list()
+posteriors <- list()
+postmat <- list()
 
-#convert to 1/0  matrix
-postaccmat <- postacc[1:85]
-postaccmat[postaccmat >= 0.95] = 1
-postaccmat[postaccmat < 0.95] = 0
-postaccmat$cnee = postacc$cnee
+#read in all files; not automated due to variation in file names, etc
+likelihoods$original <- input_lik(file="/Users/tim/Projects/birds/ratite_compgen/data/2018-09-FINAL/CNEE/cnee_results/phyloAcc_output/original_set/Combined_elem_lik2-1.txt", "original")
+likelihoods$extended <- input_lik(file="/Users/tim/Projects/birds/ratite_compgen/data/2018-09-FINAL/CNEE/cnee_results/phyloAcc_output/extended_set/Combined_elem_lik-E.txt", "extended")
+likelihoods$reduced <- input_lik(file="/Users/tim/Projects/birds/ratite_compgen/data/2018-09-FINAL/CNEE/cnee_results/phyloAcc_output/reduced_set/Combined_elem_lik-R.txt", "reduced")
 
-#posterior prob conservation
-postcons<-zpost %>% select(contains("_2"))
-colnames(postcons)<-colnames(zmat)
-postcons$cnee = zpost$cnee
+posteriors$original <- input_states(file="/Users/tim/Projects/birds/ratite_compgen/data/2018-09-FINAL/CNEE/cnee_results/phyloAcc_output/original_set/Combined_post_Z_1-1.txt", "original", "postprob")
+posteriors$extended <- input_states(file="/Users/tim/Projects/birds/ratite_compgen/data/2018-09-FINAL/CNEE/cnee_results/phyloAcc_output/extended_set/Combined_post_Z_1-E.txt", "extended", "postprob")
+posteriors$reduced <- input_states(file="/Users/tim/Projects/birds/ratite_compgen/data/2018-09-FINAL/CNEE/cnee_results/phyloAcc_output/reduced_set/Combined_post_Z_1-R.txt", "reduced", "postprob")
 
-#define tips
-vocal.tips<-c("taeGut", "ficAlb", "pseHum", "corBra", "melUnd", "calAnn")
-ratite.tips<-c("aptRow", "aptOwe", "aptHaa", "casCas", "droNov", "rheAme", "rhePen", "anoDid", "strCam")
-nonratite.tips <- colnames(zmat)[!colnames(zmat) %in% ratite.tips][1:27]
-nonvl.tips <- colnames(zmat)[!colnames(zmat) %in% vocal.tips][1:30]
+postmat$original <- input_states(file="/Users/tim/Projects/birds/ratite_compgen/data/2018-09-FINAL/CNEE/cnee_results/phyloAcc_output/original_set/Combined_max_Z-1.txt", "original", "maxpost")
+postmat$extended <- input_states(file="/Users/tim/Projects/birds/ratite_compgen/data/2018-09-FINAL/CNEE/cnee_results/phyloAcc_output/extended_set/Combined_max_Z-E.txt", "extended", "maxpost")
+postmat$reduced <- input_states(file="/Users/tim/Projects/birds/ratite_compgen/data/2018-09-FINAL/CNEE/cnee_results/phyloAcc_output/reduced_set/Combined_max_Z-R.txt", "reduced", "maxpost")
 
-#compute expected number of losses for each ratite clade:
-postacc <- postacc %>% mutate(cas_loss = (casCas - casCas.droNov) + (droNov - casCas.droNov) + (casCas.droNov - aptHaa.casCas)) %>%
-  mutate(ost_loss = strCam - aptHaa.strCam) %>%
-  mutate(rhea_loss = (rheAme - rheAme.rhePen) + (rhePen - rheAme.rhePen) + (rheAme.rhePen - aptHaa.rheAme)) %>%
-  mutate(moa_loss = anoDid - cryCin.anoDid) %>%
-  mutate(kiwi_loss = (aptHaa - aptHaa.aptRow) + (aptOwe - aptHaa.aptOwe) + (aptRow - aptHaa.aptRow) + (aptHaa.aptRow - aptHaa.aptOwe) + (aptHaa.aptOwe - aptHaa.casCas)) %>% 
-  mutate(tin_loss = (tinGut - cryCin.tinGut) + (cryCin - cryCin.tinGut) + (eudEle - eudEle.notPer) + (notPer - eudEle.notPer) + (eudEle.notPer - cryCin.eudEle) + (cryCin.tinGut - cryCin.eudEle)) %>%
-  mutate(internal_loss = (cryCin.eudEle - cryCin.anoDid) + (cryCin.anoDid - aptHaa.cryCin) + (aptHaa.rheAme - aptHaa.cryCin) + (aptHaa.casCas - aptHaa.rheAme) + (aptHaa.cryCin - aptHaa.strCam)) %>%
-  mutate(ratite_loss = cas_loss + ost_loss + rhea_loss + moa_loss + kiwi_loss) %>%
-  mutate(ratite_loss_cons = trunc_to_one(cas_loss) + trunc_to_one(rhea_loss) + trunc_to_one(kiwi_loss) + moa_loss + ost_loss) %>%
-  mutate(ratite_loss_cons_min = trunc_to_one(cas_loss + rhea_loss + kiwi_loss) + moa_loss + ost_loss) %>%
-    mutate(nonratite_loss = tin_loss + internal_loss)
+#now merge each dataset to make one cnee set for each phyloAcc run, containing the CNEE id, basic parameters, post prob acceleration, max a posteriori estimated state
 
-postaccmat <- postaccmat %>% mutate(cas_loss = (casCas - casCas.droNov) + (droNov - casCas.droNov) + (casCas.droNov - aptHaa.casCas)) %>%
-  mutate(ost_loss = strCam - aptHaa.strCam) %>%
-  mutate(rhea_loss = (rheAme - rheAme.rhePen) + (rhePen - rheAme.rhePen) + (rheAme.rhePen - aptHaa.rheAme)) %>%
-  mutate(moa_loss = anoDid - cryCin.anoDid) %>%
-  mutate(kiwi_loss = (aptHaa - aptHaa.aptRow) + (aptOwe - aptHaa.aptOwe) + (aptRow - aptHaa.aptRow) + (aptHaa.aptRow - aptHaa.aptOwe) + (aptHaa.aptOwe - aptHaa.casCas)) %>% 
-  mutate(tin_loss = (tinGut - cryCin.tinGut) + (cryCin - cryCin.tinGut) + (eudEle - eudEle.notPer) + (notPer - eudEle.notPer) + (eudEle.notPer - cryCin.eudEle) + (cryCin.tinGut - cryCin.eudEle)) %>%
-  mutate(internal_loss = (cryCin.eudEle - cryCin.anoDid) + (cryCin.anoDid - aptHaa.cryCin) + (aptHaa.rheAme - aptHaa.cryCin) + (aptHaa.casCas - aptHaa.rheAme) + (aptHaa.cryCin - aptHaa.strCam)) %>%
-  mutate(ratite_loss = cas_loss + ost_loss + rhea_loss + moa_loss + kiwi_loss) %>%
-  mutate(ratite_loss_cons = trunc_to_one(cas_loss) + trunc_to_one(rhea_loss) + trunc_to_one(kiwi_loss) + moa_loss + ost_loss) %>%
-  mutate(ratite_loss_cons_min = trunc_to_one(cas_loss + rhea_loss + kiwi_loss) + moa_loss + ost_loss) %>%
-  mutate(nonratite_loss = tin_loss + internal_loss)
+cnee_orig <- merge_phyloAcc("original")
+cnee_reduced <- merge_phyloAcc("reduced")
+cnee_ext <- merge_phyloAcc("extended")
 
-#compute expected neognath losses:
-postacc <- postacc %>% mutate(neo_loss = (taeGut + ficAlb + pseHum + corBra + melUnd + falPer + picPub + lepDis + halLeu + aptFor + pygAde + fulGla + nipNip + balReg + chaVoc + calAnn + chaPel + cucCan +colLiv + mesUni + galGal + melGal + anaPla) - (taeGut.ficAlb + taeGut.pseHum + taeGut.corBra + taeGut.melUnd + taeGut.falPer + picPub.lepDis + picPub.halLeu + taeGut.picPub + aptFor.pygAde + aptFor.fulGla + aptFor.nipNip + taeGut.aptFor + balReg.chaVoc + taeGut.balReg + calAnn.chaPel + calAnn.cucCan + taeGut.calAnn + colLiv.mesUni + taeGut.colLiv + galGal.melGal + galGal.anaPla) - (2 * taeGut.galGal))
+#now, need to compute some stats on these merged datasets. in particular, want expected number of losses for each flightless clade plus total flightless
+#also need tinamou losses and volant neognath losses (penguin separate)
+#for each loss calculation, do the following:
+#assume dollo (e.g. e/k/c/r just one clade) or assume biogeographic (e.g. e/c, k, r, o, m all separate)
+#use cutoff vs use raw posterior probs
 
-postaccmat <- postaccmat %>% mutate(neo_loss = (taeGut + ficAlb + pseHum + corBra + melUnd + falPer + picPub + lepDis + halLeu + aptFor + pygAde + fulGla + nipNip + balReg + chaVoc + calAnn + chaPel + cucCan +colLiv + mesUni + galGal + melGal + anaPla) - (taeGut.ficAlb + taeGut.pseHum + taeGut.corBra + taeGut.melUnd + taeGut.falPer + picPub.lepDis + picPub.halLeu + taeGut.picPub + aptFor.pygAde + aptFor.fulGla + aptFor.nipNip + taeGut.aptFor + balReg.chaVoc + taeGut.balReg + calAnn.chaPel + calAnn.cucCan + taeGut.calAnn + colLiv.mesUni + taeGut.colLiv + galGal.melGal + galGal.anaPla) - (2 * taeGut.galGal))
+#this is going to be a bit of a mess, need to name columns carefully
 
-#make analysis dataset
-phyloacc<-inner_join(postacc, lik, by=c("cnee" = "cnee")) %>% inner_join(., postaccmat, by=c("cnee" = "cnee"), suffix=c(".prob", ".mat")) %>% ungroup
+cnee_orig_losses <- cnee_orig %>%
+  #this is the posterior estimated number of losses on each clade
+  mutate(cd_pp_loss = (casCas - casCas.droNov) + (droNov - casCas.droNov) + (casCas.droNov - aptHaa.casCas)) %>%
+  mutate(rh_pp_loss = (rheAme - rheAme.rhePen) + (rhePen - rheAme.rhePen) + (rheAme.rhePen - aptHaa.rheAme)) %>%
+  mutate(os_pp_loss = strCam - aptHaa.strCam) %>%
+  mutate(ki_pp_loss = (aptHaa - aptHaa.aptRow) + (aptOwe - aptHaa.aptOwe) + (aptRow - aptHaa.aptRow) + (aptHaa.aptRow - aptHaa.aptOwe) + (aptHaa.aptOwe - aptHaa.casCas)) %>%
+  mutate(mo_pp_loss = anoDid - cryCin.anoDid) %>%
+  mutate(ti_pp_loss = (tinGut - cryCin.tinGut) + (cryCin - cryCin.tinGut) + (eudEle - eudEle.notPer) + (notPer - eudEle.notPer) + (eudEle.notPer - cryCin.eudEle) + (cryCin.tinGut - cryCin.eudEle)) %>%
+  mutate(it_pp_loss = (cryCin.eudEle - cryCin.anoDid) + (cryCin.anoDid - aptHaa.cryCin) + (aptHaa.rheAme - aptHaa.cryCin) + (aptHaa.casCas - aptHaa.rheAme) + (aptHaa.cryCin - aptHaa.strCam)) %>%
+  mutate(nv_pp_loss = (aptFor.fulGla + taeGut + ficAlb + pseHum + corBra + melUnd + falPer + picPub + lepDis + halLeu + fulGla + nipNip + balReg + chaVoc + calAnn + chaPel + cucCan +colLiv + mesUni + galGal + melGal + anaPla) - (taeGut.ficAlb + taeGut.pseHum + taeGut.corBra + taeGut.melUnd + taeGut.falPer + picPub.lepDis + picPub.halLeu + taeGut.picPub  + aptFor.nipNip + taeGut.aptFor + balReg.chaVoc + taeGut.balReg + calAnn.chaPel + calAnn.cucCan + taeGut.calAnn + colLiv.mesUni + taeGut.colLiv + galGal.melGal + galGal.anaPla) - (2 * taeGut.galGal)) %>%
+  mutate(pg_pp_loss = (aptFor -  aptFor.pygAde ) + (pygAde - aptFor.pygAde) + (aptFor.pygAde -  + aptFor.fulGla)) %>%
+  #now select columns to keep
+  select(cnee, ends_with("_loss")) %>%
+  #now compute total ratite losses with various assumptions
+  mutate(floss_sp_pp = cd_pp_loss + rh_pp_loss + os_pp_loss + ki_pp_loss + mo_pp_loss) %>%
+  mutate(floss_cl_pp = tto(cd_pp_loss) + tto(rh_pp_loss) + tto(os_pp_loss) + tto(ki_pp_loss) + tto(mo_pp_loss)) %>%
+  mutate(floss_cl_pp_dollo = tto(cd_pp_loss + rh_pp_loss + ki_pp_loss) + tto(os_pp_loss) + tto(mo_pp_loss)) %>%
+  mutate(vloss_pp = ti_pp_loss + it_pp_loss + nv_pp_loss + pg_pp_loss)
+
+cnee_red_losses <- cnee_reduced %>%
+  #this is the posterior estimated number of losses on each clade
+  mutate(cd_pp_loss = (casCas - casCas.droNov) + (droNov - casCas.droNov) + (casCas.droNov - aptHaa.casCas)) %>%
+  mutate(rh_pp_loss = (rheAme - rheAme.rhePen) + (rhePen - rheAme.rhePen) + (rheAme.rhePen - aptHaa.rheAme)) %>%
+  mutate(os_pp_loss = strCam - aptHaa.strCam) %>%
+  mutate(ki_pp_loss = (aptHaa - aptHaa.aptRow) + (aptOwe - aptHaa.aptOwe) + (aptRow - aptHaa.aptRow) + (aptHaa.aptRow - aptHaa.aptOwe) + (aptHaa.aptOwe - aptHaa.casCas)) %>%
+  mutate(ti_pp_loss = (tinGut - cryCin.tinGut) + (cryCin - cryCin.tinGut) + (eudEle - eudEle.notPer) + (notPer - eudEle.notPer) + (eudEle.notPer - cryCin.eudEle) + (cryCin.tinGut - cryCin.eudEle)) %>%
+  mutate(it_pp_loss = (cryCin.eudEle - aptHaa.cryCin) + (aptHaa.rheAme - aptHaa.cryCin) + (aptHaa.casCas - aptHaa.rheAme) + (aptHaa.cryCin - aptHaa.strCam)) %>%
+  mutate(nv_pp_loss = (aptFor.fulGla + taeGut + ficAlb + pseHum + corBra + melUnd + falPer + picPub + lepDis + halLeu + fulGla + nipNip + balReg + chaVoc + calAnn + chaPel + cucCan +colLiv + mesUni + galGal + melGal + anaPla) - (taeGut.ficAlb + taeGut.pseHum + taeGut.corBra + taeGut.melUnd + taeGut.falPer + picPub.lepDis + picPub.halLeu + taeGut.picPub  + aptFor.nipNip + taeGut.aptFor + balReg.chaVoc + taeGut.balReg + calAnn.chaPel + calAnn.cucCan + taeGut.calAnn + colLiv.mesUni + taeGut.colLiv + galGal.melGal + galGal.anaPla) - (2 * taeGut.galGal)) %>%
+  mutate(pg_pp_loss = (aptFor -  aptFor.pygAde ) + (pygAde - aptFor.pygAde) + (aptFor.pygAde -  + aptFor.fulGla)) %>%
+  #now select columns to keep
+  select(cnee, ends_with("_loss")) %>%
+  #now compute total ratite losses with various assumptions
+  mutate(floss_sp_pp = cd_pp_loss + rh_pp_loss + os_pp_loss + ki_pp_loss) %>%
+  mutate(floss_cl_pp = tto(cd_pp_loss) + tto(rh_pp_loss) + tto(os_pp_loss) + tto(ki_pp_loss)) %>%
+  mutate(floss_cl_pp_dollo = tto(cd_pp_loss + rh_pp_loss + ki_pp_loss) + tto(os_pp_loss)) %>%
+  mutate(vloss_pp = ti_pp_loss + it_pp_loss + nv_pp_loss + pg_pp_loss)
+
+cnee_ext_losses <- cnee_ext %>%
+  #this is the posterior estimated number of losses on each clade
+  mutate(cd_pp_loss = (casCas - casCas.droNov) + (droNov - casCas.droNov) + (casCas.droNov - aptHaa.casCas)) %>%
+  mutate(rh_pp_loss = (rheAme - rheAme.rhePen) + (rhePen - rheAme.rhePen) + (rheAme.rhePen - aptHaa.rheAme)) %>%
+  mutate(os_pp_loss = strCam - aptHaa.strCam) %>%
+  mutate(ki_pp_loss = (aptHaa - aptHaa.aptRow) + (aptOwe - aptHaa.aptOwe) + (aptRow - aptHaa.aptRow) + (aptHaa.aptRow - aptHaa.aptOwe) + (aptHaa.aptOwe - aptHaa.casCas)) %>%
+  mutate(mo_pp_loss = anoDid - cryCin.anoDid) %>%
+  mutate(ti_pp_loss = (tinGut - cryCin.tinGut) + (cryCin - cryCin.tinGut) + (eudEle - eudEle.notPer) + (notPer - eudEle.notPer) + (eudEle.notPer - cryCin.eudEle) + (cryCin.tinGut - cryCin.eudEle)) %>%
+  mutate(it_pp_loss = (cryCin.eudEle - cryCin.anoDid) + (cryCin.anoDid - aptHaa.cryCin) + (aptHaa.rheAme - aptHaa.cryCin) + (aptHaa.casCas - aptHaa.rheAme) + (aptHaa.cryCin - aptHaa.strCam)) %>%
+  mutate(nv_pp_loss = (aptFor.fulGla + taeGut + ficAlb + pseHum + corBra + melUnd + falPer + picPub + lepDis + halLeu + fulGla + nipNip + balReg + chaVoc + calAnn + chaPel + cucCan +colLiv + mesUni + galGal + melGal + anaPla + nanAur + nanBra + uriPel) - (taeGut.ficAlb + taeGut.pseHum + taeGut.corBra + taeGut.melUnd + taeGut.falPer + picPub.lepDis + picPub.halLeu + taeGut.picPub  + taeGut.aptFor + balReg.chaVoc + taeGut.balReg + calAnn.chaPel + calAnn.cucCan + taeGut.calAnn + colLiv.mesUni + taeGut.colLiv + galGal.melGal + galGal.anaPla + nanAur.nanBra + nanAur.uriPel + nanAur.nipNip + aptFor.nanAur) - (2 * taeGut.galGal)) %>%
+  mutate(pg_pp_loss = (aptFor -  aptFor.pygAde ) + (pygAde - aptFor.pygAde) + (aptFor.pygAde -  + aptFor.fulGla)) %>%
+  mutate(gc_pp_loss = nanHar - nanAur.nanHar) %>%
+  #now select columns to keep
+  select(cnee, ends_with("_loss")) %>%
+  #now compute total ratite losses with various assumptions
+  mutate(floss_sp_pp = cd_pp_loss + rh_pp_loss + os_pp_loss + ki_pp_loss + mo_pp_loss + gc_pp_loss) %>%
+  mutate(floss_cl_pp = tto(cd_pp_loss) + tto(rh_pp_loss) + tto(os_pp_loss) + tto(ki_pp_loss) + tto(mo_pp_loss) + tto(gc_pp_loss)) %>%
+  mutate(floss_cl_pp_dollo = tto(cd_pp_loss + rh_pp_loss + ki_pp_loss) + tto(os_pp_loss) + tto(mo_pp_loss) + tto(gc_pp_loss)) %>%
+  mutate(vloss_pp = ti_pp_loss + it_pp_loss + nv_pp_loss + pg_pp_loss)
+
+#write out final datasets with everything
+cnee_orig_final <- inner_join(cnee_orig, cnee_orig_losses, by=c("cnee" = "cnee"))
+cnee_red_final <- inner_join(cnee_reduced, cnee_red_losses, by=c("cnee" = "cnee"))
+cnee_ext_final <- inner_join(cnee_ext, cnee_ext_losses, by=c("cnee" = "cnee"))
+
+
+write_tsv(cnee_orig_final, path="cnees_original.tsv")
+write_tsv(cnee_ext_final, path="cnees_extended.tsv")
+write_tsv(cnee_red_final, path="cnees_reduced.tsv")
