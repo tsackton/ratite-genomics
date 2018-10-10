@@ -71,7 +71,7 @@ make_RER_paths <- function(treeObj, trait.tree) {
 count_sister_taxa <- function(tree, tips) {
   #set up pairs
   pairs<-combn(tips, 2, simplify = FALSE)
-  lapply(pairs, is.monophyletic, phy=phy) %>% unlist %>% sum
+  lapply(pairs, is.monophyletic, phy=tree) %>% unlist %>% sum
 }
 
 get_random_targets <- function(number, tips, tree) {
