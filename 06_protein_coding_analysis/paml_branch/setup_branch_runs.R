@@ -23,7 +23,11 @@ make_trait_tree <- function(master.tree, target.tips, sp.to.drop, collapseAnc = 
   
   #get subtree by removing tips from master.tree corresponding to species to drop
   #also set all branch lengths to 0
-  sub.tree <- drop.tip(master.tree, sp.to.remove) %>% compute.brlen(0)
+  if (is_empty(sp.to.remove)) {
+    sub.tree <- compute.brlen(master.tree, 0)
+  } else {
+    sub.tree <- drop.tip(master.tree, sp.to.remove) %>% compute.brlen(0)
+  }
   
   #get edges corresponding to tips
   if (!collapseAnc) {
