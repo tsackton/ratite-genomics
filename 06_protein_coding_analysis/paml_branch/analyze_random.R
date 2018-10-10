@@ -14,10 +14,10 @@ if (length(args) != 3) {
 ## VARIABLE DEFINITIONS ##
 
 tree_to_use<-args[2]
-tips_to_use <- setdiff(tree_to_use$tip.label,c("rhePen", "rheAme", "aptHaa", "aptRow", "aptOwe", "droNov", "casCas", "anoDid", "strCam"))
+tips_to_use <- setdiff(trees[[tree_to_use]]$tip.label,c("rhePen", "rheAme", "aptHaa", "aptRow", "aptOwe", "droNov", "casCas", "anoDid", "strCam"))
 target_species <- get_random_targets(args[1], tips_to_use, trees[[tree_to_use]])
 remove_species = NULL
-outfile = paste0(c("random", args[1], args[3], tree_to_use, "RER.out"), collapse="_")
+outfile = paste0(c("random", args[1], args[3], args[2], "RER.out"), collapse="_")
 
 compute_results(target_species, remove_species=NULL, tree_to_use) %>% write_tsv(path=outfile)
 
