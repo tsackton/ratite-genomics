@@ -19,6 +19,6 @@ target_species <- get_random_targets(args[1], tips_to_use, trees[[tree_to_use]])
 remove_species = NULL
 outfile = paste0(c("random", args[1], args[3], tree_to_use, "RER.out"), collapse="_")
 
-compute_results(target_species, remove_species, tree_to_use) %>% write_tsv(path=outfile)
+compute_results(target_species, remove_species=NULL, tree_to_use) %>% write_tsv(path=outfile)
 
 
