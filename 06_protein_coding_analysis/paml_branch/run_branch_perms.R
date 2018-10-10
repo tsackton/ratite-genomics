@@ -148,23 +148,19 @@ num_perms <- PERMS
 
 simple_ratite<-vector("list", num_perms)
 simple_vl<-vector("list", num_perms)
-simple_wb<-vector("list", num_perms)
 
 species_random<-vector("list", num_perms)
 species_ratite<-vector("list", num_perms)
 species_vl<-vector("list", num_perms)
-species_wb<-vector("list", num_perms)
 
 for (i in 1:num_perms) {
   #run everything and make lists
   simple_ratite[[i]]<-simple_perm(DF=dn.default, target=ratite)
   simple_vl[[i]]<-simple_perm(DF=dn.default, target=vl)
-  simple_wb[[i]]<-simple_perm(DF=dn.default, target=wb)
   
   species_random[[i]]<-random_species(DF=dn.default, count=3, tips=all_clades, tree=phy)
   species_ratite[[i]]<-random_species(DF=dn.default, count=3, tips=ratite_clades, tree=phy)
   species_vl[[i]]<-random_species(DF=dn.default, count=3, tips=vl_clades, tree=phy)
-  species_wb[[i]]<-random_species(DF=dn.default, count=3, tips=wb_clades, tree=phy)
 }
 
 simple_ratite %>% bind_rows(.id="perm") %>% write_tsv("simple_ratite.perms")
@@ -174,4 +170,3 @@ simple_wb %>% bind_rows(.id="perm") %>% write_tsv("simple_wb.perms")
 species_random %>% bind_rows(.id="perm") %>% write_tsv("species_random.perms")
 species_ratite %>% bind_rows(.id="perm") %>% write_tsv("species_ratite.perms")
 species_vl %>% bind_rows(.id="perm") %>% write_tsv("species_vl.perms")
-species_wb %>% bind_rows(.id="perm") %>% write_tsv("species_wb.perms")
