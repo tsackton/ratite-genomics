@@ -219,7 +219,8 @@ final_original %>% define_groups %>% full_join(final_v1, by=c("cnee" = "cnee")) 
   mutate(old_new = paste0(old_score, "_", score)) %>% 
   ggplot(aes((it_pp_loss+ti_pp_loss), (internal_loss.prob + tin_loss.prob), color=old_new)) + geom_point(alpha=0.4) + geom_abline(col="red", size=1, linetype="dashed")
 
-final_original %>% full_join(final_v1, by=c("cnee" = "cnee")) %>%
-  mutate(old_acc = ifelse((loglik_Full - loglik_Null) > 10, "yes", "no")) %>%
-  mutate(new_acc = ifelse((loglik.full -loglik.null) > 10,  "yes", "no")) %>% with(., table(old_acc, new_acc))
+final_reduced %>% full_join(final_v1, by=c("cnee" = "cnee")) %>%
+  mutate(bfAll_NEW = (loglik_Full - loglik_Null)) %>%
+  mutate(bfAll_OLD = (loglik.full - loglik.null)) %>% 
+  ggplot(aes(bfAll_NEW, bfAll_OLD)) + geom_point(alpha=0.1) + coord_cartesian(xlim=c(-30,75), ylim=c(-30,75))
 
