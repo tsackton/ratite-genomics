@@ -7,7 +7,7 @@
 #SBATCH -N 1
 #SBATCH -e /dev/null
 #SBATCH -o /dev/null
-#SBATCH --array=1:1000
+#SBATCH --array=0-1000
 
 source ~/default_env.sh
 Rscript --vanilla $1 $2 $3 ${SLURM_ARRAY_TASK_ID}
