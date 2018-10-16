@@ -48,7 +48,8 @@ pos_gg5_ncbi<-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/04_wga/0
 #  mutate(ratite_spec.1 = bf2 > 1 & nonratite_loss.prob < 1 & nonratite_loss.mat == 0, ratite_spec.2 = ratite_spec.1 & !phylop.tin) %>%
 #  mutate(ratite_conv.1 = ratite_loss_cons.prob > 2, ratite_conv.2 = ratite_conv.1 & ratite_loss_cons_min.mat >= 2 & phylop.rcount > 1)
 
-
+#old cnees
+final_v1 <- read_tsv("cnees.tsv.gz")
 
 #define groups
 
@@ -154,8 +155,7 @@ pos_gg5_ncbi %>%
 #more testing
 final_extended %>% define_groups %>% inner_join(gene_gg4) %>% filter(grepl("TBX5", gene)) %>% count(score)
 
-#old cnees
-final_v1 <- read_tsv("cnees.tsv.gz")
+
 
 #compare
 final_original %>% define_groups %>% full_join(final_v1, by=c("cnee" = "cnee")) %>%
@@ -191,7 +191,7 @@ final_original %>% define_groups %>% full_join(final_v1, by=c("cnee" = "cnee")) 
   filter(pmax(bf1,logBF1) > 10) %>% ggplot(aes(floss_cl_pp_dollo, ratite_loss_cons_min.prob)) + geom_point(col="red", alpha=0.2) + geom_abline() 
 
           
-final_original %>% full_join(final_v1, by=c("cnee" = "cnee")) %>% filter(ratite_loss_cons.prob > 4, floss_cl_pp < 1) %>% select(cnee, gene)
+final_original %>% full_join(final_v1, by=c("cnee" = "cnee")) %>% filter(ratite_loss_cons.prob > 4, floss_cl_pp < 1, ratite_spec.1) %>% select(cnee, gene)
 
 final_original %>% full_join(final_reduced, by=c("cnee" = "cnee")) %>% ggplot(aes(strCam.x, strCam.y)) + geom_point(alpha=0.1) + geom_abline(col="red", size=3, linetype="dashed")
 

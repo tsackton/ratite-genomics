@@ -1,30 +1,123 @@
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/protein_coding/hyphy_bsrel/")
-library(data.table)
-library(tidyr)
-library(dplyr)
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/06_protein_coding_analysis/hyphy_bsrel/")
+library(tidyverse)
+library(clusterProfiler)
+library(biomaRt)
 
-#load tree key from paml_ancrec 
-ancrec.parsed<-fread("gunzip -c ../paml_ancrec/paml_M0_parsed.txt.gz")
-ancrec.treekey<-ancrec.parsed[,c("hog", "treenum", "species_tree"), with=FALSE]
-ancrec.treekey$tree = paste0("tree", ancrec.treekey$treenum)
-hog_info<-read.table("../all_hog_info.tsv", sep="\t", header=T)
-hog_info$has_species_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$species_tree]
-hog_info$has_gene_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$species_tree == F]
+##ANNOTATION -- code copied from https://github.com/ajshultz/avian-immunity/blob/master/ComparativeGenomics/PAML_Analyze/02_GeneID_Annotation.R ##
 
-#load hog <-> chicken info
-hog_to_gene <- read.table("../HOG_final_alignment_seqids", header=T, stringsAsFactors =F)
-hog_to_gene <- hog_to_gene %>% tbl_df %>%
-  mutate(hog = as.integer(sub("HOG2_", "", HOG, fixed=T))) %>% 
-  filter(Taxon == "galGal") %>%
-  dplyr::select(-HOG, -Fasta_seqid, -Taxon, -Transcript) %>%
-  group_by(hog) %>%
-  mutate(gene = paste0(Gene, sep="", collapse=";")) %>%
-  dplyr::select(-Gene)
+#Read in HOG IDs
+hog_ids <- read.table("../../03_homology/new_hog_list.txt")
+colnames(hog_ids) <- c("HOG2_HogID","NCBI_ID","entrezgene","sp")
+
+#Data cleanup, extract chicken gene IDs
+hog_ids_gg <- hog_ids %>% tbl_df %>%
+  separate(HOG2_HogID,sep = "_",into=c("drop","hog")) %>%
+  mutate(entrezgene = as.character(entrezgene), sp = as.character(sp)) %>%
+  filter(sp == "galGal") %>%
+  dplyr::select(hog,entrezgene)
+
+#Data cleanup, extract zebra finch gene IDs
+hog_ids_zf <- hog_ids %>% tbl_df %>%
+  separate(HOG2_HogID,sep = "_",into=c("drop","hog")) %>%
+  mutate(entrezgene_zf = as.character(entrezgene), sp = as.character(sp)) %>%
+  filter(sp == "taeGut") %>%
+  dplyr::select(hog,entrezgene_zf)
+
+####Add human NCBI gene IDs from biomaRt
+ensembl = useMart("ensembl")
+
+#Use correct datasets - sometimes throws an error for some reason saying the given dataset is not valid. However, it works if you try again once or twice
+ensembl_gg = useDataset("ggallus_gene_ensembl",mart=ensembl)
+ensembl_hs = useDataset("hsapiens_gene_ensembl",mart=ensembl)
+ensembl_zf = useDataset("tguttata_gene_ensembl",mart=ensembl)
+
+#Get human ensembl IDs for homologs
+human_ids_gg <- getBM(attributes=c("ensembl_gene_id","external_gene_name","hsapiens_homolog_ensembl_gene","hsapiens_homolog_orthology_confidence"),
+                      filters=c("with_hsapiens_homolog"),
+                      values=TRUE,
+                      mart=ensembl_gg) %>% tbl_df
+
+human_ids_zf <- getBM(attributes=c("ensembl_gene_id","external_gene_name","hsapiens_homolog_ensembl_gene","hsapiens_homolog_orthology_confidence"),
+                      filters=c("with_hsapiens_homolog"),
+                      values=TRUE,
+                      mart=ensembl_zf) %>% tbl_df %>%
+  dplyr::rename(ensembl_gene_id_zf = ensembl_gene_id)
+
+
+#Get ensembl ID to NCBI entrezgene mapping for three different species
+gg_ens_to_entrezgene <- getBM(attributes=c("ensembl_gene_id","entrezgene"),
+                              mart=ensembl_gg) %>%
+  tbl_df %>%
+  filter(!is.na(entrezgene)) %>%
+  mutate(entrezgene = as.character(entrezgene))
+
+zf_ens_to_entrezgene <- getBM(attributes=c("ensembl_gene_id","entrezgene"),
+                              mart=ensembl_zf) %>%
+  tbl_df %>%
+  filter(!is.na(entrezgene)) %>%
+  dplyr::rename(entrezgene_zf=entrezgene,ensembl_gene_id_zf=ensembl_gene_id) %>%
+  mutate(entrezgene_zf = as.character(entrezgene_zf))
+
+hs_ens_to_entrezgene <- getBM(attributes=c("ensembl_gene_id","entrezgene"),
+                              mart=ensembl_hs) %>%
+  tbl_df %>%
+  filter(!is.na(entrezgene)) %>%
+  dplyr::rename(entrezgene_hs=entrezgene,hsapiens_homolog_ensembl_gene=ensembl_gene_id) %>%
+  mutate(entrezgene_hs = as.character(entrezgene_hs))
+
+#Add human IDs to chicken ensembl to entrezgene table
+
+gg_trans_table <- gg_ens_to_entrezgene %>%
+  left_join(human_ids_gg,by="ensembl_gene_id") %>%
+  left_join(hs_ens_to_entrezgene,by="hsapiens_homolog_ensembl_gene")
+
+zf_trans_table <- zf_ens_to_entrezgene %>%
+  left_join(human_ids_zf,by="ensembl_gene_id_zf") %>%
+  left_join(hs_ens_to_entrezgene,by="hsapiens_homolog_ensembl_gene")
+
+
+hog_to_gene <- gg_trans_table %>% full_join(hog_ids_gg) %>% filter(!is.na(hog))
+
+full_list <- read_tsv("../paml_ancrec/paml_M0_parsed.txt.gz", col_types = "cccc?????") %>% 
+  filter(!is.na(hog), model == "ancrec") %>%
+  mutate(tree = paste0("tree", treenum)) %>%
+  dplyr::select(hog, tree, species_tree)
 
 ##LOAD DATA## 
-merged = read.table("bsrel_res_parsed_ratites_2017-11-20.txt", fill=T)
-names(merged)=c("class", "tree", "hog", "tsel.s", "nsel.s", "tsel.n", "nsel.n", "tnon", "nnon", "strict_branches", "nom_branches")
-merged=merge(merged, ancrec.treekey, by.x=c("hog", "tree"), by.y=c("hog", "tree"), all=T)
+bsrel <- read.table("bsrel_res_parsed_ratites_2018-10-15.txt", fill=TRUE, stringsAsFactors = FALSE)
+names(bsrel) <- c("class", "tree", "hog", "tsel.s", "nsel.s", "tsel.n", "nsel.n", "tnon", "nnon", "strict_branches", "nom_branches")
+bsrel <- bsrel %>% mutate(hog = as.character(hog)) %>% full_join(full_list, by=c("hog" = "hog", "tree" = "tree")) %>% 
+  as.tibble() %>% left_join(hog_to_gene, by=c("hog" = "hog"))
+  
+
+##ANALYSIS##
+ratite_spec_genes <- bsrel %>% filter(tsel.n >= 1, nsel.n == 0, species_tree == "True") %>% filter(!is.na(ensembl_gene_id))
+ratite_spec_genes_gt <- bsrel %>% filter(tsel.n >= 1, nsel.n == 0, species_tree == "False") %>% filter(!is.na(ensembl_gene_id))
+ratite_spec_genes_strict <- ratite_spec_genes %>% filter(entrezgene %in% ratite_spec_genes_gt$entrezgene) %>% filter(!is.na(ensembl_gene_id))
+
+ratite_genes <- bsrel %>% filter(tsel.s >= 1, tsel.s > nsel.s, species_tree == "True")  %>% filter(!is.na(ensembl_gene_id))
+ratite_genes_gt <- bsrel %>% filter(tsel.s >= 1, tsel.s > nsel.s, species_tree == "False")  %>% filter(!is.na(ensembl_gene_id))
+ratite_genes_strict <- ratite_genes %>% filter(entrezgene %in% ratite_genes_gt$entrezgene)  %>% filter(!is.na(ensembl_gene_id))
+
+background <- bsrel %>% distinct(entrezgene, .keep_all=TRUE)  %>% filter(!is.na(ensembl_gene_id))
+
+
+bsrel_s_mf <- enrichGO(ratite_spec_genes_strict$ensembl_gene_id,'org.Gg.eg.db',pvalueCutoff = 0.05, universe=background$ensembl_gene_id,keyType="ENSEMBL",ont="MF") %>% as.data.frame
+bsrel_s_bp <- enrichGO(ratite_spec_genes_strict$ensembl_gene_id,'org.Gg.eg.db',pvalueCutoff = 0.05, universe=background$ensembl_gene_id,keyType="ENSEMBL",ont="BP") %>% as.data.frame
+
+bsrel_all_mf <- enrichGO(ratite_genes_strict$ensembl_gene_id,'org.Gg.eg.db',pvalueCutoff = 0.05, universe=background$ensembl_gene_id,keyType="ENSEMBL",ont="MF") %>% as.data.frame
+bsrel_all_bp <- enrichGO(ratite_genes_strict$ensembl_gene_id,'org.Gg.eg.db',pvalueCutoff = 0.05, universe=background$ensembl_gene_id,keyType="ENSEMBL",ont="BP") %>% as.data.frame
+
+bsrel_s_kegg <- enrichKEGG(ratite_spec_genes_strict$entrezgene, 'gga', pvalueCutoff = 0.05, universe = background$entrezgene, keyType = "ncbi-geneid")
+bsrel_all_kegg <- enrichKEGG(ratite_genes_strict$entrezgene, 'gga', pvalueCutoff = 0.05, universe = background$entrezgene, keyType = "ncbi-geneid")
+
+bsrel_s_mf
+bsrel_s_bp
+bsrel_all_mf
+bsrel_all_bp
+bsrel_s_kegg
+bsrel_all_kegg
+
 
 #work with tibbles
 merged <- tbl_df(merged)
@@ -57,7 +150,7 @@ bsrel %>% distinct(hog) %>% summarize(count=n())
 ratite_spec_genes <- bsrel %>% filter(tsel.s >= 1, nsel.s == 0) %>% dplyr::select(hog) %>% inner_join(., hog_to_gene) %>% dplyr::select(gene)
 ratite_conv_genes <- bsrel %>% filter(tsel.s > 1) %>% dplyr::select(hog) %>% inner_join(., hog_to_gene) %>% dplyr::select(gene)
 ratite_conv_spec_genes <- ratite_conv_genes %>% filter(gene %in% ratite_spec_genes$gene)
-background <- bsrel %>% dplyr::select(hog) %>% inner_join(., hog_to_gene) %>% dplyr::select(gene)
+
 
 bsrel_sc_mf <- enrichGO(ratite_conv_spec_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="MF")
 bsrel_sc_bp <- enrichGO(ratite_conv_spec_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="BP")
