@@ -21,11 +21,11 @@ treefile=sys.argv[2]
 resultsfile=sys.argv[3] 
 
 if not os.path.isfile(resultsfile):
-    print(hog, 'NA', 'NA', 'NA', 'NA', sep="\t")
+    print(hog, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', sep="\t")
     quit()
 
 if not os.path.isfile(treefile):
-    print(hog, 'NA', 'NA', 'NA', 'NA', sep="\t")
+    print(hog, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', sep="\t")
     quit()
 
 with open(treefile, 'r') as treefile:
