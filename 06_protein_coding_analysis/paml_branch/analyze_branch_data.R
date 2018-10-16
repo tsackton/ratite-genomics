@@ -1,7 +1,5 @@
 library(tidyverse)
 library(devtools)
-library(foreach)
-library(doParallel)
 
 #using my fork of RERconverge that fixes a few small bugs
 if (!is.element("RERconverge", installed.packages()[,1])) {
