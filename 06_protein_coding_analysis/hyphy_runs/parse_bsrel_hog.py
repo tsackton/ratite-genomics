@@ -2,7 +2,7 @@ import re, csv, sys, os
 from ete3 import EvolTree
 
 #given name, test if ratite or not
-def node_in_class(nodename,tree):
+def trans_node(nodename,tree):
     #takes a node name, an ete3 EvolTree, and a set defining a class of tips
     #returns true if i) the node is a leaf and is in the class set or
     #ii) the node is internal and all descendant leaves are in the class set
@@ -53,8 +53,8 @@ for line in res_list:
             if pvalholm < 0.05:
                 rs['selected_holm'] = rs['selected_holm'] + 1
                 rs['holm_branches'] = rs['holm_branches'] + node_id + ":"
-            else:
-                rs['selected_nom'] = rs['selected_nom'] + 1
+            rs['selected_nom'] = rs['selected_nom'] + 1
+            rs['nom_branches'] = rs['nom_branches'] + node_id + ":"
 
 print(rs['hog'], rs['selected_holm'], rs['selected_nom'], rs['total_tests'], rs['holm_branches'][:-1], rs['nom_branches'][:-1], rs['tree'], sep="\t")
 
