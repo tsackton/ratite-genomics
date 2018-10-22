@@ -56,9 +56,9 @@ final_v1 <- read_tsv("cnees.tsv.gz")
 define_groups <- function(x) {
   x %>%   
     mutate(accelerated = ifelse(logBF1 >= 10 & logBF2 > 1 & (it_pp_loss + ti_pp_loss) < 1, TRUE, FALSE)) %>%
-    mutate(conv = ifelse(floss_cl_pp >= 2, TRUE, FALSE)) %>%
+    mutate(conv = ifelse(floss_cl_pp >= 1.80, TRUE, FALSE)) %>%
     mutate(phylop = as.logical(phylop)) %>% 
-    mutate(dollo = ifelse(floss_cl_pp_dollo >= 2, TRUE, FALSE)) %>%
+    mutate(dollo = ifelse(floss_cl_pp_dollo >= 1.80, TRUE, FALSE)) %>%
     mutate(score = case_when(
       accelerated & conv & phylop & dollo ~ "Dollo_Conv_Acc_PhyloP",
       accelerated & conv & !phylop & !dollo ~ "Conv_Acc",
@@ -73,7 +73,7 @@ define_groups <- function(x) {
 define_groups_corm <- function(x) {
   x %>%
     mutate(accelerated = ifelse(logBF1 >= 10 & logBF2 >= 1 & (ti_pp_loss + it_pp_loss) < 1, TRUE, FALSE)) %>%
-    mutate(conv = ifelse(floss_cl_pp >= 2, TRUE, FALSE)) %>%
+    mutate(conv = ifelse(floss_cl_pp >= 1.80, TRUE, FALSE)) %>%
     mutate(ratite = ifelse((floss_cl_pp - gc_pp_loss) >= 0.90, TRUE, FALSE)) %>%
     mutate(corm = ifelse(gc_pp_loss >= 0.90, TRUE, FALSE)) %>%
     mutate(score = case_when(
@@ -89,68 +89,142 @@ define_groups_corm <- function(x) {
     ))
 }
 
+#verions
+final_original %>% define_groups() %>% group_by(version) %>% count(score) %>% spread(score,n)
+final_reduced %>% define_groups() %>% group_by(version) %>% count(score) %>% spread(score,n)
+final_extended %>% define_groups_corm() %>% group_by(version) %>% count(score) %>% spread(score,n)
+
+
+##MAKE BEDS##
+
+#original
+
 pos_gg4 %>% 
-  inner_join(final_original) %>%
+  inner_join(final_original) %>% filter(version=="gain") %>%
   define_groups %>% select(chr, start, end, cnee, score) %>%
-  write_tsv(path="cnee_scored_original_ucsc_galgal4.bed", col_names = FALSE)
+  write_tsv(path="cnee_gapmissing_original_ucsc_galgal4.bed", col_names = FALSE)
   
-pos_gg4_ncbi %>% 
-  inner_join(final_original) %>%
+pos_gg4 %>% 
+  inner_join(final_original) %>% filter(version=="gain_gap") %>%
   define_groups %>% select(chr, start, end, cnee, score) %>%
-  write_tsv(path="cnee_scored_original_ncbi_galgal4.bed", col_names = FALSE)
+  write_tsv(path="cnee_gaploss_original_ucsc_galgal4.bed", col_names = FALSE)
+
+pos_gg4_ncbi %>% 
+  inner_join(final_original) %>% filter(version=="gain") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gapmissing_original_ncbi_galgal4.bed", col_names = FALSE)
+
+pos_gg4_ncbi %>% 
+  inner_join(final_original) %>% filter(version=="gain_gap") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gaploss_original_ncbi_galgal4.bed", col_names = FALSE)
+
+pos_gg5 %>% 
+  inner_join(final_original) %>% filter(version=="gain") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gapmissing_original_ucsc_galgal5.bed", col_names = FALSE)
+
+pos_gg5 %>% 
+  inner_join(final_original) %>% filter(version=="gain_gap") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gaploss_original_ucsc_galgal5.bed", col_names = FALSE)
+
+pos_gg5_ncbi %>% 
+  inner_join(final_original) %>% filter(version=="gain") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gapmissing_original_ncbi_galgal5.bed", col_names = FALSE)
+
+pos_gg5_ncbi %>% 
+  inner_join(final_original) %>% filter(version=="gain_gap") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gaploss_original_ncbi_galgal5.bed", col_names = FALSE)
+
+#reduced
 
 pos_gg4 %>% 
-  inner_join(final_reduced) %>%
+  inner_join(final_reduced) %>% filter(version=="gain") %>%
   define_groups %>% select(chr, start, end, cnee, score) %>%
-  write_tsv(path="cnee_scored_reduced_ucsc_galgal4.bed", col_names = FALSE)
-
-pos_gg4_ncbi %>% 
-  inner_join(final_reduced) %>%
-  define_groups %>% select(chr, start, end, cnee, score) %>%
-  write_tsv(path="cnee_scored_reduced_ncbi_galgal4.bed", col_names = FALSE)
+  write_tsv(path="cnee_gapmissing_reduced_ucsc_galgal4.bed", col_names = FALSE)
 
 pos_gg4 %>% 
-  inner_join(final_extended) %>%
-  define_groups_corm %>% select(chr, start, end, cnee, score) %>%
-  write_tsv(path="cnee_scored_extended_ucsc_galgal4.bed", col_names = FALSE)
+  inner_join(final_reduced) %>% filter(version=="gain_gap") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gaploss_reduced_ucsc_galgal4.bed", col_names = FALSE)
 
 pos_gg4_ncbi %>% 
-  inner_join(final_extended) %>%
-  define_groups_corm %>% select(chr, start, end, cnee, score) %>%
-  write_tsv(path="cnee_scored_extended_ncbi_galgal4.bed", col_names = FALSE)
+  inner_join(final_reduced) %>% filter(version=="gain") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gapmissing_reduced_ncbi_galgal4.bed", col_names = FALSE)
 
-
+pos_gg4_ncbi %>% 
+  inner_join(final_reduced) %>% filter(version=="gain_gap") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gaploss_reduced_ncbi_galgal4.bed", col_names = FALSE)
 
 pos_gg5 %>% 
-  inner_join(final_original) %>%
+  inner_join(final_reduced) %>% filter(version=="gain") %>%
   define_groups %>% select(chr, start, end, cnee, score) %>%
-  write_tsv(path="cnee_scored_original_ucsc_galgal5.bed", col_names = FALSE)
-
-pos_gg5_ncbi %>% 
-  inner_join(final_original) %>%
-  define_groups %>% select(chr, start, end, cnee, score) %>%
-  write_tsv(path="cnee_scored_original_ncbi_galgal5.bed", col_names = FALSE)
+  write_tsv(path="cnee_gapmissing_reduced_ucsc_galgal5.bed", col_names = FALSE)
 
 pos_gg5 %>% 
-  inner_join(final_reduced) %>%
+  inner_join(final_reduced) %>% filter(version=="gain_gap") %>%
   define_groups %>% select(chr, start, end, cnee, score) %>%
-  write_tsv(path="cnee_scored_reduced_ucsc_galgal5.bed", col_names = FALSE)
+  write_tsv(path="cnee_gaploss_reduced_ucsc_galgal5.bed", col_names = FALSE)
 
 pos_gg5_ncbi %>% 
-  inner_join(final_reduced) %>%
+  inner_join(final_reduced) %>% filter(version=="gain") %>%
   define_groups %>% select(chr, start, end, cnee, score) %>%
-  write_tsv(path="cnee_scored_reduced_ncbi_galgal5.bed", col_names = FALSE)
+  write_tsv(path="cnee_gapmissing_reduced_ncbi_galgal5.bed", col_names = FALSE)
+
+pos_gg5_ncbi %>% 
+  inner_join(final_reduced) %>% filter(version=="gain_gap") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gaploss_reduced_ncbi_galgal5.bed", col_names = FALSE)
+
+## extended
+
+pos_gg4 %>% 
+  inner_join(final_extended) %>% filter(version=="gain") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gapmissing_extended_ucsc_galgal4.bed", col_names = FALSE)
+
+pos_gg4 %>% 
+  inner_join(final_extended) %>% filter(version=="gain_gap") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gaploss_extended_ucsc_galgal4.bed", col_names = FALSE)
+
+pos_gg4_ncbi %>% 
+  inner_join(final_extended) %>% filter(version=="gain") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gapmissing_extended_ncbi_galgal4.bed", col_names = FALSE)
+
+pos_gg4_ncbi %>% 
+  inner_join(final_extended) %>% filter(version=="gain_gap") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gaploss_extended_ncbi_galgal4.bed", col_names = FALSE)
 
 pos_gg5 %>% 
-  inner_join(final_extended) %>%
-  define_groups_corm %>% select(chr, start, end, cnee, score) %>%
-  write_tsv(path="cnee_scored_extended_ucsc_galgal5.bed", col_names = FALSE)
+  inner_join(final_extended) %>% filter(version=="gain") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gapmissing_extended_ucsc_galgal5.bed", col_names = FALSE)
+
+pos_gg5 %>% 
+  inner_join(final_extended) %>% filter(version=="gain_gap") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gaploss_extended_ucsc_galgal5.bed", col_names = FALSE)
 
 pos_gg5_ncbi %>% 
-  inner_join(final_extended) %>%
-  define_groups_corm %>% select(chr, start, end, cnee, score) %>%
-  write_tsv(path="cnee_scored_extended_ncbi_galgal5.bed", col_names = FALSE)
+  inner_join(final_extended) %>% filter(version=="gain") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gapmissing_extended_ncbi_galgal5.bed", col_names = FALSE)
 
+pos_gg5_ncbi %>% 
+  inner_join(final_extended) %>% filter(version=="gain_gap") %>%
+  define_groups %>% select(chr, start, end, cnee, score) %>%
+  write_tsv(path="cnee_gaploss_extended_ncbi_galgal5.bed", col_names = FALSE)
+
+
+## OLD TESTING ##
 
 #more testing
 final_extended %>% define_groups %>% inner_join(gene_gg4) %>% filter(grepl("TBX5", gene)) %>% count(score)
