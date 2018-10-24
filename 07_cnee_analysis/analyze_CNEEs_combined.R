@@ -223,78 +223,9 @@ pos_gg5_ncbi %>%
   define_groups %>% select(chr, start, end, cnee, score) %>%
   write_tsv(path="cnee_gaploss_extended_ncbi_galgal5.bed", col_names = FALSE)
 
+## WRITE OUT FINAL DATA FILES
 
-## OLD TESTING ##
-
-#more testing
-final_extended %>% define_groups %>% inner_join(gene_gg4) %>% filter(grepl("TBX5", gene)) %>% count(score)
-
-
-
-#compare
-final_original %>% define_groups %>% full_join(final_v1, by=c("cnee" = "cnee")) %>%
-  mutate(old_score = case_when(
-    ratite_accel.1 & ratite_spec.1 & ratite_conv.1 ~ "Conv_Acc",
-    ratite_accel.1 & ratite_spec.1 & !ratite_conv.1 ~ "Acc",
-    TRUE ~ "none"
-  )) %>% 
-  mutate(score = sub("_PhyloP", "", score)) %>% 
-  mutate(score = sub("Dollo_", "", score)) %>%
-  with(., table(score, old_score))
-
-final_original %>% define_groups %>% full_join(final_v1, by=c("cnee" = "cnee")) %>%
-  mutate(old_score = case_when(
-    ratite_accel.1 & ratite_spec.1 & ratite_conv.1 ~ "Conv_Acc",
-    ratite_accel.1 & ratite_spec.1 & !ratite_conv.1 ~ "Acc",
-    TRUE ~ "none"
-  )) %>% 
-  mutate(score = sub("_PhyloP", "", score)) %>% 
-  mutate(score = sub("Dollo_", "", score)) %>%
-  select(cnee:l_rate, bf1:loglik.full, cd_pp_loss:floss_cl_phylop_dollo, cas_loss.prob:neo_loss.prob, ratite_accel.1:gene, score, old_score) %>%
-  filter(score == "none" & old_score=="Conv_Acc") %>% View()
-
-
-final_original %>% define_groups %>% full_join(final_v1, by=c("cnee" = "cnee")) %>% ggplot(aes(logBF2, bf2)) + geom_point()
-final_original %>% define_groups %>% mutate(score = sub("_PhyloP", "", score)) %>% 
-  mutate(score = sub("Dollo_", "", score)) %>%
-  full_join(final_v1, by=c("cnee" = "cnee")) %>% filter(pmax(bf1,logBF1) > 10, pmax(bf2,logBF2)>1) %>% 
-  ggplot(aes(logBF1, bf1)) + geom_point(alpha=0.1) + geom_hline(yintercept=10, col="red") + geom_vline(xintercept=10, col="red")+ coord_cartesian(xlim=c(-25,50), ylim=c(-25,50))
-
-final_original %>% define_groups %>% full_join(final_v1, by=c("cnee" = "cnee")) %>% mutate(score = sub("_PhyloP", "", score)) %>% 
-  mutate(score = sub("Dollo_", "", score)) %>%
-  filter(pmax(bf1,logBF1) > 10) %>% ggplot(aes(floss_cl_pp_dollo, ratite_loss_cons_min.prob)) + geom_point(col="red", alpha=0.2) + geom_abline() 
-
-          
-final_original %>% full_join(final_v1, by=c("cnee" = "cnee")) %>% filter(ratite_loss_cons.prob > 4, floss_cl_pp < 1, ratite_spec.1) %>% select(cnee, gene)
-
-final_original %>% full_join(final_reduced, by=c("cnee" = "cnee")) %>% ggplot(aes(strCam.x, strCam.y)) + geom_point(alpha=0.1) + geom_abline(col="red", size=3, linetype="dashed")
-
-final_original %>% full_join(final_reduced, by=c("cnee" = "cnee")) %>% ggplot(aes(strCam.x, strCam.y)) + geom_point(alpha=0.1) + geom_abline(col="red", size=3, linetype="dashed")
-
-final_original %>% full_join(final_extended, by=c("cnee" = "cnee")) %>% ggplot(aes(strCam.x, strCam.y)) + geom_point(alpha=0.1) + geom_abline(col="red", size=3, linetype="dashed")
-
-final_extended %>% full_join(final_original, by=c("cnee" = "cnee")) %>% ggplot(aes(logBF1.x, logBF1.y)) + geom_point(alpha=0.1) + coord_cartesian(xlim=c(-25,50), ylim=c(-25,50))
-
-final_original %>% full_join(final_v1, by=c("cnee" = "cnee")) %>% ggplot(aes(strCam, strCam.prob)) + geom_point(alpha=0.1) + geom_abline(col="red", size=1, linetype="dashed")
-
-final_original %>% full_join(final_v1, by=c("cnee" = "cnee")) %>% ggplot(aes(anoDid, anoDid.prob)) + geom_point(alpha=0.1) + geom_abline(col="red", size=1, linetype="dashed")
-
-final_original %>% define_groups %>% full_join(final_v1, by=c("cnee" = "cnee")) %>%
-  mutate(old_score = case_when(
-    ratite_accel.1 & ratite_spec.1 & ratite_conv.1 ~ "Acc",
-    ratite_accel.1 & ratite_spec.1 & !ratite_conv.1 ~ "Acc",
-    TRUE ~ "none"
-  )) %>% 
-  mutate(score = sub("_PhyloP", "", score)) %>% 
-  mutate(score = sub("Dollo_", "", score)) %>%
-  mutate(score = sub("Conv_", "", score)) %>%
-  filter(!(score == old_score)) %>%
-  mutate(loss_diff = round(ratite_loss_cons_min.prob - floss_cl_pp_dollo,2)) %>%
-  mutate(old_new = paste0(old_score, "_", score)) %>% 
-  ggplot(aes((it_pp_loss+ti_pp_loss), (internal_loss.prob + tin_loss.prob), color=old_new)) + geom_point(alpha=0.4) + geom_abline(col="red", size=1, linetype="dashed")
-
-final_reduced %>% full_join(final_v1, by=c("cnee" = "cnee")) %>%
-  mutate(bfAll_NEW = (loglik_Full - loglik_Null)) %>%
-  mutate(bfAll_OLD = (loglik.full - loglik.null)) %>% 
-  ggplot(aes(bfAll_NEW, bfAll_OLD)) + geom_point(alpha=0.1) + coord_cartesian(xlim=c(-30,75), ylim=c(-30,75))
+final_extended %>% define_groups_corm() %>% write_tsv("final_extended_cnee.tsv")
+final_original %>% define_groups() %>% write_tsv("final_original_cnee.tsv")
+final_reduced %>% define_groups() %>% write_tsv("final_reduced_cnee.tsv")
 

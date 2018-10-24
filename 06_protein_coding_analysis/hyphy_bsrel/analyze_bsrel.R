@@ -5,23 +5,21 @@ library(biomaRt)
 
 ##ANNOTATION -- code copied from https://github.com/ajshultz/avian-immunity/blob/master/ComparativeGenomics/PAML_Analyze/02_GeneID_Annotation.R ##
 
-#Read in HOG IDs
-hog_ids <- read.table("../../03_homology/new_hog_list.txt")
-colnames(hog_ids) <- c("HOG2_HogID","NCBI_ID","entrezgene","sp")
+#Get CDS <-> GENE key for chicken
+gg4_ft<-read_tsv("../../04_wga/03_ce_annotation/GCF_000002315.3_Gallus_gallus-4.0_genes_table.txt", col_types = "ccccciicccc") 
+names(gg4_ft) = c("feature", "class", "asm", "chr", "genomic_acc", "start", "end", "accession", "nr_ref", "sym", "entrezgene")
 
-#Data cleanup, extract chicken gene IDs
-hog_ids_gg <- hog_ids %>% tbl_df %>%
-  separate(HOG2_HogID,sep = "_",into=c("drop","hog")) %>%
-  mutate(entrezgene = as.character(entrezgene), sp = as.character(sp)) %>%
-  filter(sp == "galGal") %>%
-  dplyr::select(hog,entrezgene)
+#Get ACC from actual PAML alignments
+hog_to_acc <- read_tsv("../../03_homology/HOG_final_alignment_seqids") %>% 
+  filter(Taxon == "galGal") %>%
+  mutate(hog = sub("HOG2_", "", HOG)) %>%
+  dplyr::select(hog, trans_acc = Transcript)
 
-#Data cleanup, extract zebra finch gene IDs
-hog_ids_zf <- hog_ids %>% tbl_df %>%
-  separate(HOG2_HogID,sep = "_",into=c("drop","hog")) %>%
-  mutate(entrezgene_zf = as.character(entrezgene), sp = as.character(sp)) %>%
-  filter(sp == "taeGut") %>%
-  dplyr::select(hog,entrezgene_zf)
+#merge with feature table
+gg4_ft <- gg4_ft %>% 
+  filter(!is.na(accession)) %>% 
+  right_join(hog_to_acc, by=c("accession" = "trans_acc")) %>%
+  dplyr::select(hog, chr, entrezgene, sym)
 
 ####Add human NCBI gene IDs from biomaRt
 ensembl = useMart("ensembl")
@@ -29,7 +27,6 @@ ensembl = useMart("ensembl")
 #Use correct datasets - sometimes throws an error for some reason saying the given dataset is not valid. However, it works if you try again once or twice
 ensembl_gg = useDataset("ggallus_gene_ensembl",mart=ensembl)
 ensembl_hs = useDataset("hsapiens_gene_ensembl",mart=ensembl)
-ensembl_zf = useDataset("tguttata_gene_ensembl",mart=ensembl)
 
 #Get human ensembl IDs for homologs
 human_ids_gg <- getBM(attributes=c("ensembl_gene_id","external_gene_name","hsapiens_homolog_ensembl_gene","hsapiens_homolog_orthology_confidence"),
@@ -37,26 +34,12 @@ human_ids_gg <- getBM(attributes=c("ensembl_gene_id","external_gene_name","hsapi
                       values=TRUE,
                       mart=ensembl_gg) %>% tbl_df
 
-human_ids_zf <- getBM(attributes=c("ensembl_gene_id","external_gene_name","hsapiens_homolog_ensembl_gene","hsapiens_homolog_orthology_confidence"),
-                      filters=c("with_hsapiens_homolog"),
-                      values=TRUE,
-                      mart=ensembl_zf) %>% tbl_df %>%
-  dplyr::rename(ensembl_gene_id_zf = ensembl_gene_id)
-
-
 #Get ensembl ID to NCBI entrezgene mapping for three different species
 gg_ens_to_entrezgene <- getBM(attributes=c("ensembl_gene_id","entrezgene"),
                               mart=ensembl_gg) %>%
   tbl_df %>%
   filter(!is.na(entrezgene)) %>%
   mutate(entrezgene = as.character(entrezgene))
-
-zf_ens_to_entrezgene <- getBM(attributes=c("ensembl_gene_id","entrezgene"),
-                              mart=ensembl_zf) %>%
-  tbl_df %>%
-  filter(!is.na(entrezgene)) %>%
-  dplyr::rename(entrezgene_zf=entrezgene,ensembl_gene_id_zf=ensembl_gene_id) %>%
-  mutate(entrezgene_zf = as.character(entrezgene_zf))
 
 hs_ens_to_entrezgene <- getBM(attributes=c("ensembl_gene_id","entrezgene"),
                               mart=ensembl_hs) %>%
@@ -71,27 +54,95 @@ gg_trans_table <- gg_ens_to_entrezgene %>%
   left_join(human_ids_gg,by="ensembl_gene_id") %>%
   left_join(hs_ens_to_entrezgene,by="hsapiens_homolog_ensembl_gene")
 
-zf_trans_table <- zf_ens_to_entrezgene %>%
-  left_join(human_ids_zf,by="ensembl_gene_id_zf") %>%
-  left_join(hs_ens_to_entrezgene,by="hsapiens_homolog_ensembl_gene")
-
-
-hog_to_gene <- gg_trans_table %>% full_join(hog_ids_gg) %>% filter(!is.na(hog))
+#make final hog key
+hog_key_gg <- gg4_ft %>% left_join(gg_trans_table, by=c("entrezgene" = "entrezgene"))
 
 full_list <- read_tsv("../paml_ancrec/paml_M0_parsed.txt.gz", col_types = "cccc?????") %>% 
   filter(!is.na(hog), model == "ancrec") %>%
   mutate(tree = paste0("tree", treenum)) %>%
   dplyr::select(hog, tree, species_tree)
 
+#make a simpler hog key with just chicken entrezgene ensembl_gene and external gene name
+hog_final_key <- hog_key_gg %>% full_join(full_list, by=c("hog" = "hog")) %>%
+  distinct(hog, tree, species_tree, chr, entrezgene, ensembl_gene_id, external_gene_name) %>% 
+  filter(!is.na(tree))
+
+hog_final_key %>% filter(species_tree == "False") %>% count(hog) %>% count(n)
+hog_final_key %>% filter(species_tree == "True") %>% count(hog) %>% count(n)
+
+hog_final_key %>% count(hog) %>% filter(n > 2)
+hog_final_key %>% filter(species_tree == "True") %>% count(hog) %>% filter(n >= 2)
+hog_final_key %>% filter(hog == 27140)
+
+#hog final key still has some duplication - looks like mostly cases where an entrez gene id maps to two ENS gene ids
+
 ##LOAD DATA## 
-bsrel <- read.table("bsrel_res_parsed_ratites_2018-10-15.txt", fill=TRUE, stringsAsFactors = FALSE)
-names(bsrel) <- c("class", "tree", "hog", "tsel.s", "nsel.s", "tsel.n", "nsel.n", "tnon", "nnon", "strict_branches", "nom_branches")
-bsrel <- bsrel %>% mutate(hog = as.character(hog)) %>% full_join(full_list, by=c("hog" = "hog", "tree" = "tree")) %>% 
-  as.tibble() %>% left_join(hog_to_gene, by=c("hog" = "hog"))
+bsrel_cols <- c("tree", "hog", "strict", "nom", "total", "strict_br", "nom_br", "newick")
+bsrel_ext <- read_tsv("bsrel_res_parsed_extended_2018-10-22.txt", col_names = bsrel_cols)
+bsrel_orig <- read_tsv("bsrel_res_parsed_original_2018-10-17.txt", col_names = bsrel_cols)
+
+##ADD GENES, CLEAN UP##
+
+bsrel_ext <- hog_final_key %>% distinct(hog, tree, entrezgene, .keep_all = TRUE) %>%
+  mutate(hog = as.integer(hog)) %>%
+  right_join(bsrel_ext, by=c("hog" = "hog", "tree" = "tree")) %>%
+  filter(!is.na(species_tree))
+
+bsrel_orig <- hog_final_key %>% distinct(hog, tree, entrezgene, .keep_all = TRUE) %>%
+  mutate(hog = as.integer(hog)) %>%
+  right_join(bsrel_orig, by=c("hog" = "hog", "tree" = "tree")) %>%
+  filter(!is.na(species_tree))
+
+
+#this looks very good now, ready for analysis
+
+#first need to write function to take tree string and compute # targets vs # non-targets
+
+count_targets <- function(nodelist, targets) {
+  #nodelist will need to be split on ":"
+  #then each element needs to be checked for presence of targets
+  #and internal nodes computed to assign to target or non-target (tips are easy)
   
+  ##INTERNAL FUNCS##
+  #parse a single node (can be internal) into pieces, fraction of pieces that are in target
+  compute_target_frac <- function(node, targets) {
+    test<-strsplit(node, "-", fixed=TRUE) %>% unlist
+    target_hits <- sum(test %in% targets)
+    total_len <- length(test)
+    return (target_hits/total_len)
+  }
+  
+  #first split nodelist
+  node_vec <- tibble(node = strsplit(nodelist, ":", fixed=TRUE) %>% unlist) %>% 
+    group_by(node) %>% 
+    mutate(target_frac = compute_target_frac(node, targets))
+  
+  sum(node_vec$target_frac >= 1)
+}
+
+ratite_tips = c("anoDid", "strCam", "rheAme", "rhePen", "droNov", "casCas", "aptHaa", "aptRow", "aptOwe")
+corm_tip = c("nanHar")
+
+bsrel_orig <- bsrel_orig %>% 
+  mutate(ratite_selected_nom = map_int(nom_br, count_targets, ratite_tips)) %>%
+  mutate(ratite_selected_str = map_int(strict_br, count_targets, ratite_tips))
+
+bsrel_ext <- bsrel_ext %>%
+  mutate(ratite_selected_nom = map_int(nom_br, count_targets, ratite_tips)) %>%
+  mutate(ratite_selected_str = map_int(strict_br, count_targets, ratite_tips)) %>%
+  mutate(corm_selected_nom = map_int(nom_br, count_targets, corm_tip)) %>%
+  mutate(corm_selected_str = map_int(strict_br, count_targets, corm_tip))
 
 ##ANALYSIS##
-ratite_spec_genes <- bsrel %>% filter(tsel.n >= 1, nsel.n == 0, species_tree == "True") %>% filter(!is.na(ensembl_gene_id))
+
+ratite_spec_genes_orig <- bsrel_orig %>% filter(ratite_selected_str >= 1,ratite_selected_str == strict, species_tree == "True")
+ratite_spec_genes_ext <- bsrel_ext %>% filter(ratite_selected_str >= 1,ratite_selected_str == strict, species_tree == "True")
+
+
+
+### OLD CODE BELOW ###
+
+
 ratite_spec_genes_gt <- bsrel %>% filter(tsel.n >= 1, nsel.n == 0, species_tree == "False") %>% filter(!is.na(ensembl_gene_id))
 ratite_spec_genes_strict <- ratite_spec_genes %>% filter(entrezgene %in% ratite_spec_genes_gt$entrezgene) %>% filter(!is.na(ensembl_gene_id))
 

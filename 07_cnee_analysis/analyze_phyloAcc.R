@@ -165,9 +165,9 @@ cnee_orig_final <- inner_join(cnee_orig, cnee_orig_losses, by=c("cnee" = "cnee",
 cnee_red_final <- inner_join(cnee_reduced, cnee_red_losses, by=c("cnee" = "cnee", "version" = "version", "dataset" = "dataset"))
 cnee_ext_final <- inner_join(cnee_ext, cnee_ext_losses, by=c("cnee" = "cnee", "version" = "version", "dataset" = "dataset"))
 
-write_tsv(cnee_orig_final, path="/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/cnees_original.tsv")
-write_tsv(cnee_ext_final, path="/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/cnees_extended.tsv")
-write_tsv(cnee_red_final, path="/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/cnees_reduced.tsv")
+#write_tsv(cnee_orig_final, path="/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/cnees_original.tsv")
+#write_tsv(cnee_ext_final, path="/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/cnees_extended.tsv")
+#write_tsv(cnee_red_final, path="/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/cnees_reduced.tsv")
 
 ## BASIC QC ##
 
