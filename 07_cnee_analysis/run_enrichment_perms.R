@@ -9,8 +9,8 @@ library(rlist)
 #setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
 
 #set cores and perms for whole run, can be individually modified later in code
-CORES <- 32
-PERMS <- 12000
+CORES <- 1
+PERMS <- 1
 
 #load data
 cnee <- read_tsv("cnees.tsv")
@@ -79,42 +79,3 @@ write_tsv(bp_res_real, path="obs_bp_results.tsv")
 write_tsv(mf_res_real, path="obs_mf_results.tsv")
 
 #end GO results#
-
-### GENE ENRICHMENT HERE ###
-#for gene enrichment tests, the idea is to randomly permute each set and get count of CNEEs per gene
-#strategy here is to make an indicator variable, compute "real" T/F per gene, and then shuffle indicator variable
-
-get_gene_counts <- function(DF, indicator) {
-#  indcol <- enquo(indicator)
-#  indcol <- indicator
-  DF %>% filter(gene != ".") %>% mutate(in_target = !!indicator) %>% count(gene, in_target) %>% filter(!is.na(in_target)) %>% spread(in_target, n, fill=0, drop=FALSE, sep="_")
-}
-
-perm_gene_counts <- function(perm, DF, indicator) {
-#  indcol <- enquo(indicator)
-  DF %>% filter(gene != ".") %>% mutate(rand = sample(!!indicator)) %>% count(gene, rand) %>% filter(!is.na(rand)) %>% spread(rand, n, fill=0, drop=FALSE, sep="_")
-}
-
-#make real dataset
-#first add sets to cnee data frame
-cnee <- cnee %>% mutate(set1 = ratite_accel.1 & ratite_spec.1) %>% 
-  mutate(set2 = ratite_accel.2 & ratite_spec.2) %>% 
-  mutate(set3 = ratite_accel.1 & ratite_spec.1 & ratite_conv.1) %>% 
-  mutate(set4 = ratite_accel.1 & ratite_spec.1 & ratite_conv.1 & ratite_loss_cons_min.mat >= 2)
-
-gene_counts_obs <- lapply(c(quo(set1),quo(set2),quo(set3),quo(set4)), get_gene_counts, DF=cnee) %>% bind_rows(.id="set")
-
-para_cores <- CORES
-num_perms <- PERMS
-
-gene_counts_perm_list <- list(set1 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set1), mc.preschedule = FALSE, mc.cores = para_cores) %>% bind_rows(.id="perm"),
-                                   set2 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set2), mc.preschedule = FALSE, mc.cores = para_cores) %>% bind_rows(.id="perm"),
-                                   set3 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set3), mc.preschedule = FALSE, mc.cores = para_cores) %>% bind_rows(.id="perm"),
-                                   set4 = mclapply(1:num_perms, perm_gene_counts, DF=cnee, indicator=quo(set4), mc.preschedule = FALSE, mc.cores = para_cores) %>% bind_rows(.id="perm"))
-
-gene_counts_perm <- gene_counts_perm_list %>% bind_rows(.id="set")
-
-write_tsv(gene_counts_perm, path="perm_gene_count_results.tsv")
-write_tsv(gene_counts_obs, path="obs_gene_count_results.tsv")
-
-#end GENE PERMUTATIONS#
