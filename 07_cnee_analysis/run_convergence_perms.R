@@ -3,10 +3,10 @@ library(tidyverse)
 library(parallel)
 library(ape)
 
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
+#setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
 
-CORES <- 2
-NPERM <- 2
+CORES <- 32
+NPERM <- 5000
 
 ## LOAD DATA ##
 
