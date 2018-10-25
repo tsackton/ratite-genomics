@@ -1,12 +1,12 @@
 #code updated for revisions Oct 2018
 
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
+#setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
 library(tidyverse)
 library(GenomicRanges)
 
-pos_gg4_uscs<-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/04_wga/03_ce_annotation/cnees.galGal4UCSC.bed", col_names = c("chr", "start", "end", "cnee"))
+pos_gg4_uscs<-read_tsv("../04_wga/03_ce_annotation/cnees.galGal4UCSC.bed", col_names = c("chr", "start", "end", "cnee"))
 
-chr_to_remove <- pos_gg4_uscs %>% count(chr) %>% filter(n < 500) %>% pull(chr)
+chr_to_remove <- pos_gg4_uscs %>% count(chr) %>% filter(n < 150) %>% pull(chr)
 
 cnee_orig <- read_tsv("final_original_cnee.tsv.gz") %>% 
   select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo) %>%
