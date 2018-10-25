@@ -17,7 +17,7 @@ perm_gene_counts <- function(perm, DF, indicator) {
   DF %>% filter(gene != ".") %>% mutate(rand = sample(!!indicator)) %>% count(gene, rand) %>% filter(!is.na(rand)) %>% spread(rand, n, fill=0, drop=FALSE, sep="_")
 }
 
-gene_gg4<-read_tsv("../04_wga/03_ce_annotation/cnees.galgal4.annotation", col_names = c("cnee", "gene"))
+gene_gg4<-read_tsv("../04_wga/03_ce_annotation/cnees.galgal5.annotation", col_names = c("cnee", "gene"))
 
 cnee_orig <- read_tsv("final_original_cnee.tsv.gz") %>% 
   select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo) %>%
@@ -85,9 +85,9 @@ compute_gene_results <- function(DF, outname, CORES, PERMS) {
                                                                                                               
 }
 
-compute_gene_results(cnee_orig, "original_gene", 10, 10000)
-compute_gene_results(cnee_ext, "extended_gene", 10, 10000)
-compute_gene_results(cnee_ext2, "extended_ratiteVcorm_gene", 10, 10000)
-compute_gene_results(cnee_red, "reduced_gene", 10, 10000)
+compute_gene_results(cnee_orig, "original_gene_gg5", 10, 10000)
+compute_gene_results(cnee_ext, "extended_gene_gg5", 10, 10000)
+compute_gene_results(cnee_ext2, "extended_ratiteVcorm_gene_gg5", 10, 10000)
+compute_gene_results(cnee_red, "reduced_gene_gg5", 10, 10000)
 
 
