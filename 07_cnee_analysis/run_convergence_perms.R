@@ -5,8 +5,11 @@ library(ape)
 
 #setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
 
-CORES <- 32
-NPERM <- 5000
+args <- commandArgs(trailingOnly = TRUE)
+
+OUTNUM <- args[1]
+CORES <- args[2]
+NPERM <- args[3]
 
 ## LOAD DATA ##
 
@@ -232,6 +235,6 @@ ext_perms[[10]] <- cnee_ext %>% filter(version=="gain_gap") %>%
   mutate(version = "gain_gap", dataset="extended", test="neo_cross_3") %>% 
   distinct(tips, .keep_all=TRUE)
 
-orig_perms %>% bind_rows() %>% write_tsv("original_perms.tsv")
-red_perms %>% bind_rows() %>% write_tsv("reduced_perms.tsv")
-ext_perms %>% bind_rows() %>% write_tsv("extended_perms.tsv")
+orig_perms %>% bind_rows() %>% write_tsv(paste0("convperms/original_perms_run", args[1], ".tsv"))
+red_perms %>% bind_rows() %>% write_tsv(paste0("convperms/reduced_perms_run", args[1], ".tsv"))
+ext_perms %>% bind_rows() %>% write_tsv(paste0("convperms/extended_perms_run", args[1], ".tsv"))
