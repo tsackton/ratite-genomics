@@ -8,12 +8,130 @@ library(rlist)
 #set working directory
 #setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
 
-#load data
-gene_gg4<-read_tsv("../04_wga/03_ce_annotation/cnees.galgal4.annotation", col_names = c("cnee", "gene"))
+compute_go_results <- function(DF, outname, CORES, PERMS) {
+
+  ##INTERNAL FUNCTIONS##
+  calc_enrich <- function(targetset, background, ont) { 
+    enrichGO(targetset$ncbi,'org.Gg.eg.db',
+             pvalueCutoff=1.5,
+             qvalueCutoff = 1.5, minGSSize=5, maxGSSize=2000, 
+             pAdjustMethod="none",
+             universe=background,
+             keytype="ENTREZID",
+             ont=ont) 
+  }
+  
+  get_go_perm <- function(DF, samples, golist, ont) {
+    rand <- DF %>% 
+      sample_n(samples) %>% 
+      filter(gene != ".") %>% 
+      dplyr::select(gene) %>% 
+      separate(gene, into=c("ncbi", "sym"), sep=":") %>% 
+      distinct(ncbi)
+    
+    
+    background <- DF %>% 
+      filter(gene != ".") %>% 
+      dplyr::select(gene) %>% 
+      separate(gene, into=c("ncbi", "sym"), sep=":") %>% 
+      distinct(ncbi)
+    
+    rand_go <- calc_enrich(targetset=rand, background=background$ncbi, ont=ont)
+    
+    golist %>% 
+      left_join(rand_go_bp@result, by=c("ID" = "ID")) %>% 
+      separate(GeneRatio, into=c("target_in", "target_total")) %>% 
+      separate(BgRatio, into=c("bg_in", "bg_total")) %>%
+      mutate(newpval = ifelse(is.na(pvalue), 1, pvalue), 
+             logp.perm = -log10(newpval),
+             target_frac = as.numeric(target_in)/as.numeric(target_total), 
+             bg_frac = as.numeric(bg_in)/as.numeric(bg_total)) %>%
+      dplyr::select(ID, logp.perm, target_frac, bg_frac) %>% 
+      arrange(ID)
+  }
+  
+  #to do one permutation of the full set
+  get_one_perm_set <- function(perm, input, DF, golist, ont) {
+    try(lapply(input, get_go_perm, DF=DF, golist=golist, ont=ont) %>%
+          dplyr::bind_rows(.id="set"), TRUE)
+  }
+  
+  bp_perm_all <- list()
+  bp_res_all <- list()
+
+  mf_perm_all <- list()
+  mf_res_all <- list()
+  
+  for (ver in c("gain", "gap", "gain_gap", "orig")) {
+  
+    cnee <- DF %>% filter(version == ver)
+    
+    background <- cnee %>% 
+      filter(gene != ".") %>% 
+      dplyr::select(gene) %>% 
+      separate(gene, into=c("ncbi", "sym"), sep=":") %>% 
+      distinct(ncbi)
+    
+    set1 <- cnee %>% filter(gene != ".", rar) %>% 
+      dplyr::select(gene) %>% 
+      separate(gene, into=c("ncbi", "sym"), sep=":") %>% 
+      distinct(ncbi)
+    
+    set2 <- cnee %>% filter(gene != ".", crar) %>% 
+      dplyr::select(gene) %>% 
+      separate(gene, into=c("ncbi", "sym"), sep=":") %>% 
+      distinct(ncbi)
+    
+    set3 <- cnee %>% filter(gene != ".", crar_dollo) %>% 
+      dplyr::select(gene) %>% 
+      separate(gene, into=c("ncbi", "sym"), sep=":") %>% 
+      distinct(ncbi)
+    
+    inputs <- list("rar" = set1, "crar" = set2, "crar_dollo" = set3)
+    
+    
+  
+    bp_res_all[[ver]] <- lapply(inputs, calc_enrich, background=background$ncbi, ont="BP") %>% 
+      lapply(slot, name="result") %>% 
+      dplyr::bind_rows(.id = "set")
+    
+    mf_res_all[[ver]] <-  lapply(inputs, calc_enrich, background=background$ncbi, ont="MF") %>% 
+      lapply(slot, name="result") %>% 
+      dplyr::bind_rows(.id = "set")
+    
+    merged_mf_terms <- mf_res_real %>% dplyr::distinct(ID)
+    merged_bp_terms <- bp_res_real %>% dplyr::distinct(ID)
+  
+    input_counts<-list("rar" = cnee %>% filter(gene != ".", rar) %>% count %>% pull(n),
+                       "crar" = cnee %>% filter(gene != ".", crar) %>% count %>% pull(n),
+                       "crar_dollo" = cnee %>% filter(gene != ".", crar_dollo) %>% count %>% pull(n))
+    
+    bp_perm_all[[ver]] <- mclapply(1:PERMS, get_one_perm_set, input=input_counts, DF=cnee, golist=merged_bp_terms, ont="BP", mc.cores=CORES, mc.preschedule = FALSE) %>%
+      list.filter(class(.) == "data.frame") %>% 
+      dplyr::bind_rows(.id="perm")
+    
+    mf_perm_all[[ver]] <- mclapply(1:PERMS, get_one_perm_set, input=input_counts, DF=cnee, golist=merged_mf_terms, ont="MF", mc.cores=CORES, mc.preschedule = FALSE) %>%
+      list.filter(class(.) == "data.frame") %>% 
+      dplyr::bind_rows(.id="perm")
+    
+  }
+
+  bind_rows(bp_perm_all, .id="version") %>% write_tsv(paste0(outname, "_BP_perm.tsv"))
+  bind_rows(bp_res_all, .id="version") %>% write_tsv(paste0(outname, "_BP_real.tsv"))              
+  bind_rows(mf_perm_all, .id="version") %>% write_tsv(paste0(outname, "_MF_perm.tsv"))
+  bind_rows(mf_res_all, .id="version") %>% write_tsv(paste0(outname, "_MF_real.tsv"))       
+}
+
+### REAL WORK ###
+
+args <- commandArgs(trailingOnly = TRUE)
+#args are 1 annotation file name, 2 permutation index ID for slurm batch processing, 3 number of cores, 4 number of permutations, 
+
+gene_gg<-read_tsv(paste0("../04_wga/03_ce_annotation/cnees.", args[1], ".annotation"), col_names = c("cnee", "gene"))
 
 cnee_orig <- read_tsv("final_original_cnee.tsv.gz") %>% 
   select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo) %>%
-  full_join(gene_gg4, by=c("cnee" = "cnee")) %>%
+  full_join(gene_gg, by=c("cnee" = "cnee")) %>%
   mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
          crar = ifelse(rar & floss_cl_pp >= 1.8, TRUE, FALSE),
          crar_dollo = ifelse(rar & floss_cl_pp_dollo >= 1.8, TRUE, FALSE)) %>%
@@ -22,7 +140,7 @@ cnee_orig <- read_tsv("final_original_cnee.tsv.gz") %>%
 
 cnee_red <- read_tsv("final_reduced_cnee.tsv.gz") %>% 
   select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo) %>%
-  full_join(gene_gg4, by=c("cnee" = "cnee")) %>%
+  full_join(gene_gg, by=c("cnee" = "cnee")) %>%
   mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
          crar = ifelse(rar & floss_cl_pp >= 1.8, TRUE, FALSE),
          crar_dollo = ifelse(rar & floss_cl_pp_dollo >= 1.8, TRUE, FALSE)) %>%
@@ -31,7 +149,7 @@ cnee_red <- read_tsv("final_reduced_cnee.tsv.gz") %>%
 
 cnee_ext <- read_tsv("final_extended_cnee.tsv.gz") %>% 
   select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo) %>%
-  full_join(gene_gg4, by=c("cnee" = "cnee")) %>%
+  full_join(gene_gg, by=c("cnee" = "cnee")) %>%
   mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
          crar = ifelse(rar & floss_cl_pp >= 1.8, TRUE, FALSE),
          crar_dollo = ifelse(rar & floss_cl_pp_dollo >= 1.8, TRUE, FALSE)) %>%
@@ -41,79 +159,14 @@ cnee_ext <- read_tsv("final_extended_cnee.tsv.gz") %>%
 #note in ext2, convergence defined as ratites + cormorants
 cnee_ext2 <- read_tsv("final_extended_cnee.tsv.gz") %>% 
   select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo, gc_pp_loss) %>%
-  full_join(gene_gg4, by=c("cnee" = "cnee")) %>%
+  full_join(gene_gg, by=c("cnee" = "cnee")) %>%
   mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
          crar = ifelse(rar & floss_cl_pp >= 1.8 & gc_pp_loss > 0.90, TRUE, FALSE),
          crar_dollo = ifelse(rar & floss_cl_pp_dollo >= 1.8 & gc_pp_loss > 0.90, TRUE, FALSE)) %>%
   distinct(cnee, version, .keep_all=TRUE) %>%
   select(cnee, version, rar, crar, crar_dollo, gene)
 
-
-### GO ENRICHMENT HERE ###
-
-## put this in a loop ##
-## turn into a function ##
-
-#GO enrichment - four tests: accel .1s, accel .1s & conv .1s, accel .2s, accel. 1s & conv .1s & ratite_loss_cons_min.mat >= 2
-#this code gets the real results
-background <- cnee %>% filter(gene != ".") %>% dplyr::select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi)
-set1 <- cnee %>% filter(gene != ".", ratite_accel.1, ratite_spec.1) %>% dplyr::select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi)
-set2 <- cnee %>% filter(gene != ".", ratite_accel.2, ratite_spec.2) %>% dplyr::select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi)
-set3 <- cnee %>% filter(gene != ".", ratite_accel.1, ratite_spec.1, ratite_conv.1) %>% dplyr::select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi)
-set4 <- cnee %>% filter(gene != ".", ratite_accel.1, ratite_spec.1, ratite_conv.1, ratite_loss_cons_min.mat >= 2) %>% dplyr::select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi)
-inputs <- list("set1" = set1, "set2" = set2, "set3" = set3, "set4" = set4)
-calc_enrich <- function(targetset, background,ont) { enrichGO(targetset$ncbi,'org.Gg.eg.db',pvalueCutoff=1.5,qvalueCutoff = 1.5, minGSSize=5, maxGSSize=2000, pAdjustMethod="none",universe=background,keytype="ENTREZID",ont=ont) }
-bp_res_real <- lapply(inputs, calc_enrich, background=background$ncbi, ont="BP") %>% 
-  lapply(slot, name="result") %>% 
-  dplyr::bind_rows(.id = "set")
-mf_res_real <-  lapply(inputs, calc_enrich, background=background$ncbi, ont="MF") %>% 
-  lapply(slot, name="result") %>% 
-  dplyr::bind_rows(.id = "set")
-merged_mf_terms <- mf_res_real %>% dplyr::distinct(ID)
-merged_bp_terms <- bp_res_real %>% dplyr::distinct(ID)
-
-#get counts of CNEEs in each set
-input_counts<-list("set1" = cnee %>% filter(gene != ".", ratite_accel.1, ratite_spec.1) %>% count %>% pull(n),
-                   "set2" = cnee %>% filter(gene != ".", ratite_accel.2, ratite_spec.2) %>% count %>% pull(n),
-                   "set3" = cnee %>% filter(gene != ".", ratite_accel.1, ratite_spec.1, ratite_conv.1) %>% count %>% pull(n),
-                   "set4" = cnee %>% filter(gene != ".", ratite_accel.1, ratite_spec.1, ratite_conv.1, ratite_loss_cons_min.mat >= 2) %>% count  %>% pull(n))
-
-#for each GO term in the merged go list, want to compute permutations: input is the merged term list and the counts
-
-get_go_perm <- function(DF, samples, golist, ont) {
-  rand <- DF %>% sample_n(samples) %>% filter(gene != ".") %>% 
-    dplyr::select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% 
-    distinct(ncbi)
-  background <- DF %>% filter(gene != ".") %>% dplyr::select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi)
-  rand_go_bp <- calc_enrich(targetset=rand, background=background$ncbi, ont=ont)
-  golist %>% left_join(rand_go_bp@result, by=c("ID" = "ID")) %>% separate(GeneRatio, into=c("target_in", "target_total")) %>% 
-    separate(BgRatio, into=c("bg_in", "bg_total")) %>%
-    mutate(newpval = ifelse(is.na(pvalue), 1, pvalue), logp.perm = -log10(newpval)) %>% 
-    mutate(target_frac = as.numeric(target_in)/as.numeric(target_total), bg_frac = as.numeric(bg_in)/as.numeric(bg_total)) %>%
-    dplyr::select(ID, logp.perm, target_frac, bg_frac) %>% arrange(ID)
-}
-
-#to do one permutation of the full set
-get_one_perm_set <- function(perm, input, DF, golist, ont) {
-  try(lapply(input, get_go_perm, DF=DF, golist=golist, ont=ont) %>%
-  dplyr::bind_rows(.id="set"), TRUE)
-}
-
-#do permutations in parallel
-para_cores <- CORES
-num_perms <- PERMS
-
-perm_bp <- mclapply(1:num_perms, get_one_perm_set, input=input_counts, DF=cnee, golist=merged_bp_terms, ont="BP", mc.cores=para_cores, mc.preschedule = FALSE) %>%
-  list.filter(class(.) == "data.frame") %>% 
-  dplyr::bind_rows(.id="perm")
-perm_mf <- mclapply(1:num_perms, get_one_perm_set, input=input_counts, DF=cnee, golist=merged_mf_terms, ont="MF", mc.cores=para_cores, mc.preschedule = FALSE) %>%
-  list.filter(class(.) == "data.frame") %>% 
-  dplyr::bind_rows(.id="perm")
-
-#write out
-write_tsv(perm_bp, path="perm_bp_results.tsv")
-write_tsv(perm_mf, path="perm_mf_results.tsv")
-write_tsv(bp_res_real, path="obs_bp_results.tsv")
-write_tsv(mf_res_real, path="obs_mf_results.tsv")
-
-#end GO results#
+compute_go_results(cnee_orig, paste0("goperms/original_GO_", args[1], "_run", args[2]), args[3], args[4])
+compute_go_results(cnee_ext, paste0("goperms/extended_GO_", args[1], "_run", args[2]), args[3], args[4])
+compute_go_results(cnee_ext2, paste0("goperms/extended_ratiteVcorm_GO_", args[1], "_run", args[2]), args[3], args[4])
+compute_go_results(cnee_red, paste0("goperms/reduced_GO_", args[1], "_run", args[2]), args[3], args[4])
