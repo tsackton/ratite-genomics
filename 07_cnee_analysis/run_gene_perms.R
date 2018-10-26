@@ -87,9 +87,9 @@ cnee_ext2 <- read_tsv("final_extended_cnee.tsv.gz") %>%
   distinct(cnee, version, .keep_all=TRUE) %>%
   select(cnee, version, rar, crar, crar_dollo, gene)
 
-compute_gene_results(cnee_orig, paste0("original_gene_", args[1], "_run", args[2]), args[3], args[4])
-compute_gene_results(cnee_ext, paste0("extended_gene_", args[1], "_run", args[2]), args[3], args[4])
-compute_gene_results(cnee_ext2, paste0("extended_ratiteVcorm_gene_", args[1], "_run", args[2]), args[3], args[4])
-compute_gene_results(cnee_red, paste0("reduced_gene_", args[1], "_run", args[2]), args[3], args[4])
+compute_gene_results(cnee_orig, paste0("geneperms/original_gene_", args[1], "_run", args[2]), args[3], args[4])
+compute_gene_results(cnee_ext, paste0("geneperms/extended_gene_", args[1], "_run", args[2]), args[3], args[4])
+compute_gene_results(cnee_ext2, paste0("geneperms/extended_ratiteVcorm_gene_", args[1], "_run", args[2]), args[3], args[4])
+compute_gene_results(cnee_red, paste0("geneperms/reduced_gene_", args[1], "_run", args[2]), args[3], args[4])
 
 
