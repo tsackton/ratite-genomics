@@ -48,7 +48,7 @@ compute_gene_results <- function(DF, outname, CORES, PERMS) {
 args <- commandArgs(trailingOnly = TRUE)
 #args are 1 annotation file name, 2 permutation index ID for slurm batch processing, 3 number of cores, 4 number of permutations, 
 
-gene_gg<-read_tsv(paste0("../04_wga/03_ce_annotation/cnees.", args[1], ".annnotation"), col_names = c("cnee", "gene"))
+gene_gg<-read_tsv(paste0("../04_wga/03_ce_annotation/cnees.", args[1], ".annotation"), col_names = c("cnee", "gene"))
 
 cnee_orig <- read_tsv("final_original_cnee.tsv.gz") %>% 
   select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo) %>%
@@ -87,9 +87,9 @@ cnee_ext2 <- read_tsv("final_extended_cnee.tsv.gz") %>%
   distinct(cnee, version, .keep_all=TRUE) %>%
   select(cnee, version, rar, crar, crar_dollo, gene)
 
-compute_gene_results(cnee_orig, paste0("original_gene_", args[2]), args[3], args[4])
-compute_gene_results(cnee_ext, paste0("extended_gene", args[2]), args[3], args[4])
-compute_gene_results(cnee_ext2, paste0("extended_ratiteVcorm_gene", args[2]), args[3], args[4])
-compute_gene_results(cnee_red, paste0("reduced_gene", args[2]), args[3], args[4])
+compute_gene_results(cnee_orig, paste0("original_gene_", args[1], "_run", args[2]), args[3], args[4])
+compute_gene_results(cnee_ext, paste0("extended_gene_", args[1], "_run", args[2]), args[3], args[4])
+compute_gene_results(cnee_ext2, paste0("extended_ratiteVcorm_gene_", args[1], "_run", args[2]), args[3], args[4])
+compute_gene_results(cnee_red, paste0("reduced_gene_", args[1], "_run", args[2]), args[3], args[4])
 
 
