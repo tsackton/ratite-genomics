@@ -98,8 +98,8 @@ compute_go_results <- function(DF, outname, CORES, PERMS) {
       lapply(slot, name="result") %>% 
       dplyr::bind_rows(.id = "set")
     
-    merged_mf_terms <- mf_res_real %>% dplyr::distinct(ID)
-    merged_bp_terms <- bp_res_real %>% dplyr::distinct(ID)
+    merged_mf_terms <- mf_res_all[[ver]] %>% dplyr::distinct(ID)
+    merged_bp_terms <- bp_res_all[[ver]] %>% dplyr::distinct(ID)
   
     input_counts<-list("rar" = cnee %>% filter(gene != ".", rar) %>% count %>% pull(n),
                        "crar" = cnee %>% filter(gene != ".", crar) %>% count %>% pull(n),
