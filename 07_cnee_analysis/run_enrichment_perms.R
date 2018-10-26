@@ -8,14 +8,52 @@ library(rlist)
 #set working directory
 #setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
 
-#set cores and perms for whole run, can be individually modified later in code
-CORES <- 1
-PERMS <- 1
-
 #load data
-cnee <- read_tsv("cnees.tsv")
+gene_gg4<-read_tsv("../04_wga/03_ce_annotation/cnees.galgal4.annotation", col_names = c("cnee", "gene"))
+
+cnee_orig <- read_tsv("final_original_cnee.tsv.gz") %>% 
+  select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo) %>%
+  full_join(gene_gg4, by=c("cnee" = "cnee")) %>%
+  mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
+         crar = ifelse(rar & floss_cl_pp >= 1.8, TRUE, FALSE),
+         crar_dollo = ifelse(rar & floss_cl_pp_dollo >= 1.8, TRUE, FALSE)) %>%
+  distinct(cnee, version, .keep_all=TRUE) %>%
+  select(cnee, version, rar, crar, crar_dollo, gene)
+
+cnee_red <- read_tsv("final_reduced_cnee.tsv.gz") %>% 
+  select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo) %>%
+  full_join(gene_gg4, by=c("cnee" = "cnee")) %>%
+  mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
+         crar = ifelse(rar & floss_cl_pp >= 1.8, TRUE, FALSE),
+         crar_dollo = ifelse(rar & floss_cl_pp_dollo >= 1.8, TRUE, FALSE)) %>%
+  distinct(cnee, version, .keep_all=TRUE) %>%
+  select(cnee, version, rar, crar, crar_dollo, gene)
+
+cnee_ext <- read_tsv("final_extended_cnee.tsv.gz") %>% 
+  select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo) %>%
+  full_join(gene_gg4, by=c("cnee" = "cnee")) %>%
+  mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
+         crar = ifelse(rar & floss_cl_pp >= 1.8, TRUE, FALSE),
+         crar_dollo = ifelse(rar & floss_cl_pp_dollo >= 1.8, TRUE, FALSE)) %>%
+  distinct(cnee, version, .keep_all=TRUE) %>%
+  select(cnee, version, rar, crar, crar_dollo, gene)
+
+#note in ext2, convergence defined as ratites + cormorants
+cnee_ext2 <- read_tsv("final_extended_cnee.tsv.gz") %>% 
+  select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo, gc_pp_loss) %>%
+  full_join(gene_gg4, by=c("cnee" = "cnee")) %>%
+  mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
+         crar = ifelse(rar & floss_cl_pp >= 1.8 & gc_pp_loss > 0.90, TRUE, FALSE),
+         crar_dollo = ifelse(rar & floss_cl_pp_dollo >= 1.8 & gc_pp_loss > 0.90, TRUE, FALSE)) %>%
+  distinct(cnee, version, .keep_all=TRUE) %>%
+  select(cnee, version, rar, crar, crar_dollo, gene)
+
 
 ### GO ENRICHMENT HERE ###
+
+## put this in a loop ##
+## turn into a function ##
+
 #GO enrichment - four tests: accel .1s, accel .1s & conv .1s, accel .2s, accel. 1s & conv .1s & ratite_loss_cons_min.mat >= 2
 #this code gets the real results
 background <- cnee %>% filter(gene != ".") %>% dplyr::select(gene) %>% separate(gene, into=c("ncbi", "sym"), sep=":") %>% distinct(ncbi)
