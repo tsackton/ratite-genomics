@@ -1,15 +1,26 @@
 #revised Oct 2018 for paper revisions
-library(data.table)
 library(tidyverse)
 
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
+#loop to compute ecdfs for each run (extended, original, reduced, extended cormorant and version galgal4, galgal5)
 
-#testing
+wdir<-getwd()
 
-file<-"geneperms/original_gene_galgal4_run69_perm.tsv"
-perms<-read_tsv(file)
-perms_ecdf <- perms %>% group_by(version, set, gene) %>% summarize(ecdf_gene = list(ecdf(rand_TRUE)))
+for (whichset in c("extended", "original", "reduced", "extended_ratiteVcorm")) {
+  for (whichgenome in c("galgal4", "galgal5")) {
+    spec_patt<-glob2rx(paste0(whichset, "_gene_", whichgenome, "_run*_perm.tsv"))
+    files<-list.files(path=paste0(wdir, "/geneperms"), pattern=spec_patt, full.names = TRUE)
+    results<-list()
+    for (file in files) {
+      results[[file]] <- read_tsv(file) 
+    }
+    perms_ecdf <- bind_rows(results) %>% group_by(version, set, gene) %>% summarize(ecdf_gene = list(ecdf(rand_TRUE)))
+    
+  }
+  
+}
 
+whichset<-"extended"
+whichgenome<-"galgal4"
 
 perms_ecdf %>% filter(version == "gain", set == "rar", gene=="100216000:CNN2") %>% mutate(count = 5, pval=1-ecdf_gene[[1]](count))
 #read permutation results
