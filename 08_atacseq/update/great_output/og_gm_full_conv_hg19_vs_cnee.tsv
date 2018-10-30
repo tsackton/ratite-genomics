@@ -1,0 +1,48 @@
+# GREAT version 3.0.0	Species assembly: hg19	Association rule: Basal+extension: 5000 bp upstream, 1000 bp downstream, 1000000 bp max extension, curated regulatory domains included
+# Ontology	 Term Name 	 Hyper Rank 	 Hyper Raw P-Value 	  Hyper FDR Q-Val  	 Hyper Fold Enrichment 	 Hyper Foreground Region Hits 	 Hyper Total Regions 	 Hyper Region Set Coverage 	 Hyper Foreground Gene Hits 	 Total Genes Annotated
+GO Biological Process	specification of nephron tubule identity	1	6.648477e-7	0.0041539684296	5.694916	13	927	0.05652174	4	5	
+GO Biological Process	pattern specification involved in kidney development	2	0.000001854549	0.005793611076	4.793658	14	1186	0.06086957	5	9	
+GO Biological Process	segment specification	3	0.000003089051	0.006433463549333333	4.584902	14	1240	0.06086957	5	17	
+GO Biological Process	nephron tubule formation	4	0.000003672546	0.005736516852	4.51571	14	1259	0.06086957	5	14	
+GO Biological Process	nephron tubule morphogenesis	5	0.00001053956	0.013170234176	4.11083	14	1383	0.06086957	5	21	
+MGI Expression: Detected	TS15_branchial groove	1	1.376211e-7	0.0007560903234	9.510335	10	427	0.04347826	2	8	
+MGI Expression: Detected	TS21_phalanx pre-cartilage condensation	2	2.050658e-7	0.0005633157526	7.906202	11	565	0.04782609	2	7	
+MGI Expression: Detected	TS21_dermis	3	6.729155e-7	0.0012323325856666665	6.263619	12	778	0.05217391	3	17	
+MGI Expression: Detected	TS20_lobar bronchus	4	8.540797e-7	0.0011730784679499999	7.779527	10	522	0.04347826	2	6	
+MGI Expression: Detected	TS21_digit mesenchyme	8	0.000002206813	0.00151552882775	5.582011	12	873	0.05217391	3	10	
+MGI Expression: Detected	TS15_laryngo-tracheal groove	9	0.000003076701	0.0018781550326666665	5.402545	12	902	0.05217391	3	9	
+MGI Expression: Detected	TS15_tracheal diverticulum	9	0.000003076701	0.0018781550326666665	5.402545	12	902	0.05217391	3	8	
+MGI Expression: Detected	TS15_respiratory tract	12	0.000003517138	0.0016102630143333331	5.331614	12	914	0.05217391	3	10	
+MGI Expression: Detected	TS21_lower jaw incisor epithelium	13	0.00000384078	0.0016231727169230769	5.285353	12	922	0.05217391	3	21	
+MGI Expression: Detected	TS15_2nd branchial arch ectoderm	14	0.000004420069	0.0017345613632857141	4.786208	13	1103	0.05652174	4	17	
+MGI Expression: Detected	TS23_rest of skin epidermis	15	0.000004538807	0.001662413710533333	3.914133	16	1660	0.06956522	6	150	
+MGI Expression: Detected	TS21_footplate mesenchyme	16	0.000006134412	0.0021064037205	5.044612	12	966	0.05217391	3	21	
+MGI Expression: Detected	TS15_1st branchial arch ectoderm	17	0.000008270051	0.0026726858937647056	4.512126	13	1170	0.05652174	4	18	
+MGI Expression: Detected	TS22_hindlimb phalanx cartilage condensation	18	0.000008435421	0.002574677943	5.368996	11	832	0.04782609	2	11	
+MGI Expression: Detected	TS23_rest of cerebellum ventricular layer	19	0.000008590027	0.0024838741230526315	2.124669	38	7263	0.1652174	19	273	
+MGI Expression: Detected	TS23_heart ventricle	25	0.00003543377	0.007786925295199999	2.584422	23	3614	0.1	11	246	
+MGI Expression: Detected	TS23_surface epithelium of labioscrotal swelling of male	26	0.00003726175	0.007873694403846153	6.536681	8	497	0.03478261	3	9	
+MGI Expression: Detected	TS18_oral region	27	0.00003782744	0.007697183531851852	5.025882	10	808	0.04347826	2	16	
+MGI Expression: Detected	TS20_forelimb digit	28	0.00006233718	0.012231445247142855	3.305138	15	1843	0.06521739	4	24	
+MGI Expression: Detected	TS21_lobar bronchus	31	0.00008169974	0.014479302308387098	4.578256	10	887	0.04347826	2	26	
+MGI Expression: Detected	TS22_rest of skin	32	0.00008195024	0.01406983183	2.739963	19	2816	0.0826087	8	113	
+MGI Expression: Detected	TS25_intestine	34	0.000138673	0.022407925352941175	3.230272	14	1760	0.06086957	8	77	
+MGI Expression: Detected	TS22_embryo mesenchyme	35	0.0001390436	0.021825872525714284	2.35742	23	3962	0.1	9	133	
+MGI Expression: Detected	TS22_lower jaw molar epithelium	36	0.0001394926	0.02128812067777778	3.644799	12	1337	0.05217391	3	45	
+MGI Expression: Detected	TS22_footplate mesenchyme	38	0.0001476602	0.021348556284210524	3.901314	11	1145	0.04782609	2	21	
+MGI Expression: Detected	TS23_medulla oblongata alar plate marginal layer	40	0.000273152	0.037517427199999995	4.340643	9	842	0.03913043	5	22	
+MGI Expression: Detected	TS21_limb digit	41	0.0002925226	0.0391980284	3.163084	13	1669	0.05652174	4	29	
+MGI Expression: Detected	TS20_hindlimb digit	42	0.0002968796	0.038834679104761904	3.593728	11	1243	0.04782609	2	18	
+MGI Expression: Detected	TS23_urothelium of pelvic urethra of male	43	0.0003001263	0.038346369586046515	2.638973	17	2616	0.07391304	9	105	
+MGI Expression: Detected	TS15_cranial ganglion	44	0.0003010146	0.03758577755454545	2.739233	16	2372	0.06956522	6	68	
+MGI Expression: Detected	TS15_central nervous system ganglion	45	0.0003137278	0.03830267851555555	2.728879	16	2381	0.06956522	6	70	
+MGI Expression: Detected	TS17_primitive ventricle	46	0.0003499261	0.04179334768260869	2.701647	16	2405	0.06956522	7	80	
+MGI Expression: Detected	TS23_early distal tubule of maturing nephron	47	0.0003624396	0.042366875795744684	3.509037	11	1273	0.04782609	3	53	
+MGI Expression: Detected	TS23_mesenchyme of glans of male genital tubercle	49	0.0004411064	0.049457929828571424	4.543679	8	715	0.03478261	3	16	
+MSigDB Predicted Promoter Motifs	Motif YTTCCNNNGGAMR (no known TF)	1	0.00009408388	0.057861586199999995	4.10948	11	1087	0.04782609	5	48	
+MSigDB Predicted Promoter Motifs	Motif AACWWCAANK (no known TF)	3	0.0001876814	0.038474687	2.42477	21	3517	0.09130435	9	130	
+MSigDB Predicted Promoter Motifs	Motif RTTTNNNYTGGM (no known TF)	4	0.000273214	0.0420066525	2.118029	26	4985	0.1130435	16	150	
+InterPro	Iroquois-class homeodomain protein	1	6.319512e-8	0.00011830126464000001	6.37363	14	892	0.06086957	4	6	
+InterPro	Homeobox KN domain	2	0.00001613491	0.01510227576	3.364304	17	2052	0.07391304	7	19	
+TreeFam	IRX1, IRX2, IRX3, IRX5, IRX6, ...	1	0.000005027618	0.00145800922	5.145824	12	947	0.05217391	3	6	
+HGNC Gene Families	TALE	1	0.00003534004	0.01102609248	3.15952	17	2185	0.07391304	7	20	
