@@ -39,7 +39,7 @@ compute_go_results <- function(DF, outname, CORES, PERMS) {
     rand_go <- calc_enrich(targetset=rand, background=background$ncbi, ont=ont)
     
     golist %>% 
-      left_join(rand_go_bp@result, by=c("ID" = "ID")) %>% 
+      left_join(rand_go@result, by=c("ID" = "ID")) %>% 
       separate(GeneRatio, into=c("target_in", "target_total")) %>% 
       separate(BgRatio, into=c("bg_in", "bg_total")) %>%
       mutate(newpval = ifelse(is.na(pvalue), 1, pvalue), 
