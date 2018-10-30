@@ -1,15 +1,90 @@
-library("tidyverse")
+#revised Oct 2018
+
+library(tidyverse)
+library(ape)
 
 #set working dir
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
 
-cnee <- read_tsv("cnees.tsv")
-obs_conv <- read_tsv("~/Projects/birds/ratite_compgen/data/cnee_perms/obs_convergence.tsv")
+#load permutation results
+wdir<-getwd()
 
-perm_conv <-read_tsv("~/Projects/birds/ratite_compgen/data/cnee_perms/perm_convergence.tsv")
+runs<-list()
+for (whichset in c("extended", "original", "reduced")) {
+    spec_patt<-glob2rx(paste0(whichset, "_perms_run*.tsv"))
+    files<-list.files(path=paste0(wdir, "/convperms"), pattern=spec_patt, full.names = TRUE)
+    results<-list()
+    for (file in files) {
+      results[[file]] <- read_tsv(file) 
+    }
+    runs[[whichset]] <- bind_rows(results, .id="file")
+}
 
-#remove row with all passerines as there are a lot of passerine-specific CNEEs losses so this is not convergence
-perm_conv <- perm_conv %>% filter(count < 3000)
+perms<-bind_rows(runs, .id="set") %>% select(set, version, test, tips, count) %>% distinct(set, version, test, tips, .keep_all = TRUE)
+
+#load real data
+cnee_orig <- read_tsv("final_original_cnee.tsv.gz")
+cnee_red <- read_tsv("final_reduced_cnee.tsv.gz")
+cnee_ext <- read_tsv("final_extended_cnee.tsv.gz")
+
+phy_orig <- read.tree("original.phy")
+phy_red <- read.tree("reduced.phy")
+phy_ext <- read.tree("extended.phy")
+
+#compute observed convergences with same approach as permutations
+
+conv_real <- function(DF, targets, tips, cutoff = 0.90) {
+  count_acc_targets <- function(tip, prob_acc, cutoff, targets) {
+    targets_selected <- prob_acc[tip %in% targets]
+    return(sum(targets_selected > cutoff))
+  }
+  
+  #compute 
+  number<-length(targets)
+  count<-DF %>% dplyr::select(cnee, one_of(tips)) %>% 
+    gather(key = "tip", value = "prob_acc", -cnee) %>%
+    group_by(cnee) %>%
+    summarize(total_acc = sum(prob_acc > cutoff), target_acc = count_acc_targets(tip, prob_acc, cutoff, targets)) %>%
+    dplyr::filter(target_acc == number & target_acc == total_acc) %>%
+    tally() %>% pull(n)
+  
+  return(tibble(count=count, tips=paste0(targets, collapse="-")))
+}
+
+cross_real <- function(DF, targets, tips, cross_target, cutoff = 0.90) {
+  count_acc_targets <- function(tip, prob_acc, cutoff, targets) {
+    targets_selected <- prob_acc[tip %in% targets]
+    return(sum(targets_selected > cutoff))
+  }
+  
+  #compute 
+  number<-length(targets)
+  count<-DF %>% dplyr::select(cnee, one_of(tips)) %>% 
+    gather(key = "tip", value = "prob_acc", -cnee) %>%
+    group_by(cnee) %>%
+    summarize(total_acc = sum(prob_acc > cutoff), 
+              target_acc = count_acc_targets(tip, prob_acc, cutoff, targets), 
+              cross_target_acc = count_acc_targets(tip, prob_acc, cutoff, cross_target)) %>%
+    dplyr::filter(target_acc == number, target_acc == (total_acc-1), cross_target_acc == 1) %>%
+    tally() %>% pull(n)
+  
+  return(tibble(count=count, tips=paste0(targets, cross_target, collapse="-")))
+}
+
+all_neo_orig <- cnee_orig %>% select(taeGut:anaPla) %>% names()
+all_neo_ext <- cnee_ext %>% select(taeGut:nanBra,uriPel:anaPla) %>% names()
+all_tin <- c("eudEle", "notPer", "tinGut", "cryCin")
+
+#put this in a loop#
+
+test_targets <- c("strCam")
+test_tips <- c(test_targets, all_neo_ext, all_tin)
+
+cnee_orig %>% filter(version=="gain") %>% conv_real(test_targets, test_tips)
+cnee_ext %>% filter(version=="gain") %>% cross_real(test_targets, test_tips, "nanHar")
+
+##### BELOW TO EDIT ###
+
 
 #add pval
 obs_conv$epval = sapply(obs_conv$conv_count, function(x) (sum(perm_conv$count >= x)+1)/length(perm_conv$count))

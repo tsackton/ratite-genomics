@@ -107,14 +107,6 @@ conv_sample_cross <- function(perm=1, DF, number, tips, cross_tips, phy, cutoff 
   return(tibble(count=count, tips=paste0(c(targets, cross_target), collapse="-")))  
 }
 
-#get real ratite results -- REWRITE
-get_ratite_count <- function(DF, species) {
-  target = quo(paste0(species, ".mat", collapse=""))
-  DF %>% filter(neo_loss.mat == 0, tinGut.mat == 0, notPer.mat==0, eudEle.mat==0, cryCin.mat==0) %>% dplyr::select(strCam.mat, anoDid.mat, !!target) %>% 
-    mutate(selected_loss = rowSums(.[,1:3])) %>% 
-    dplyr::filter(selected_loss == 3) %>%
-    tally() %>% pull(n)
-}
 
 #EACH DATASET NEEDS DIFFERENT PROCESSING SO NEED TO DO IN SEQUENCE
 
@@ -146,7 +138,7 @@ orig_perms[[3]] <- cnee_orig %>% filter(version=="gain_gap") %>%
   distinct(tips, .keep_all=TRUE)
 
 orig_perms[[4]] <- cnee_orig %>% filter(version=="gain") %>% 
-  mclapply(1:NPERM, conv_sample, DF=., number=3, tips=neo_tips_orig, phy=phy_orig, mc.preschedule = TRUE, mc.cores = CORES) %>%
+  mclapply(1:NPERM, conv_sample, DF=., number=2, tips=neo_tips_orig, phy=phy_orig, mc.preschedule = TRUE, mc.cores = CORES) %>%
   bind_rows(.id="perm") %>%
   mutate(version = "gain", dataset="original", test="neo_conv_2") %>% 
   distinct(tips, .keep_all=TRUE)
@@ -170,7 +162,7 @@ red_perms[[3]] <- cnee_red %>% filter(version=="gain_gap") %>%
   distinct(tips, .keep_all=TRUE)
 
 red_perms[[4]] <- cnee_red %>% filter(version=="gain") %>% 
-  mclapply(1:NPERM, conv_sample, DF=., number=3, tips=neo_tips_orig, phy=phy_red, mc.preschedule = TRUE, mc.cores = CORES) %>%
+  mclapply(1:NPERM, conv_sample, DF=., number=2, tips=neo_tips_orig, phy=phy_red, mc.preschedule = TRUE, mc.cores = CORES) %>%
   bind_rows(.id="perm") %>%
   mutate(version = "gain", dataset="original", test="neo_conv_2") %>% 
   distinct(tips, .keep_all=TRUE)
@@ -194,7 +186,7 @@ ext_perms[[3]] <- cnee_ext %>% filter(version=="gain_gap") %>%
   distinct(tips, .keep_all=TRUE)
 
 ext_perms[[4]] <- cnee_ext %>% filter(version=="gain") %>% 
-  mclapply(1:NPERM, conv_sample, DF=., number=3, tips=neo_tips_ext, phy=phy_ext, mc.preschedule = TRUE, mc.cores = CORES) %>%
+  mclapply(1:NPERM, conv_sample, DF=., number=2, tips=neo_tips_ext, phy=phy_ext, mc.preschedule = TRUE, mc.cores = CORES) %>%
   bind_rows(.id="perm") %>%
   mutate(version = "gain", dataset="extended", test="neo_conv_2") %>% 
   distinct(tips, .keep_all=TRUE)
