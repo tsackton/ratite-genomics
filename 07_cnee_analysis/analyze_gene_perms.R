@@ -1,6 +1,21 @@
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
+#revised Oct 2018 for paper revisions
 library(data.table)
 library(tidyverse)
+
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
+
+#testing
+
+file<-"geneperms/original_gene_galgal4_run69_perm.tsv"
+perms<-read_tsv(file)
+perms_ecdf <- perms %>% group_by(version, set, gene) %>% summarize(ecdf_gene = list(ecdf(rand_TRUE)))
+
+
+perms_ecdf %>% filter(version == "gain", set == "rar", gene=="100216000:CNN2") %>% mutate(count = 5, pval=1-ecdf_gene[[1]](count))
+#read permutation results
+
+#this should work. then compute P-value as 1-ecdf(real-1)
+
 perms<-fread("perm_gene_count_results.tsv")
 setkey(perms, set, gene)
 real_data<-fread("obs_gene_count_results.tsv") %>% mutate(set = paste0("set", set)) %>% as.tibble
