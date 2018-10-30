@@ -8,4 +8,4 @@
 #SBATCH --array=1-100
 
 source ~/default_env.sh
-Rscript run_convergence_perms.R ${SLURM_ARRAY_TASK_ID} 4 100
+Rscript run_convergence_perms.R ${SLURM_ARRAY_TASK_ID} 4 50
