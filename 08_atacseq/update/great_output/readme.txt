@@ -7,3 +7,4 @@
 	3. Observed Gene Hits was set to 2
 	4. Term Annotation Count (min) was set to 5
 - for mm10, selecting export "all shown data as .tsv" did not prompt a save of data.  we were able to export "all data as .tsv" for mm10, which is why the mouse and human files are different
+- gene to mCE associations were uploaded for the "original" dataset for both mm10 and hg19.  The "original" dataset was also utilized for the Venn diagram in figure 4.
