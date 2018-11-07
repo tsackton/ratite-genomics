@@ -1,0 +1,66 @@
+Search for sites by WeightMatrix library: file:///usr/local/apache/cgi-bin/build_ghptywl/idb/1.0/Match/data/2018.3/matrix.dat
+Sequence file: file:///data/dumps/udm//build_ghptywl/pgrayson/16935.dat
+Profile: file:///tmp/ff96d094de27b1d1e7ba9c80ca7eb017_117479/predef.prf,vertebrate_non_redundant_minFP.prf
+Configuration file: /tmp/ff96d094de27b1d1e7ba9c80ca7eb017_117479/project.xml
+
+Inspecting sequence ID   galGal_mCE967994
+
+ V$MYOGENIN_Q6_01      |        5 (+) |  1.000 |  1.000 | CAGCTg                     | myogenin
+ V$MYOGENIN_Q6_01      |        5 (-) |  1.000 |  1.000 | cAGCTG                     | myogenin
+ V$ZNF333_01           |       12 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$MTF1_Q5             |       61 (-) |  1.000 |  0.995 | gTGCACacgg                 | MTF-1
+ V$AHR_Q6              |       74 (+) |  1.000 |  1.000 | CACGCa                     | AHR
+ V$SRY_Q6              |       83 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+ V$NFY_Q3              |      169 (+) |  1.000 |  0.987 | gaCCAATcagg                | NF-Y
+ V$RFX_Q6              |      191 (-) |  1.000 |  0.986 | tgGCAACac                  | RFX
+ V$BRCA_01             |      194 (-) |  1.000 |  0.999 | CAACAcaa                   | BRCA1:USF2
+ V$SRY_Q6              |      205 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+ V$GKLF_Q4             |      235 (-) |  1.000 |  1.000 | agGGAGG                    | GKLF
+ V$LEF1_Q5_01          |      298 (-) |  1.000 |  1.000 | cCTTTGa                    | LEF-1
+ V$SOX10_Q3            |      304 (+) |  1.000 |  0.999 | ACAATgcc                   | Sox-10
+
+Inspecting sequence ID   rheAme_mCE967994
+
+ V$MYOGENIN_Q6_01      |        5 (+) |  1.000 |  1.000 | CAGCTg                     | myogenin
+ V$MYOGENIN_Q6_01      |        5 (-) |  1.000 |  1.000 | cAGCTG                     | myogenin
+ V$ZNF333_01           |       12 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$MTF1_Q5             |       61 (-) |  1.000 |  0.995 | gTGCACacgg                 | MTF-1
+ V$RFX1_01             |       72 (+) |  0.982 |  0.944 | taggcgcacaGAAACaa          | RFX1
+ V$SRY_Q6              |       83 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+ V$TEF1_Q6_04          |      147 (-) |  1.000 |  0.975 | cgcaGGAATga                | TEF-1
+ V$GKLF_Q4             |      173 (-) |  1.000 |  1.000 | aaGGAGG                    | GKLF
+ V$ZFP161_04           |      179 (+) |  1.000 |  0.914 | gcCGCGCggggctg             | ZF5
+ V$CPBP_Q6             |      184 (-) |  1.000 |  1.000 | gcGGGGC                    | CPBP
+ V$RFX1_01             |      254 (-) |  0.982 |  0.934 | ctGTTCCtcagcccctg          | RFX1
+ V$CPBP_Q6             |      264 (+) |  1.000 |  1.000 | GCCCCtg                    | CPBP
+ V$SOX10_Q3            |      300 (+) |  1.000 |  0.999 | ACAATgcc                   | Sox-10
+
+Inspecting sequence ID   eudEle_mCE967994
+
+ V$MYOGENIN_Q6_01      |        5 (+) |  1.000 |  1.000 | CAGCTg                     | myogenin
+ V$MYOGENIN_Q6_01      |        5 (-) |  1.000 |  1.000 | cAGCTG                     | myogenin
+ V$ZNF333_01           |       12 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$AHR_Q6              |       74 (+) |  1.000 |  1.000 | CACGCa                     | AHR
+ V$SRY_Q6              |       83 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+ V$SRY_Q6              |      205 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+ V$SOX10_Q3            |      304 (+) |  1.000 |  0.999 | ACAATgcc                   | Sox-10
+ V$GEN_INI_B           |      314 (-) |  0.995 |  0.995 | AACTGagg                   | GEN_INI
+
+Inspecting sequence ID   anoDid_mCE967994
+
+ V$ZNF333_01           |       12 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$MTF1_Q5             |       61 (-) |  1.000 |  0.995 | gTGCACacgg                 | MTF-1
+ V$AHR_Q6              |       74 (+) |  1.000 |  1.000 | CACGCa                     | AHR
+ V$SP100_04            |      132 (-) |  0.942 |  0.925 | gcttttgcCGTCGcg            | SP100
+ V$SP100_04            |      138 (+) |  1.000 |  0.934 | gcCGTCGcgcagagg            | SP100
+ V$ZFP161_04           |      141 (+) |  1.000 |  0.928 | gtCGCGCagaggaa             | ZF5
+ V$TEF1_Q6_04          |      147 (-) |  1.000 |  0.976 | cagaGGAATga                | TEF-1
+ V$SRY_Q6              |      205 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+ V$GKLF_Q4             |      235 (-) |  1.000 |  1.000 | agGGAGG                    | GKLF
+ V$SOX10_Q3            |      304 (+) |  1.000 |  0.999 | ACAATgcc                   | Sox-10
+
+Total sequences length = 1340
+
+Total number of found sites = 44
+
+Frequency of sites per nucleotide = 0.03284
