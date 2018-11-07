@@ -1,31 +1,23 @@
 #revised Oct 2018 for paper revisions
 library(tidyverse)
 
-#loop to compute ecdfs for each run (extended, original, reduced, extended cormorant and version galgal4, galgal5)
+#read real data
+real<-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/geneperms/extended_gene_galgal5_run1_real.tsv") %>% rename(run = set) %>%
+  mutate(total=in_target_TRUE + in_target_FALSE, 
+         set = case_when(
+           run == 1 ~ "rar",
+           run == 2 ~ "crar",
+           run == 3 ~ "crar_dollo")) %>%
+  select(version, set, gene, count=in_target_TRUE, total)
 
-wdir<-getwd()
+#testing
+orig_galgal4<-readRDS("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/geneperms/extended_galgal5.robj")
 
-for (whichset in c("extended", "original", "reduced", "extended_ratiteVcorm")) {
-  for (whichgenome in c("galgal4", "galgal5")) {
-    spec_patt<-glob2rx(paste0(whichset, "_gene_", whichgenome, "_run*_perm.tsv"))
-    files<-list.files(path=paste0(wdir, "/geneperms"), pattern=spec_patt, full.names = TRUE)
-    results<-list()
-    for (file in files) {
-      results[[file]] <- read_tsv(file) 
-    }
-    perms_ecdf <- bind_rows(results) %>% group_by(version, set, gene) %>% summarize(ecdf_gene = list(ecdf(rand_TRUE)))
-    
-  }
-  
-}
+#compute P-value as 1-ecdf(real-1): ecdf(real-1) is prob (X <= (x-1)), e.g. prob(X < x), 1-that is prob (X >= x)
 
-whichset<-"extended"
-whichgenome<-"galgal4"
+real_merge <- full_join(real, orig_galgal4, by=c("version" = "version", "set" = "set", "gene" = "gene")) %>% rowwise %>% mutate(pval = 1-ecdf_gene(count-1)) %>% ungroup %>% group_by(version, set) %>% mutate(qval = p.adjust(pval, method="fdr"))
 
-perms_ecdf %>% filter(version == "gain", set == "rar", gene=="100216000:CNN2") %>% mutate(count = 5, pval=1-ecdf_gene[[1]](count))
-#read permutation results
-
-#this should work. then compute P-value as 1-ecdf(real-1)
+real_merge %>% filter(qval < 0.20) %>% ungroup %>% group_by(set) %>% count(gene) %>% print.data.frame
 
 perms<-fread("perm_gene_count_results.tsv")
 setkey(perms, set, gene)
