@@ -1,0 +1,865 @@
+Search for sites by WeightMatrix library: file:///usr/local/apache/cgi-bin/build_ghptywl/idb/1.0/Match/data/2018.3/matrix.dat
+Sequence file: file:///data/dumps/udm//build_ghptywl/pgrayson/16950.dat
+Profile: file:///tmp/ff96d094de27b1d1e7ba9c80ca7eb017_117555/predef.prf,vertebrate_non_redundant_minFP.prf
+Configuration file: /tmp/ff96d094de27b1d1e7ba9c80ca7eb017_117555/project.xml
+
+Inspecting sequence ID   allMis
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   allSin
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   anaPla
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$HNF1A_Q4            |      316 (+) |  1.000 |  0.982 | gtataatcATTAActc           | HNF-1alpha
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   anoCar
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$SMAD4_Q6_01         |      342 (-) |  1.000 |  1.000 | gCAGACa                    | Smad4
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   aptFor
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   aptHaa
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$GEN_INI_B           |       78 (-) |  0.996 |  0.997 | AAATGagg                   | GEN_INI
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$HNF1A_Q4            |      332 (-) |  1.000 |  0.954 | gtgTTAATccttagac           | HNF-1alpha
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   aptOwe
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$GEN_INI_B           |       78 (-) |  0.996 |  0.997 | AAATGagg                   | GEN_INI
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$HNF1A_Q4            |      332 (-) |  1.000 |  0.954 | gtgTTAATccttagac           | HNF-1alpha
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   aptRow
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$GEN_INI_B           |       78 (-) |  0.996 |  0.997 | AAATGagg                   | GEN_INI
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$HNF1A_Q4            |      332 (-) |  1.000 |  0.954 | gtgTTAATccttagac           | HNF-1alpha
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   balReg
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   casCas
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   chaPel
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  0.978 |  0.954 | tagcAAAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$HMGIY_Q3            |      476 (-) |  1.000 |  0.946 | aaaacAAATTtctta            | HMGIY
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   chaVoc
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$ING4_01             |      414 (+) |  1.000 |  1.000 | cCACCA                     | ING4
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   cheMyd
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$SRY_Q6              |      427 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   colLiv
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   corBra
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   croPor
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   cryCin
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   cucCan
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$HNF1A_Q4            |      332 (-) |  1.000 |  0.954 | gtgTTAATccttagac           | HNF-1alpha
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$HMGIY_Q3            |      465 (-) |  1.000 |  0.937 | ccagaAAATTaaaac            | HMGIY
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+
+Inspecting sequence ID   droNov
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   eudEle
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   falPer
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+
+Inspecting sequence ID   ficAlb
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   fulGla
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   galGal
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   gavGan
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   halLeu
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   lepDis
+
+ V$NFAT1_Q4            |        7 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   melGal
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   melUnd
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+
+Inspecting sequence ID   mesUni
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$AHR_Q6              |      198 (-) |  1.000 |  1.000 | tGCGTG                     | AHR
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.967 | tagcACAACactga             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   nipNip
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   notPer
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   picPub
+
+ V$XVENT1_01           |       12 (+) |  1.000 |  0.913 | tctctATTTGtaa              | Xvent-1
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.930 | attagtccaacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+
+Inspecting sequence ID   pseHum
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$HMGIY_Q3            |      477 (+) |  1.000 |  0.935 | aaataAATTTtttat            | HMGIY
+
+Inspecting sequence ID   pygAde
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.930 | attagtccaacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   rheAme
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   rhePen
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   taeGut
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$SRY_Q6              |      477 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+
+Inspecting sequence ID   tinGut
+
+ V$CRX_Q4_01           |       28 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |       30 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |       33 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$CRX_Q4_01           |      136 (-) |  1.000 |  1.000 | GATTAa                     | CRX
+ V$DRI1_01             |      138 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$ZNF333_01           |      174 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$PIT1_Q6_01          |      188 (+) |  1.000 |  0.993 | ccatATTCAt                 | Pit-1
+ V$LEF1_Q5_01          |      205 (+) |  1.000 |  1.000 | tCAAAGg                    | LEF-1
+ V$CRX_Q4_01           |      280 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$AIRE_01             |      288 (-) |  0.956 |  0.926 | attagtccgacagTTCCAaagcttta | AIRE
+ V$ZNF333_01           |      318 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CRX_Q4_01           |      335 (+) |  1.000 |  1.000 | tTAATC                     | CRX
+ V$P53_Q3              |      344 (+) |  1.000 |  0.990 | agaCATGCctc                | P53
+ V$NFAT1_Q4            |      387 (+) |  1.000 |  1.000 | GGAAAa                     | NFATc2
+ V$FAC1_01             |      407 (+) |  1.000 |  0.970 | tagcACAACaccaa             | FAC1
+ V$CRX_Q4_01           |      421 (+) |  1.000 |  1.000 | cTAATC                     | CRX
+ V$GATA_Q6             |      426 (-) |  1.000 |  1.000 | cTTATCt                    | GATA
+ V$DRI1_01             |      471 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+
+Total sequences length = 19632
+
+Total number of found sites = 738
+
+Frequency of sites per nucleotide = 0.03759

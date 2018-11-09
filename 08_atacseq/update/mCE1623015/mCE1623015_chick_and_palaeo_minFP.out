@@ -1,0 +1,379 @@
+Search for sites by WeightMatrix library: file:///usr/local/apache/cgi-bin/build_ghptywl/idb/1.0/Match/data/2018.3/matrix.dat
+Sequence file: file:///data/dumps/udm//build_ghptywl/pgrayson/16949.dat
+Profile: file:///tmp/ff96d094de27b1d1e7ba9c80ca7eb017_117552/predef.prf,vertebrate_non_redundant_minFP.prf
+Configuration file: /tmp/ff96d094de27b1d1e7ba9c80ca7eb017_117552/project.xml
+
+Inspecting sequence ID   galGal
+
+ V$POU6F1_02           |       75 (-) |  1.000 |  0.961 | agctgcTCATTattggt          | POU6F1
+ V$ZNF333_01           |       83 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$RUSH1A_02           |      106 (+) |  1.000 |  0.998 | ttcCTTATaa                 | RUSH-1alpha
+ V$CDX2_Q5_02          |      111 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$TATA_01             |      146 (-) |  1.000 |  0.974 | tcagtggtTTTATaa            | TATA
+ V$CDX2_Q5_02          |      154 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      157 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      174 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$NFAT1_Q4            |      200 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$RUSH1A_02           |      215 (+) |  1.000 |  0.998 | gtcCTTATaa                 | RUSH-1alpha
+ V$PIT1_Q6_01          |      250 (-) |  1.000 |  0.982 | aTGAATgtac                 | Pit-1
+ V$SRY_Q6              |      278 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      281 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      284 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      291 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      317 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      324 (-) |  1.000 |  0.866 | ttatttTTTACagcac           | Freac-3
+ V$BBX_04              |      353 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$DRI1_01             |      403 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$XVENT1_01           |      424 (+) |  0.911 |  0.907 | gggctATTTTtca              | Xvent-1
+ V$POU6F1_02           |      447 (-) |  1.000 |  0.905 | gaggacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      464 (+) |  0.942 |  0.919 | GATGGatgttta               | Pbx
+ V$CDX2_Q5_02          |      472 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$CDX2_Q5_02          |      474 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+
+Inspecting sequence ID   rheAme
+
+ V$PIT1_Q6_01          |        1 (-) |  1.000 |  0.984 | aTGAATttgc                 | Pit-1
+ V$CDX2_Q5_02          |       13 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$POU6F1_02           |       72 (-) |  1.000 |  0.912 | agctgcTCATTactggt          | POU6F1
+ V$RUSH1A_02           |      103 (+) |  1.000 |  0.998 | ttcCTTATaa                 | RUSH-1alpha
+ V$CDX2_Q5_02          |      108 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$TATA_01             |      143 (-) |  1.000 |  0.974 | tcagtggtTTTATaa            | TATA
+ V$CDX2_Q5_02          |      151 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      154 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      171 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$NFAT1_Q4            |      197 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$RUSH1A_02           |      212 (+) |  1.000 |  0.998 | gtcCTTATaa                 | RUSH-1alpha
+ V$SRY_Q6              |      274 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      277 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      280 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      287 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      313 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      320 (-) |  1.000 |  0.866 | ttatttTTTACagcac           | Freac-3
+ V$BBX_04              |      349 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$DRI1_01             |      399 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$POU6F1_02           |      443 (-) |  1.000 |  0.905 | gaggacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      460 (+) |  0.942 |  0.919 | GATGGatgttat               | Pbx
+ V$CDX2_Q5_02          |      469 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$YY1_Q6_03           |      472 (-) |  1.000 |  1.000 | aaAATGG                    | YY1
+
+Inspecting sequence ID   rhePen
+
+ V$PIT1_Q6_01          |        1 (-) |  1.000 |  0.984 | aTGAATttgc                 | Pit-1
+ V$CDX2_Q5_02          |       13 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$POU6F1_02           |       72 (-) |  1.000 |  0.912 | agctgcTCATTactggt          | POU6F1
+ V$AIRE_01             |       77 (+) |  1.000 |  0.925 | ctcattacTGGTTggtttggaaagct | AIRE
+ V$RUSH1A_02           |      103 (+) |  1.000 |  0.998 | ttcCTTATaa                 | RUSH-1alpha
+ V$CDX2_Q5_02          |      108 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$TATA_01             |      143 (-) |  1.000 |  0.975 | tcggtggtTTTATaa            | TATA
+ V$CDX2_Q5_02          |      151 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      154 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      171 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$RUSH1A_02           |      212 (+) |  1.000 |  0.998 | gtcCTTATaa                 | RUSH-1alpha
+ V$SRY_Q6              |      274 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      277 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      280 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      287 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      313 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      320 (-) |  1.000 |  0.866 | ttatttTTTACagcac           | Freac-3
+ V$BBX_04              |      349 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$DRI1_01             |      399 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$POU6F1_02           |      443 (-) |  1.000 |  0.905 | gaggacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      460 (+) |  0.942 |  0.919 | GATGGatgttat               | Pbx
+ V$CDX2_Q5_02          |      469 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$YY1_Q6_03           |      472 (-) |  1.000 |  1.000 | aaAATGG                    | YY1
+
+Inspecting sequence ID   casCas
+
+ V$POU6F1_02           |       72 (-) |  1.000 |  0.961 | agctgcTCATTattggt          | POU6F1
+ V$ZNF333_01           |       80 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$TATA_01             |      143 (-) |  1.000 |  0.974 | tcagtggtTTTATaa            | TATA
+ V$CDX2_Q5_02          |      151 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      154 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      171 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$NFAT1_Q4            |      197 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$RUSH1A_02           |      212 (+) |  1.000 |  0.998 | gtcCTTATaa                 | RUSH-1alpha
+ V$PIT1_Q6_01          |      247 (-) |  1.000 |  0.982 | aTGAATgtac                 | Pit-1
+ V$SRY_Q6              |      275 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      278 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      281 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      288 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      314 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      321 (-) |  1.000 |  0.865 | ttatttTTTACagcat           | Freac-3
+ V$NF1_Q6              |      334 (+) |  1.000 |  0.991 | caTTGGCaataagccttt         | NF-1
+ V$BBX_04              |      350 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$DRI1_01             |      400 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$POU6F1_02           |      444 (-) |  1.000 |  0.905 | gaggacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      461 (+) |  0.942 |  0.919 | GATGGatgttta               | Pbx
+ V$CDX2_Q5_02          |      469 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$CDX2_Q5_02          |      471 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+
+Inspecting sequence ID   droNov
+
+ V$POU6F1_02           |       75 (-) |  1.000 |  0.961 | agctgcTCATTattggt          | POU6F1
+ V$ZNF333_01           |       83 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$RUSH1A_02           |      106 (+) |  1.000 |  0.998 | ttcCTTATaa                 | RUSH-1alpha
+ V$CDX2_Q5_02          |      111 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$TATA_01             |      146 (-) |  1.000 |  0.974 | tcagtggtTTTATaa            | TATA
+ V$CDX2_Q5_02          |      154 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      157 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      174 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$NFAT1_Q4            |      200 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$RUSH1A_02           |      215 (+) |  1.000 |  0.998 | gtcCTTATac                 | RUSH-1alpha
+ V$PIT1_Q6_01          |      250 (-) |  1.000 |  0.982 | aTGAATgtac                 | Pit-1
+ V$SRY_Q6              |      278 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      281 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      284 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      291 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      317 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      324 (-) |  1.000 |  0.865 | ttatttTTTACagcat           | Freac-3
+ V$NF1_Q6              |      337 (+) |  1.000 |  0.991 | caTTGGCaataagccttt         | NF-1
+ V$BBX_04              |      353 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$DRI1_01             |      403 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$POU6F1_02           |      447 (-) |  1.000 |  0.905 | gaggacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      464 (+) |  0.942 |  0.919 | GATGGatgttta               | Pbx
+ V$CDX2_Q5_02          |      472 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$CDX2_Q5_02          |      474 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+
+Inspecting sequence ID   aptHaa
+
+ V$POU6F1_02           |       72 (-) |  1.000 |  0.961 | agctgcTCATTattggt          | POU6F1
+ V$ZNF333_01           |       80 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$RUSH1A_02           |      103 (+) |  1.000 |  0.998 | ttcCTTATaa                 | RUSH-1alpha
+ V$CDX2_Q5_02          |      108 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$TATA_01             |      143 (-) |  1.000 |  0.973 | tnggtggtTTTATaa            | TATA
+ V$CDX2_Q5_02          |      151 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      154 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      171 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$NFAT1_Q4            |      197 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$RUSH1A_02           |      212 (+) |  1.000 |  0.998 | gtcCTTATaa                 | RUSH-1alpha
+ V$PIT1_Q6_01          |      247 (-) |  1.000 |  0.982 | aTGAATgtac                 | Pit-1
+ V$SRY_Q6              |      275 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      278 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      281 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      288 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      314 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      321 (-) |  1.000 |  0.866 | ttatttTTTACagcac           | Freac-3
+ V$BBX_04              |      350 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$DRI1_01             |      400 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$XVENT1_01           |      421 (+) |  0.911 |  0.907 | gggctATTTTtca              | Xvent-1
+ V$BCL6_Q3_01          |      437 (+) |  0.984 |  0.987 | cTTCCTagaa                 | Bcl-6
+ V$POU6F1_02           |      444 (-) |  1.000 |  0.909 | gaagacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      461 (+) |  0.942 |  0.919 | GATGGatgttta               | Pbx
+ V$CDX2_Q5_02          |      469 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$CDX2_Q5_02          |      471 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+
+Inspecting sequence ID   aptOwe
+
+ V$POU6F1_02           |       72 (-) |  1.000 |  0.961 | agctgcTCATTattggt          | POU6F1
+ V$ZNF333_01           |       80 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$RUSH1A_02           |      103 (+) |  1.000 |  0.998 | ttcCTTATaa                 | RUSH-1alpha
+ V$CDX2_Q5_02          |      108 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$TATA_01             |      143 (-) |  1.000 |  0.975 | tcggtggtTTTATaa            | TATA
+ V$CDX2_Q5_02          |      151 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      154 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      171 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$NFAT1_Q4            |      197 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$RUSH1A_02           |      212 (+) |  1.000 |  0.998 | gtcCTTATaa                 | RUSH-1alpha
+ V$PIT1_Q6_01          |      247 (-) |  1.000 |  0.982 | aTGAATgtac                 | Pit-1
+ V$SRY_Q6              |      275 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      278 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      281 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      288 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      314 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      321 (-) |  1.000 |  0.866 | ttatttTTTACagcac           | Freac-3
+ V$BBX_04              |      350 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$DRI1_01             |      400 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$XVENT1_01           |      421 (+) |  0.911 |  0.907 | gggctATTTTtca              | Xvent-1
+ V$BCL6_Q3_01          |      437 (+) |  0.984 |  0.987 | cTTCCTagaa                 | Bcl-6
+ V$POU6F1_02           |      444 (-) |  1.000 |  0.909 | gaagacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      461 (+) |  0.942 |  0.919 | GATGGatgttta               | Pbx
+ V$CDX2_Q5_02          |      469 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$CDX2_Q5_02          |      471 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+
+Inspecting sequence ID   aptRow
+
+ V$POU6F1_02           |       72 (-) |  1.000 |  0.961 | agctgcTCATTattggt          | POU6F1
+ V$ZNF333_01           |       80 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$RUSH1A_02           |      103 (+) |  1.000 |  0.998 | ttcCTTATaa                 | RUSH-1alpha
+ V$CDX2_Q5_02          |      108 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$TATA_01             |      141 (-) |  1.000 |  0.974 | tcggtgatTTTATaa            | TATA
+ V$CDX2_Q5_02          |      149 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      152 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      169 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$NFAT1_Q4            |      195 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$RUSH1A_02           |      210 (+) |  1.000 |  0.998 | gtcCTTATaa                 | RUSH-1alpha
+ V$PIT1_Q6_01          |      245 (-) |  1.000 |  0.982 | aTGAATgtac                 | Pit-1
+ V$SRY_Q6              |      273 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      276 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      279 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      286 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      312 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      319 (-) |  1.000 |  0.866 | ttatttTTTACagcac           | Freac-3
+ V$BBX_04              |      348 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$DRI1_01             |      398 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$XVENT1_01           |      419 (+) |  0.911 |  0.907 | gggctATTTTtca              | Xvent-1
+ V$BCL6_Q3_01          |      435 (+) |  1.000 |  1.000 | cTTTCTagaa                 | Bcl-6
+ V$POU6F1_02           |      442 (-) |  1.000 |  0.909 | gaagacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      459 (+) |  0.942 |  0.919 | GATGGatgttta               | Pbx
+ V$CDX2_Q5_02          |      467 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$CDX2_Q5_02          |      469 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+
+Inspecting sequence ID   strCam
+
+ V$POU6F1_02           |       75 (-) |  1.000 |  0.961 | agctgcTCATTattggt          | POU6F1
+ V$ZNF333_01           |       83 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$RUSH1A_02           |      106 (+) |  1.000 |  0.998 | ttcCTTATaa                 | RUSH-1alpha
+ V$CDX2_Q5_02          |      111 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$FAC1_01             |      134 (-) |  1.000 |  0.960 | cacgtGTTGTgtca             | FAC1
+ V$TATA_01             |      145 (-) |  1.000 |  0.974 | tcagtggtTTTATaa            | TATA
+ V$CDX2_Q5_02          |      153 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      156 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$NFAT1_Q4            |      199 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$RUSH1A_02           |      214 (+) |  1.000 |  0.998 | atcCTTATaa                 | RUSH-1alpha
+ V$PIT1_Q6_01          |      249 (-) |  1.000 |  0.982 | aTGAATgtac                 | Pit-1
+ V$SRY_Q6              |      277 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      280 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      283 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      290 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$FREAC3_01           |      323 (-) |  1.000 |  0.866 | ttatttTTTACagcac           | Freac-3
+ V$DRI1_01             |      402 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$POU6F1_02           |      446 (-) |  1.000 |  0.905 | gaggacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      463 (+) |  0.942 |  0.919 | GATGGatgttta               | Pbx
+ V$CDX2_Q5_02          |      471 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$CDX2_Q5_02          |      473 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+
+Inspecting sequence ID   anoDid
+
+ V$AP2ALPHA_03         |       48 (+) |  1.000 |  0.921 | cgCGCCTttggctgt            | AP-2alphaA
+ V$AP2ALPHA_03         |       48 (-) |  0.869 |  0.921 | cgcgccttTGGCTgt            | AP-2alphaA
+ V$POU6F1_02           |       75 (-) |  1.000 |  0.961 | agctgcTCATTattggt          | POU6F1
+ V$ZNF333_01           |       83 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$RUSH1A_02           |      106 (+) |  1.000 |  0.998 | ttcCTTATaa                 | RUSH-1alpha
+ V$CDX2_Q5_02          |      111 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+ V$TATA_01             |      144 (-) |  1.000 |  0.974 | tcagtggtTTTATaa            | TATA
+ V$CDX2_Q5_02          |      152 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      155 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      172 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$NFAT1_Q4            |      197 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$RUSH1A_02           |      213 (+) |  1.000 |  0.998 | gtcCTTATaa                 | RUSH-1alpha
+ V$SRY_Q6              |      276 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      279 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      282 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      289 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      315 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      322 (-) |  1.000 |  0.865 | ttatttTTTACagcat           | Freac-3
+ V$NF1_Q6              |      335 (+) |  1.000 |  0.991 | caTTGGCaataagccttt         | NF-1
+ V$BBX_04              |      351 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$XVENT1_01           |      422 (+) |  0.911 |  0.907 | gggctATTTTtca              | Xvent-1
+ V$POU6F1_02           |      445 (-) |  1.000 |  0.905 | gaggacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      462 (+) |  0.942 |  0.919 | GATGGatgttta               | Pbx
+ V$CDX2_Q5_02          |      470 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$CDX2_Q5_02          |      472 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+
+Inspecting sequence ID   tinGut
+
+ V$POU6F1_02           |       75 (-) |  1.000 |  0.961 | agctgcTCATTattggt          | POU6F1
+ V$ZNF333_01           |       83 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$ING4_01             |       88 (-) |  1.000 |  1.000 | TGGTGg                     | ING4
+ V$TATA_01             |      142 (-) |  1.000 |  0.974 | tcagtggtTTTATaa            | TATA
+ V$CDX2_Q5_02          |      150 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      153 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      170 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$NFAT1_Q4            |      196 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$RUSH1A_02           |      211 (+) |  1.000 |  0.998 | gtcCTTATaa                 | RUSH-1alpha
+ V$PIT1_Q6_01          |      246 (-) |  1.000 |  0.982 | aTGAATgtac                 | Pit-1
+ V$SRY_Q6              |      274 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      277 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      280 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      287 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      313 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      320 (-) |  1.000 |  0.866 | ttatttTTTACagcac           | Freac-3
+ V$BBX_04              |      349 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$DRI1_01             |      399 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$XVENT1_01           |      420 (+) |  0.911 |  0.907 | gggctATTTTtca              | Xvent-1
+ V$POU6F1_02           |      443 (-) |  1.000 |  0.905 | gaggacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      460 (+) |  0.942 |  0.919 | GATGGatgttta               | Pbx
+ V$CDX2_Q5_02          |      468 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$CDX2_Q5_02          |      470 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+
+Inspecting sequence ID   cryCin
+
+ V$POU6F1_02           |       75 (-) |  1.000 |  0.961 | agctgcTCATTattggt          | POU6F1
+ V$ZNF333_01           |       83 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$ING4_01             |       88 (-) |  1.000 |  1.000 | TGGTGg                     | ING4
+ V$CPBP_Q6             |      114 (+) |  1.000 |  1.000 | GCCCCgt                    | CPBP
+ V$TATA_01             |      142 (-) |  1.000 |  0.974 | tcagtggtTTTATaa            | TATA
+ V$CDX2_Q5_02          |      150 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      153 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      170 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$NFAT1_Q4            |      196 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$RUSH1A_02           |      211 (+) |  1.000 |  0.998 | gtcCTTATaa                 | RUSH-1alpha
+ V$PIT1_Q6_01          |      246 (-) |  1.000 |  0.982 | aTGAATgtac                 | Pit-1
+ V$SRY_Q6              |      274 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      277 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      280 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      287 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      313 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      320 (-) |  1.000 |  0.866 | ttatttTTTACagcac           | Freac-3
+ V$BBX_04              |      349 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$DRI1_01             |      399 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$XVENT1_01           |      420 (+) |  0.911 |  0.907 | gggctATTTTtca              | Xvent-1
+ V$POU6F1_02           |      443 (-) |  1.000 |  0.905 | gaggacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      460 (+) |  0.942 |  0.919 | GATGGatgttta               | Pbx
+ V$CDX2_Q5_02          |      468 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$CDX2_Q5_02          |      470 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+
+Inspecting sequence ID   eudEle
+
+ V$POU6F1_02           |       75 (-) |  1.000 |  0.961 | agctgcTCATTattggt          | POU6F1
+ V$ZNF333_01           |       83 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$ING4_01             |       88 (-) |  1.000 |  1.000 | TGGTGg                     | ING4
+ V$CPBP_Q6             |      114 (+) |  1.000 |  1.000 | GCCCCat                    | CPBP
+ V$ZNF333_01           |      153 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      170 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$NFAT1_Q4            |      196 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$RUSH1A_02           |      211 (+) |  1.000 |  0.998 | gtcCTTATaa                 | RUSH-1alpha
+ V$PIT1_Q6_01          |      246 (-) |  1.000 |  0.982 | aTGAATgtac                 | Pit-1
+ V$SRY_Q6              |      274 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      277 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      280 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      287 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      313 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      320 (-) |  1.000 |  0.866 | ttatttTTTACagcac           | Freac-3
+ V$BBX_04              |      349 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$DRI1_01             |      399 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$XVENT1_01           |      420 (+) |  0.911 |  0.907 | gggctATTTTtca              | Xvent-1
+ V$POU6F1_02           |      443 (-) |  1.000 |  0.905 | gaggacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      460 (+) |  0.942 |  0.919 | GATGGatgttta               | Pbx
+ V$CDX2_Q5_02          |      468 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$CDX2_Q5_02          |      470 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+
+Inspecting sequence ID   notPer
+
+ V$POU6F1_02           |       75 (-) |  1.000 |  0.912 | agctgcTCATTactggt          | POU6F1
+ V$ING4_01             |       88 (-) |  1.000 |  1.000 | TGGTGg                     | ING4
+ V$TATA_01             |      142 (-) |  1.000 |  0.974 | tcagtggtTTTATaa            | TATA
+ V$CDX2_Q5_02          |      150 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      153 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$ZNF333_01           |      170 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$NFAT1_Q4            |      196 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$PIT1_Q6_01          |      246 (-) |  1.000 |  0.982 | aTGAATgtac                 | Pit-1
+ V$SRY_Q6              |      274 (+) |  1.000 |  1.000 | TTGTTt                     | SRY
+ V$CDX2_Q5_02          |      277 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$ZNF333_01           |      280 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$BRCA_01             |      287 (-) |  0.997 |  0.994 | CAACCaaa                   | BRCA1:USF2
+ V$GKLF_Q4             |      313 (+) |  1.000 |  1.000 | CCTCCtt                    | GKLF
+ V$FREAC3_01           |      320 (-) |  1.000 |  0.866 | ttatttTTTACagcac           | Freac-3
+ V$BBX_04              |      349 (-) |  1.000 |  0.982 | ttacatgTTAACtcttg          | BBX
+ V$DRI1_01             |      399 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$XVENT1_01           |      420 (+) |  0.911 |  0.907 | gggctATTTTtca              | Xvent-1
+ V$POU6F1_02           |      443 (-) |  1.000 |  0.905 | gaggacTCATTactgga          | POU6F1
+ V$PBX_Q3              |      460 (+) |  0.942 |  0.919 | GATGGatgttta               | Pbx
+ V$CDX2_Q5_02          |      468 (+) |  1.000 |  1.000 | TTTATa                     | CDX-2
+ V$CDX2_Q5_02          |      470 (-) |  1.000 |  1.000 | tATAAA                     | CDX-2
+
+Total sequences length = 6747
+
+Total number of found sites = 327
+
+Frequency of sites per nucleotide = 0.04847
