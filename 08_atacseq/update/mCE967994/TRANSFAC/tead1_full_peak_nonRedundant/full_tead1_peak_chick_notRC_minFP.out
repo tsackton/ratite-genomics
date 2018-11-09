@@ -1,0 +1,78 @@
+Search for sites by WeightMatrix library: file:///usr/local/apache/cgi-bin/build_ghptywl/idb/1.0/Match/data/2018.3/matrix.dat
+Sequence file: file:///data/dumps/udm//build_ghptywl/pgrayson/16939.dat
+Profile: file:///tmp/ff96d094de27b1d1e7ba9c80ca7eb017_117539/predef.prf,vertebrate_non_redundant_minFP.prf
+Configuration file: /tmp/ff96d094de27b1d1e7ba9c80ca7eb017_117539/project.xml
+
+Inspecting sequence ID   hub_363_galGal_dna_range=NC_006092.3:7296321-7297998_5'pad=0_3'pad=0_strand=+_repeatMasking=none
+
+ V$XVENT1_01           |       32 (-) |  1.000 |  0.925 | acaCAAATaattg              | Xvent-1
+ V$ZNF333_01           |       38 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$POU6F1_02           |       80 (-) |  0.915 |  0.879 | cccaacTAATTagcctg          | POU6F1
+ V$ZNF333_01           |      171 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$DRI1_01             |      173 (+) |  1.000 |  1.000 | aATTAA                     | DRI1
+ V$DRI1_01             |      181 (-) |  1.000 |  1.000 | TTAATt                     | DRI1
+ V$XVENT1_01           |      228 (+) |  1.000 |  0.920 | ccagtATTTGtag              | Xvent-1
+ V$NR3C1_03            |      240 (-) |  0.757 |  0.821 | ggAAACAagctgtgcag          | NR3C1
+ V$SRY_Q6              |      242 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+ V$XVENT1_01           |      263 (-) |  1.000 |  0.920 | acaCAAATattat              | Xvent-1
+ V$ZNF333_01           |      271 (-) |  1.000 |  1.000 | ATTAT                      | ZNF333
+ V$MYOGENIN_Q6_01      |      291 (+) |  1.000 |  1.000 | CAGCTg                     | myogenin
+ V$MYOGENIN_Q6_01      |      291 (-) |  1.000 |  1.000 | cAGCTG                     | myogenin
+ V$ZNF333_01           |      298 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$MTF1_Q5             |      347 (-) |  1.000 |  0.995 | gTGCACacgg                 | MTF-1
+ V$AHR_Q6              |      360 (+) |  1.000 |  1.000 | CACGCa                     | AHR
+ V$SRY_Q6              |      369 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+ V$NFY_Q3              |      455 (+) |  1.000 |  0.987 | gaCCAATcagg                | NF-Y
+ V$RFX_Q6              |      477 (-) |  1.000 |  0.986 | tgGCAACac                  | RFX
+ V$BRCA_01             |      480 (-) |  1.000 |  0.999 | CAACAcaa                   | BRCA1:USF2
+ V$SRY_Q6              |      491 (-) |  1.000 |  1.000 | aAACAA                     | SRY
+ V$GKLF_Q4             |      521 (-) |  1.000 |  1.000 | agGGAGG                    | GKLF
+ V$LEF1_Q5_01          |      584 (-) |  1.000 |  1.000 | cCTTTGa                    | LEF-1
+ V$SOX10_Q3            |      590 (+) |  1.000 |  0.999 | ACAATgcc                   | Sox-10
+ V$BLIMP1_Q4           |      612 (+) |  1.000 |  0.985 | aaaaaggGAAAG               | Blimp-1
+ V$CPBP_Q6             |      630 (+) |  1.000 |  1.000 | CCCCCac                    | CPBP
+ V$MAZ_Q6_01           |      656 (+) |  0.981 |  0.960 | ttgGGGGGgggggg             | MAZ
+ V$MAZ_Q6_01           |      657 (+) |  0.981 |  0.973 | tggGGGGGgggggg             | MAZ
+ V$MAZ_Q6_01           |      658 (+) |  0.981 |  0.980 | gggGGGGGgggggg             | MAZ
+ V$MAZ_Q6_01           |      659 (+) |  0.981 |  0.980 | gggGGGGGgggggg             | MAZ
+ V$MAZ_Q6_01           |      660 (+) |  0.981 |  0.956 | gggGGGGGgggggt             | MAZ
+ V$MAZR_01             |      663 (+) |  1.000 |  0.976 | gggggGGGGGttc              | MAZR
+ V$CEBPA_Q6            |      696 (+) |  1.000 |  0.995 | atgtttTGCAAgc              | C/EBPalpha
+ V$SP100_04            |      725 (-) |  1.000 |  0.921 | cgctaaccCGACGtc            | SP100
+ V$CPBP_Q6             |      798 (-) |  1.000 |  1.000 | gcGGGGC                    | CPBP
+ V$CPBP_Q6             |      837 (+) |  1.000 |  1.000 | CCCCCag                    | CPBP
+ V$IK_Q5_01            |      851 (-) |  1.000 |  1.000 | ccTCCCA                    | Ikaros
+ V$CPBP_Q6             |      885 (-) |  1.000 |  1.000 | acGGGGG                    | CPBP
+ V$CHCH_01             |      886 (+) |  1.000 |  1.000 | CGGGGg                     | Churchill
+ V$AHR_Q6              |      920 (-) |  1.000 |  1.000 | tGCGTG                     | AHR
+ V$CPBP_Q6             |      950 (+) |  1.000 |  1.000 | GCCCCag                    | CPBP
+ V$MYB_Q4              |      958 (-) |  1.000 |  1.000 | cccAACTGccgt               | c-Myb
+ V$BEN_01              |      984 (-) |  1.000 |  1.000 | ggtCGCTG                   | BEN
+ V$CPBP_Q6             |     1000 (-) |  1.000 |  1.000 | ccGGGGG                    | CPBP
+ V$CHCH_01             |     1001 (+) |  1.000 |  1.000 | CGGGGg                     | Churchill
+ V$ZFP161_04           |     1010 (-) |  1.000 |  0.915 | gtgccccGCGCGgc             | ZF5
+ V$CPBP_Q6             |     1012 (+) |  1.000 |  1.000 | GCCCCgc                    | CPBP
+ V$ING4_01             |     1028 (-) |  1.000 |  1.000 | TGGTGg                     | ING4
+ V$MEIS1_01            |     1074 (-) |  1.000 |  0.999 | ggccTGTCActg               | MEIS1
+ V$MYOGENIN_Q6_01      |     1158 (+) |  1.000 |  1.000 | CAGCTg                     | myogenin
+ V$MYOGENIN_Q6_01      |     1158 (-) |  1.000 |  1.000 | cAGCTG                     | myogenin
+ V$BEN_01              |     1170 (-) |  1.000 |  0.999 | gctCGCTG                   | BEN
+ V$MEF2A_Q6            |     1212 (+) |  1.000 |  0.998 | gttaaAAATA                 | mef-2A
+ V$ZNF333_01           |     1219 (+) |  1.000 |  1.000 | ATAAT                      | ZNF333
+ V$CPBP_Q6             |     1268 (+) |  1.000 |  1.000 | GCCCCgt                    | CPBP
+ V$TEF1_Q6_04          |     1324 (+) |  1.000 |  0.976 | gcATTCCagaa                | TEF-1
+ V$GKLF_Q4             |     1333 (-) |  1.000 |  1.000 | aaGGAGG                    | GKLF
+ V$AHR_Q6              |     1349 (+) |  1.000 |  1.000 | CACGCa                     | AHR
+ V$TBX5_01             |     1389 (-) |  1.000 |  0.977 | tcccACACCttt               | Tbx5
+ V$XVENT1_01           |     1436 (-) |  1.000 |  0.908 | ttaCAAATtgtgg              | Xvent-1
+ V$NR3C1_03            |     1565 (-) |  0.979 |  0.844 | caGCACAgcgtttaccc          | NR3C1
+ V$NR3C1_03            |     1565 (+) |  0.721 |  0.830 | cagcacagcgTTTACcc          | NR3C1
+ V$EBOX_Q6_01          |     1590 (-) |  1.000 |  0.994 | tggcACGTGg                 | Ebox
+ V$NFAT1_Q4            |     1607 (-) |  1.000 |  1.000 | tTTTCC                     | NFATc2
+ V$TEF1_Q6_04          |     1626 (+) |  1.000 |  0.976 | gcATTCCagaa                | TEF-1
+
+Total sequences length = 1678
+
+Total number of found sites = 65
+
+Frequency of sites per nucleotide = 0.03874
