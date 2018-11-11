@@ -7,7 +7,7 @@ perl -p -i -e "s/SPECIES/$SP/" temp.bed
 bedtools getfasta -fi $SP.fa -bed temp.bed -fo - |
    perl -p -i -e 's/^>.*$//' |
    perl -p -i -e 's/^$/NNNNNNNNNN/' |
-   #tr -d '\n' > ${SP}_temp.fa
+   tr -d '\n' > ${SP}_temp.fa
 echo ">$SP" | cat - ${SP}_temp.fa > ${SP}_${BED}.fa
 rm ${SP}_temp.fa
 rm temp.bed
