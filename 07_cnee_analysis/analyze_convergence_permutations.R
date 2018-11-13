@@ -75,26 +75,30 @@ all_neo_orig <- cnee_orig %>% select(taeGut:anaPla) %>% names()
 all_neo_ext <- cnee_ext %>% select(taeGut:nanBra,uriPel:anaPla) %>% names()
 all_tin <- c("eudEle", "notPer", "tinGut", "cryCin")
 
-#put this in a loop#
-
-test_targets <- c("strCam", "droNov")
-cross_target <- c("nanHar")
-test_tips <- c(test_targets, cross_target, all_neo_ext, all_tin)
-
-cnee_orig %>% filter(version=="gain") %>% conv_real(test_targets, test_tips)
-cnee_ext %>% filter(version=="gain") %>% cross_real(test_targets, test_tips, cross_target)
-
 #ratite dollo loop
-ratite_orig_dollo <- list()
+ratite_gm_dollo <- list()
+ratite_gl_dollo <- list()
 for (third_sp in c("rheAme", "rhePen", "droNov", "casCas", "aptHaa", "aptOwe", "aptRow")) {
   test_targets <- c("strCam", "anoDid", third_sp)
   test_tips <- c(test_targets, all_neo_orig, all_tin)
-  ratite_orig_dollo[[third_sp]] <- cnee_orig %>% filter(version=="gain_gap") %>%
+  ratite_gm_dollo[[third_sp]] <- cnee_orig %>% filter(version=="gain") %>%
+    conv_real(test_targets, test_tips)
+  ratite_gl_dollo[[third_sp]] <- cnee_orig %>% filter(version=="gain_gap") %>%
     conv_real(test_targets, test_tips)
 }
 
-orig_dollo <- bind_rows(ratite_orig_dollo, .id="species")
-gap_dollo <- bind_rows(ratite_orig_dollo, .id="species")
+gm_dollo <- bind_rows(ratite_gm_dollo, .id="species")
+gl_dollo <- bind_rows(ratite_gl_dollo, .id="species")
+
+
+#new fig3A
+perms %>% filter(version=="gain", set=="original", test=="neo_conv_3") %>% ggplot(aes(count)) + 
+  geom_histogram(binwidth = 1) + 
+  coord_cartesian(xlim=c(0,50)) + theme_classic() + 
+  geom_segment(aes(x=mean(gm_dollo$count), xend=mean(gm_dollo$count), y=50, yend=0), arrow=arrow(length=unit(0.5, "cm")), colour="red") +
+  geom_jitter(data=gm_dollo, aes(count, y=4), colour="red", width=0, height=3, size=2) +
+  ylab("Count") + xlab("Number of Convergently Accelerated Elements")
+
 
 ##### BELOW TO EDIT ###
 
@@ -152,13 +156,6 @@ ggplot() + coord_cartesian(xlim=c(0,80)) + theme_classic() +
   annotate("text", x = mean(obs_conv$conv_count), y = 60, label = "Ratite mean")
 ggsave("~/Projects/birds/ratite_compgen/manuscript/ver5/Figure3A.pdf")
 
-
-#new fig3A
-perms %>% filter(version=="gain_gap", set=="original", test=="neo_conv_3") %>% ggplot(aes(count)) + 
-  geom_histogram(binwidth = 1) + 
-  coord_cartesian(xlim=c(0,50)) + theme_classic() + 
-  geom_segment(aes(x=mean(gap_dollo$count), xend=mean(gap_dollo$count), y=50, yend=0), arrow=arrow(length=unit(0.5, "cm")), colour="red") +
-  geom_jitter(data=gap_dollo, aes(count, y=1), colour="red", width=0, height=3, size=2)
 
 
 perms %>% filter(version=="gain_gap", set=="extended", test=="neo_cross_2") %>% ggplot(aes(count)) + 
