@@ -2,7 +2,7 @@
 ## UPDATED OCT 2018 FOR MANUSCRIPT REVISIONS ##
 
 library(tidyverse)
-setwd("~/Projects/birds/ratite_compgen/data/2018-09-FINAL/CNEE/cnee_results/phyloP_output/")
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/01_phyloP/phyloP_output/")
 
 allRatite <- read.table("allRatite.out_neut_ver3.results", header = T, stringsAsFactors = F) %>% tbl_df %>% mutate(qval = p.adjust(pval, method="fdr"))
 tinamou <- read.table("Tinamou.out_neut_ver3.results", header=T, stringsAsFactors = F) %>% tbl_df %>% mutate(qval = p.adjust(pval, method="fdr"))
