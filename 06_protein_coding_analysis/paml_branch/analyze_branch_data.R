@@ -8,6 +8,8 @@ if (!is.element("RERconverge", installed.packages()[,1])) {
 
 library(RERconverge)
 
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/06_protein_coding_analysis/paml_branch/")
+
 ## FUNCTIONS ##
 
 make_trait_tree <- function(master.tree, target.tips, sp.to.drop, collapseAnc = FALSE) {

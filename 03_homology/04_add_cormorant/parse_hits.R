@@ -1,0 +1,5 @@
+library("tidyverse")
+setwd("~/Projects/birds/ratite_compgen/data/add_cormorant_proteins/")
+hits<-read_tsv("allhmm_output.tsv", col_names=c("corm", "hog", "bitscore"))
+hits <-hits %>% arrange(desc(bitscore)) %>% distinct(corm, .keep_all=T)
+hits %>% select(corm, hog) %>% mutate(hog = sub(".aligned.best.pep", "", hog)) %>% write_tsv("cormorant_hog_matches.tsv")

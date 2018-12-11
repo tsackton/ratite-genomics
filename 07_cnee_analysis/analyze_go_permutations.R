@@ -1,58 +1,55 @@
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/non_coding/cnees/")
+#revised Nov 2018 for paper revisions
+library(tidyverse)
 
-obs_bp <- read_tsv("~/Projects/birds/ratite_compgen/data/cnee_perms/obs_bp_results.tsv")
-perm_bp <-read_tsv("~/Projects/birds/ratite_compgen/data/cnee_perms/perm_bp_results.tsv")
-obs_mf <- read_tsv("~/Projects/birds/ratite_compgen/data/cnee_perms/obs_mf_results.tsv")
-perm_mf <-read_tsv("~/Projects/birds/ratite_compgen/data/cnee_perms/perm_mf_results.tsv")
-
-#add stats to obs
-obs_bp <- obs_bp %>% mutate(newpval = ifelse(is.na(pvalue), 1, pvalue), logp.perm = -1*log10(newpval)) %>% 
-  separate(GeneRatio, into=c("target_in", "target_total")) %>% 
-  separate(BgRatio, into=c("bg_in", "bg_total")) %>%
-  mutate(target_frac = as.numeric(target_in)/as.numeric(target_total), bg_frac = as.numeric(bg_in)/as.numeric(bg_total))
-  
-obs_mf <- obs_mf %>% mutate(newpval = ifelse(is.na(pvalue), 1, pvalue), logp.perm = -1*log10(newpval)) %>% 
-  separate(GeneRatio, into=c("target_in", "target_total")) %>% 
-  separate(BgRatio, into=c("bg_in", "bg_total")) %>%
-  mutate(target_frac = as.numeric(target_in)/as.numeric(target_total), bg_frac = as.numeric(bg_in)/as.numeric(bg_total))
-
-#compute p-values for each set in obs bp
-get_empirical_pval <- function(term, set, permDF, value, column) {
-  val_to_get <- enquo(column)
-  null <- permDF %>% filter(set == set, ID == term) %>% pull(!!val_to_get)
-  (sum(null >= value)+1) / length(null)
+transform_real <- function(DF) {
+  DF %>% 
+    separate(GeneRatio, into=c("target_in", "target_total")) %>% 
+    separate(BgRatio, into=c("bg_in", "bg_total")) %>%
+    mutate(newpval = ifelse(is.na(pvalue), 1, pvalue), 
+           logp = -log10(newpval),
+           target_frac = as.numeric(target_in)/as.numeric(target_total), 
+           bg_frac = as.numeric(bg_in)/as.numeric(bg_total)) %>%
+    dplyr::select(version, set, ID, logp, target_frac, bg_frac) %>% 
+    arrange(ID)
 }
 
-#generate
-obs_bp_real_logp <- obs_bp %>% group_by(set, ID) %>% mutate(epval = get_empirical_pval(ID, set, perm_bp, logp.perm, logp.perm))
-write_tsv(obs_bp_real_logp, path="obs_bp_real_logp.results")
-obs_bp_real_targetfrac <- obs_bp %>% group_by(set, ID) %>% mutate(epval = get_empirical_pval(ID, set, perm_bp, target_frac, target_frac))
-write_tsv(obs_bp_real_targetfrac, path="obs_bp_real_targetfrac.results")
-obs_mf_real_logp <- obs_mf %>% group_by(set, ID) %>% mutate(epval = get_empirical_pval(ID, set, perm_mf, logp.perm, logp.perm))
-write_tsv(obs_mf_real_logp, path="obs_mf_real_logp.results")
-obs_mf_real_targetfrac <- obs_mf %>% group_by(set, ID) %>% mutate(epval = get_empirical_pval(ID, set, perm_mf, target_frac, target_frac))
-write_tsv(obs_mf_real_targetfrac, path="obs_mf_real_targetfrac.results")
 
-#read
-obs_bp_real_logp <- read_tsv("obs_bp_real_logp.results")
-obs_bp_real_targetfrac <- read_tsv("obs_bp_real_targetfrac.results")
-obs_mf_real_logp <- read_tsv("obs_mf_real_logp.results")
-obs_mf_real_targetfrac <- read_tsv("obs_mf_real_targetfrac.results")
+orig_bp <- read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/goperms/original_GO_galgal4_run1_BP_real.tsv") %>% transform_real()
 
-obs_bp_real_logp <- obs_bp_real_logp %>% ungroup %>% group_by(set) %>% mutate(eqval = p.adjust(epval, "fdr"))
-obs_bp_real_targetfrac <- obs_bp_real_targetfrac %>% ungroup %>% group_by(set) %>% mutate(eqval = p.adjust(epval, "fdr"))
-obs_mf_real_logp <- obs_mf_real_logp %>% ungroup %>% group_by(set) %>% mutate(eqval = p.adjust(epval, "fdr"))
-obs_mf_real_targetfrac <- obs_mf_real_targetfrac %>% ungroup %>% group_by(set) %>% mutate(eqval = p.adjust(epval, "fdr"))
+orig_mf <- read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/goperms/original_GO_galgal4_run1_MF_real.tsv") %>% transform_real()
 
-obs_bp_real_logp %>% ungroup %>% filter(eqval < 0.2)
-obs_mf_real_logp %>% ungroup %>% filter(eqval < 0.2)
-obs_bp_real_targetfrac %>% ungroup %>% filter(eqval < 0.2, qvalue < 0.01) %>% select(set, Description, ID, target_frac, epval, eqval)
-obs_mf_real_targetfrac %>% ungroup %>% filter(eqval < 0.2, qvalue < 0.01) %>% select(set, Description, ID, qvalue, target_frac, bg_frac, epval, eqval)
+#read perms
+orig_bp_perm<-readRDS("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/goperms/original_galgal4_BP.robj")
+orig_mf_perm<-readRDS("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/goperms/original_galgal4_MF.robj")
 
-#main go results: DNA binding / nucleic acid binding overrepresented
-perm_mf %>% filter(ID=="GO:0003677", set=="set3") %>% summarize(ave = mean(target_frac))
-perm_mf %>% filter(ID=="GO:0003676", set=="set3") %>% summarize(ave = mean(target_frac))
-perm_bp %>% filter(ID=="GO:0010468", set=="set3") %>% summarize(ave = mean(target_frac))
-perm_bp %>% filter(ID=="GO:1903506", set=="set3") %>% summarize(ave = mean(target_frac))
+#compute P-values
+
+orig_bp_merge <- full_join(orig_bp, orig_bp_perm, by=c("version" = "version", "set" = "set", "ID" = "ID")) %>% 
+  rowwise %>% 
+  mutate(pval_frac = max(1-ecdf_frac(target_frac), 1e-04), 
+         pval_logp = max(1-ecdf_logp(logp), 1e-04), 
+         pval_enrich = max(1-ecdf_enrich(log2(target_frac/bg_frac))), 1e-04) %>% 
+  ungroup %>% group_by(version, set) %>% 
+  mutate(qval_logp = p.adjust(pval_logp, "BH"),
+         qval_frac = p.adjust(pval_frac, "BH"),
+         qval_enrich = p.adjust(pval_enrich, "BH"))
 
 
+orig_mf_merge <- full_join(orig_mf, orig_mf_perm, by=c("version" = "version", "set" = "set", "ID" = "ID")) %>% 
+  rowwise %>% 
+  mutate(pval_frac = max(1-ecdf_frac(target_frac), 1e-04), 
+         pval_logp = max(1-ecdf_logp(logp), 1e-04), 
+         pval_enrich = max(1-ecdf_enrich(log2(target_frac/bg_frac)), 1e-04)) %>% 
+  ungroup %>% group_by(version, set) %>% 
+  mutate(qval_logp = p.adjust(pval_logp, "BH"),
+         qval_frac = p.adjust(pval_frac, "BH"),
+         qval_enrich = p.adjust(pval_enrich, "BH"))
+
+orig_mf_merge %>% filter(version == "gain") %>% filter(qval_frac < 0.20) %>% select(set, ID, target_frac, bg_frac, pval_frac, qval_frac) %>% write_tsv("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/orig_gain_mf_results.tsv")
+orig_bp_merge %>% filter(version == "gain") %>% filter(qval_frac < 0.20)  %>% select(set, ID, target_frac, bg_frac, pval_frac, qval_frac)  %>% write_tsv("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/orig_gain_bp_results.tsv")
+
+summary((orig_mf_merge %>% filter(ID == "GO:0003676", version == "gain", set == "crar") %>% pull(ecdf_frac))[[1]])
+summary((orig_mf_merge %>% filter(ID == "GO:0003677", version == "gain", set == "crar") %>% pull(ecdf_frac))[[1]])
+summary((orig_mf_merge %>% filter(ID == "GO:0043565", version == "gain", set == "crar") %>% pull(ecdf_frac))[[1]])
+summary((orig_bp_merge %>% filter(ID == "GO:0006355", version == "gain", set == "crar") %>% pull(ecdf_frac))[[1]])
+summary((orig_bp_merge %>% filter(ID == "GO:0060173", version == "gain", set == "crar") %>% pull(ecdf_frac))[[1]])
