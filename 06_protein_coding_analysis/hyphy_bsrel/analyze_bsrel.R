@@ -2,6 +2,7 @@ setwd("~/Projects/birds/ratite_compgen/ratite-genomics/06_protein_coding_analysi
 library(tidyverse)
 library(clusterProfiler)
 library(biomaRt)
+library(ape)
 
 ##ANNOTATION -- code copied from https://github.com/ajshultz/avian-immunity/blob/master/ComparativeGenomics/PAML_Analyze/02_GeneID_Annotation.R ##
 
@@ -69,6 +70,7 @@ hog_final_key <- hog_key_gg %>% full_join(full_list, by=c("hog" = "hog")) %>%
 
 hog_final_key %>% filter(species_tree == "False") %>% count(hog) %>% count(n)
 hog_final_key %>% filter(species_tree == "True") %>% count(hog) %>% count(n)
+hog_final_key %>% filter(species_tree == "True") %>% count(hog) %>% filter(n==2)
 
 hog_final_key %>% count(hog) %>% filter(n > 2)
 hog_final_key %>% filter(species_tree == "True") %>% count(hog) %>% filter(n >= 2)
@@ -98,7 +100,7 @@ bsrel_orig <- hog_final_key %>% distinct(hog, tree, entrezgene, .keep_all = TRUE
 
 #first need to write function to take tree string and compute # targets vs # non-targets
 
-count_targets <- function(nodelist, targets) {
+count_targets <- function(nodelist, targets, return_full = FALSE) {
   #nodelist will need to be split on ":"
   #then each element needs to be checked for presence of targets
   #and internal nodes computed to assign to target or non-target (tips are easy)
@@ -117,7 +119,22 @@ count_targets <- function(nodelist, targets) {
     group_by(node) %>% 
     mutate(target_frac = compute_target_frac(node, targets))
   
+  if (return_full) {
+    return(node_vec %>% filter(target_frac >= 1))
+  }
+  
   sum(node_vec$target_frac >= 1)
+}
+
+count_ratite_clades <- function(nodelist) {
+  
+  ratite_clades <- tibble(node = c("anoDid", "strCam", "rheAme", "rhePen", "rheAme-rhePen", "droNov", "casCas", "casCas-droNov", "aptHaa", "aptRow", "aptOwe", "aptHaa-aptOwe", "aptHaa-aptOwe-aptRow"),
+                          clade = c("moa", "ostrich", "rhea", "rhea", "rhea", "emu", "emu", "emu", "kiwi", "kiwi", "kiwi", "kiwi", "kiwi"))
+  
+  ratite_counts <- count_targets(nodelist, ratite_clades$node, TRUE)
+  
+  inner_join(ratite_clades, ratite_counts, by=c("node" = "node")) %>% distinct(clade) %>% pull(clade) %>% paste0(collapse = "-")
+
 }
 
 ratite_tips = c("anoDid", "strCam", "rheAme", "rhePen", "droNov", "casCas", "aptHaa", "aptRow", "aptOwe")
@@ -125,103 +142,68 @@ corm_tip = c("nanHar")
 
 bsrel_orig <- bsrel_orig %>% 
   mutate(ratite_selected_nom = map_int(nom_br, count_targets, ratite_tips)) %>%
-  mutate(ratite_selected_str = map_int(strict_br, count_targets, ratite_tips))
+  mutate(ratite_selected_str = map_int(strict_br, count_targets, ratite_tips)) %>%
+  mutate(ratite_nom_clades = map_chr(nom_br, count_ratite_clades)) %>%
+  mutate(ratite_str_clades = map_chr(strict_br, count_ratite_clades))
 
 bsrel_ext <- bsrel_ext %>%
   mutate(ratite_selected_nom = map_int(nom_br, count_targets, ratite_tips)) %>%
   mutate(ratite_selected_str = map_int(strict_br, count_targets, ratite_tips)) %>%
+  mutate(ratite_nom_clades = map_chr(nom_br, count_ratite_clades)) %>%
+  mutate(ratite_str_clades = map_chr(strict_br, count_ratite_clades)) %>%
   mutate(corm_selected_nom = map_int(nom_br, count_targets, corm_tip)) %>%
   mutate(corm_selected_str = map_int(strict_br, count_targets, corm_tip))
 
+bsrel_orig_clean <- bsrel_orig %>% filter(species_tree == "True", !is.na(total), total > 0, !grepl("XM", nom_br), !grepl("00", nom_br)) %>% distinct(hog, chr, entrezgene, .keep_all = TRUE)
+
+bsrel_ext_clean <- bsrel_ext %>% filter(species_tree == "True", !is.na(total), total > 0, !grepl("XM", nom_br), !grepl("00", nom_br)) %>% distinct(hog, chr, entrezgene, .keep_all = TRUE)
+
+pos_ext <- bsrel_ext_clean %>% dplyr::select(hog, entrezgene, sym = external_gene_name, strict_br) %>% 
+  filter(!grepl("XM", strict_br))
+
+ext_tree <- read.tree("../final_tree_ext_proteins.nwk")
+
+all_tips <- ext_tree$tip.label[1:44]
+all_tips_internal <- bsrel_ext_clean %>% distinct(nom_br) %>% pull(nom_br) %>% str_split(., coll(":")) %>% unlist %>% unique
+
+count_selected_tips <- function(branch_string, tips, drop_internal = TRUE) {
+  nodes <- str_split(branch_string, coll(":")) %>% unlist
+  if (drop_internal) {
+    nodes <- nodes[!grepl("-", nodes)]
+  }
+  selected<-as.numeric(tips %in% nodes)
+  names(selected) <- tips
+  return(selected)
+}
+
+pos_ext_wide <- apply(pos_ext[,4], 1, function(x) count_selected_tips(x, all_tips)) %>% t() %>% as.tibble() %>% 
+  mutate(total_sel = rowSums(.), ratite_sel = anoDid+strCam+rheAme+rhePen+droNov+casCas+aptHaa+aptRow+aptOwe)
+
+write_tsv(pos_ext_wide, path="bsrel_matrix.tsv")
+
 ##ANALYSIS##
 
-ratite_spec_genes_orig <- bsrel_orig %>% filter(ratite_selected_str >= 1,ratite_selected_str == strict, species_tree == "True")
-ratite_spec_genes_ext <- bsrel_ext %>% filter(ratite_selected_str >= 1,ratite_selected_str == strict, species_tree == "True")
+bsrel_ext_clean %>% filter(ratite_selected_str == strict, strict > 0)
+bsrel_ext_clean %>% filter(ratite_selected_str == strict, strict > 0) %>% count(ratite_str_clades) %>% print.data.frame
+bsrel_ext_clean %>% filter(ratite_selected_str >= 1, ratite_selected_str/strict > 0.50) %>% count(ratite_str_clades) %>% print.data.frame
 
+bsrel_ext_clean %>% filter(ratite_selected_str >= 1, ratite_selected_str/strict > 0.50, ratite_str_clades == "moa-ostrich-rhea-emu-kiwi")
 
+background_orig <- bsrel_orig_clean %>% distinct(entrezgene)
+background_ext <- bsrel_ext_clean %>% distinct(entrezgene)
 
-### OLD CODE BELOW ###
+##CONVERGENCE##
 
+#ratite vs cormorant
 
-ratite_spec_genes_gt <- bsrel %>% filter(tsel.n >= 1, nsel.n == 0, species_tree == "False") %>% filter(!is.na(ensembl_gene_id))
-ratite_spec_genes_strict <- ratite_spec_genes %>% filter(entrezgene %in% ratite_spec_genes_gt$entrezgene) %>% filter(!is.na(ensembl_gene_id))
+pos_ext_wide %>% colSums(.)
+pos_ext_wide %>% filter(total_sel == ratite_sel + 1, ratite_sel > 0) %>% colSums(.) / colSums(pos_ext_wide)
+bsrel_ext_clean %>% filter(ratite_selected_str >= 1, ratite_selected_str + 1 == strict, corm_selected_str == 1)
 
-ratite_genes <- bsrel %>% filter(tsel.s >= 1, tsel.s > nsel.s, species_tree == "True")  %>% filter(!is.na(ensembl_gene_id))
-ratite_genes_gt <- bsrel %>% filter(tsel.s >= 1, tsel.s > nsel.s, species_tree == "False")  %>% filter(!is.na(ensembl_gene_id))
-ratite_genes_strict <- ratite_genes %>% filter(entrezgene %in% ratite_genes_gt$entrezgene)  %>% filter(!is.na(ensembl_gene_id))
+bsrel_ext_clean <- bsrel_ext_clean %>% mutate(prob_sel_str = strict/total, prob_sel_nom = nom/total)
+bsrel_orig_clean <- bsrel_orig_clean %>% mutate(prob_sel_str = strict/total, prob_sel_nom = nom/total)
 
-background <- bsrel %>% distinct(entrezgene, .keep_all=TRUE)  %>% filter(!is.na(ensembl_gene_id))
-
-
-bsrel_s_mf <- enrichGO(ratite_spec_genes_strict$ensembl_gene_id,'org.Gg.eg.db',pvalueCutoff = 0.05, universe=background$ensembl_gene_id,keyType="ENSEMBL",ont="MF") %>% as.data.frame
-bsrel_s_bp <- enrichGO(ratite_spec_genes_strict$ensembl_gene_id,'org.Gg.eg.db',pvalueCutoff = 0.05, universe=background$ensembl_gene_id,keyType="ENSEMBL",ont="BP") %>% as.data.frame
-
-bsrel_all_mf <- enrichGO(ratite_genes_strict$ensembl_gene_id,'org.Gg.eg.db',pvalueCutoff = 0.05, universe=background$ensembl_gene_id,keyType="ENSEMBL",ont="MF") %>% as.data.frame
-bsrel_all_bp <- enrichGO(ratite_genes_strict$ensembl_gene_id,'org.Gg.eg.db',pvalueCutoff = 0.05, universe=background$ensembl_gene_id,keyType="ENSEMBL",ont="BP") %>% as.data.frame
-
-bsrel_s_kegg <- enrichKEGG(ratite_spec_genes_strict$entrezgene, 'gga', pvalueCutoff = 0.05, universe = background$entrezgene, keyType = "ncbi-geneid")
-bsrel_all_kegg <- enrichKEGG(ratite_genes_strict$entrezgene, 'gga', pvalueCutoff = 0.05, universe = background$entrezgene, keyType = "ncbi-geneid")
-
-bsrel_s_mf
-bsrel_s_bp
-bsrel_all_mf
-bsrel_all_bp
-bsrel_s_kegg
-bsrel_all_kegg
-
-
-#work with tibbles
-merged <- tbl_df(merged)
-merged <- hog_info %>% dplyr::select(hog, dup_ct, missing_ct) %>% right_join(., merged) %>% tbl_df %>% 
-  mutate(totbranch = tnon + nnon + tsel.n + nsel.n) %>% 
-  mutate(total_sel.s = tsel.s + nsel.s, total_sel.n = tsel.n + nsel.n, target_prop.s = tsel.s/total_sel.s, target_prop.n = tsel.n / total_sel.n, target_lin = tsel.n + tnon) %>% 
-  dplyr::select(-class)
-
-## THIS CODE CHECKS FOR MISSING HOGS TO RERUN
-#get missing and set up reruns
-check_for_missing = subset(merged, select=c("hog", "tree", "treenum", "species_tree", "totbranch"))
-
-table(check_for_missing$treenum, check_for_missing$tree, useNA="ifany")
-check_for_missing=subset(check_for_missing, !is.na(treenum))
-table(check_for_missing$totbranch==0, useNA='ifany')
-#missing set to rerun
-rerun<-subset(check_for_missing, totbranch==0 | is.na(totbranch))
-#rerun rule: if tree1 is a rerun & the species tree, rerun tree1 and tree2
-#if tree1 is a rerun and not the species tree, no tree2 to rerun
-#if tree2 is a rerun and not the species tree, no need to rerun tree1
-#however because of checks in script, should be able to just run straight up
-write.table(unique(rerun$hog), col.names = F, row.names = F, quote=F, file="hogs_to_rerun_Nov2017")
-#####
-
-#ANALYSIS 
-bsrel<-merged %>% filter(dup_ct == 0, species_tree == TRUE, totbranch > 0, missing_ct <= 5)
-bsrel %>% distinct(hog) %>% summarize(count=n())
-
-#test whether ratite-specific selection has functional enrichments
-ratite_spec_genes <- bsrel %>% filter(tsel.s >= 1, nsel.s == 0) %>% dplyr::select(hog) %>% inner_join(., hog_to_gene) %>% dplyr::select(gene)
-ratite_conv_genes <- bsrel %>% filter(tsel.s > 1) %>% dplyr::select(hog) %>% inner_join(., hog_to_gene) %>% dplyr::select(gene)
-ratite_conv_spec_genes <- ratite_conv_genes %>% filter(gene %in% ratite_spec_genes$gene)
-
-
-bsrel_sc_mf <- enrichGO(ratite_conv_spec_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="MF")
-bsrel_sc_bp <- enrichGO(ratite_conv_spec_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="BP")
-
-bsrel_c_mf <- enrichGO(ratite_conv_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="MF")
-bsrel_c_bp <- enrichGO(ratite_conv_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="BP")
-
-bsrel_s_mf <- enrichGO(ratite_spec_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="MF")
-bsrel_s_bp <- enrichGO(ratite_spec_genes$gene,'org.Gg.eg.db',pvalueCutoff = 0.1, universe=backgroundset$gene,keytype="SYMBOL",ont="BP")
-
-bsrel_sc_mf 
-bsrel_sc_bp
-bsrel_c_mf 
-bsrel_c_bp
-bsrel_s_mf
-bsrel_s_bp
-
-#convergence testing
-barplot(table(bsrel$tsel.s[bsrel$nsel.s == 0 & bsrel$tsel.s >= 1]), ylab="Number of Genes Uniquely Selected in >1 Target Lineages", legend=T)
-bsrel$prob_sel = (bsrel$total_sel.s / bsrel$totbranch)
+#run this once then load data
 
 compute_convergence <- function(prob = prob, target = target, total = total) {
   target<-rbinom(1, target, prob)
@@ -234,28 +216,110 @@ compute_convergence <- function(prob = prob, target = target, total = total) {
   }
 }
 
-exp_multiratite<-list()
+conv_perms_orig<-list()
+conv_perms_ext<-list()
+conv_perms_trio<-list()
 
-for (i in 1:1000) {
-  res<-mapply(compute_convergence, bsrel$prob_sel, bsrel$target_lin, bsrel$totbranch)
-exp_multiratite[[i]]<-as.data.frame(table(res), stringsAsFactors = F)
+for (i in 1:10000) {
+  res<-mapply(compute_convergence, bsrel_orig_clean$prob_sel_str, 4, bsrel_orig_clean$total-4)
+  res2<-mapply(compute_convergence, bsrel_ext_clean$prob_sel_str, 5, bsrel_ext_clean$total-4)
+  res3<-mapply(compute_convergence, bsrel_ext_clean$prob_sel_str, 3, bsrel_ext_clean$total-6)
+  conv_perms_orig[[i]]<-as.data.frame(table(res), stringsAsFactors = F)
+  conv_perms_ext[[i]]<-as.data.frame(table(res2), stringsAsFactors = F)
+  conv_perms_trio[[i]]<-as.data.frame(table(res3), stringsAsFactors = F)
 }
 
-perm_res <- bind_rows(exp_multiratite, .id="rep") %>% spread(res, Freq, fill=0, drop=FALSE) %>% 
-  dplyr::rename(ct0 = `0`, ct1 = `1`, ct2 = `2`, ct3 = `3`, ct4=`4`, ct5=`5`) %>%
+perm_res_orig <- bind_rows(conv_perms_orig, .id="rep") %>% spread(res, Freq, fill=0, drop=FALSE) %>% 
+  dplyr::rename(ct0 = `0`, ct1 = `1`, ct2 = `2`, ct3 = `3`, ct4 = `4`) %>%
+  mutate(selected = ct1+ct2+ct3+ct4, convergent = ct2+ct3+ct4, rel_conv = convergent/selected) %>% tbl_df
+
+perm_res_ext <- bind_rows(conv_perms_ext, .id="rep") %>% spread(res2, Freq, fill=0, drop=FALSE) %>% 
+  dplyr::rename(ct0 = `0`, ct1 = `1`, ct2 = `2`, ct3 = `3`, ct4 = `4`, ct5 = `5`) %>%
   mutate(selected = ct1+ct2+ct3+ct4+ct5, convergent = ct2+ct3+ct4+ct5, rel_conv = convergent/selected) %>% tbl_df
 
-real_res <- as.data.frame(table(bsrel$tsel.s[bsrel$nsel.s==0])) %>% tbl_df %>% spread(Var1, Freq) %>%
+perm_res_trio <- bind_rows(conv_perms_trio, .id="rep") %>% spread(res3, Freq, fill=0, drop=FALSE) %>% 
   dplyr::rename(ct0 = `0`, ct1 = `1`, ct2 = `2`, ct3 = `3`) %>%
-  mutate(ct4=0, ct5=0, selected = ct1+ct2+ct3+ct4+ct5, convergent = ct2+ct3+ct4+ct5, rel_conv = convergent/selected) %>% tbl_df
+  mutate(selected = ct1+ct2+ct3, convergent = ct2+ct3, rel_conv = convergent/selected) %>% tbl_df
 
-1-(sum(real_res$selected > perm_res$selected)/1000)
-1-(sum(real_res$convergent > perm_res$convergent)/1000)
-1-(sum(real_res$rel_conv > perm_res$rel_conv)/1000)
+##end run once
 
-bsrel %>% filter(tsel.s > 2, nsel.s == 0) %>% dplyr::select(hog) %>% inner_join(., hog_to_gene) %>% arrange(gene) %>% print.data.frame
+write_tsv(perm_res_trio, path="perm_res_trio.tsv")
+write_tsv(perm_res_ext, path="perm_res_ext.tsv")
+write_tsv(perm_res_orig, path="perm_res_orig.tsv")
 
-library(ggthemes)
-#figure 2b
-perm_res %>% ggplot(aes(x=rel_conv)) + theme_tufte() + geom_density() + labs(x="Proportion with convergent selection") +
-  geom_vline(xintercept=real_res$rel_conv, col="red")
+perm_res_ext <- read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/06_protein_coding_analysis/hyphy_bsrel/perm_res_ext.tsv")
+perm_res_trio <- read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/06_protein_coding_analysis/hyphy_bsrel/perm_res_trio.tsv")
+
+#real results
+
+orig_counts <- bsrel_orig_clean %>% 
+  filter(ratite_selected_str >= 1,ratite_selected_str == strict, species_tree == "True", ratite_str_clades != "") %>% 
+  count(ratite_str_clades) %>% mutate(clade_ct = str_count(ratite_str_clades, coll("-"))+1)
+
+ext_counts <- bsrel_ext_clean %>% 
+  filter(ratite_selected_str >= 1,ratite_selected_str == strict, species_tree == "True", ratite_str_clades != "") %>% 
+  count(ratite_str_clades) %>% mutate(clade_ct = str_count(ratite_str_clades, coll("-"))+1)
+
+orig_counts %>% group_by(clade_ct) %>% summarize(sum(n))
+ext_counts %>% group_by(clade_ct) %>% summarize(sum(n))
+
+#extended counts P-value:
+ecdf(perm_res_ext$rel_conv)(0.2647059)
+1/10000
+
+#ext_counts
+ext_counts %>% arrange(clade_ct) %>% print.data.frame
+
+#trios
+
+#convergent = all three lineages, so moa-ostrich and one more
+conv_trio_ct1 <- 40+4+46+17+10+62+10+3+6
+conv_trio_ct2 <- 14+2+6+2+1+3+2+1+2+1+4+1+1
+frac_trio_ct2 <- conv_trio_ct2 / (conv_trio_ct2+conv_trio_ct1)
+
+perm_res_trio <- perm_res_trio %>% mutate(ct2_frac = ct2/selected, ct3_frac = ct3/selected)
+
+perm_res_trio %>% ggplot(aes(ct2_frac)) + geom_density(adjust=4) + geom_vline(xintercept = frac_trio_ct2, col="red")
+perm_res_trio %>% ggplot(aes(ct3_frac)) + geom_density(adjust=4) 
+
+#plotting
+
+perm_res_orig %>% ggplot(aes(rel_conv)) + geom_density(adjust=2) + theme_minimal() + xlab("Proportion Selected Genes with Evidence for Convergence") + coord_cartesian(xlim=c(0,0.30)) + geom_vline(xintercept=0.07670455, col="red")
+perm_res_ext %>% ggplot(aes(rel_conv)) + geom_density(adjust=2) + theme_minimal() + xlab("Proportion Selected Genes with Evidence for Convergence") + coord_cartesian(xlim=c(0,0.30)) + geom_vline(xintercept=0.2647059, col="red")
+
+#checking consistency of results across original and extended runs:
+merged <- full_join(bsrel_ext_clean, bsrel_orig_clean, by=c("hog" = "hog"), suffix=c(".ext", ".org"))
+
+merged %>% ggplot(aes(nom.ext, nom.org)) + geom_point(alpha=0.1)
+merged %>% ggplot(aes(strict.org, nom.org)) + geom_point(alpha=0.1)
+
+merged %>% filter(strict.ext > 40, strict.org < 2) %>% View()
+
+#enrichments for convergent genes? what are the ratite-specific and convergent genes?
+
+ratite_selected_genes <- bsrel_ext_clean %>% 
+  filter(ratite_selected_str >= 1,ratite_selected_str == strict, species_tree == "True", ratite_str_clades != "") %>% 
+  mutate(clade_ct = str_count(ratite_str_clades, coll("-"))+1) %>% 
+  dplyr::select(hog, chr, entrezgene, external_gene_name, strict, strict_br, ratite_selected_str, ratite_str_clades, clade_ct)
+
+#GO / KEGG#
+
+ratite_spec_genes_orig <- bsrel_orig_clean %>% filter(ratite_selected_str >= 1,ratite_selected_str == strict, species_tree == "True")
+ratite_spec_genes_ext <- bsrel_ext_clean %>% filter(ratite_selected_str >= 1,ratite_selected_str == strict, species_tree == "True")
+
+ratite_enrich_genes_ext <- bsrel_ext_clean %>% filter(ratite_selected_str >= 1,ratite_selected_str/strict > 0.50, species_tree == "True")
+
+enrichGO(ratite_spec_genes_ext$entrezgene,'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="MF")
+enrichGO(ratite_spec_genes_ext$entrezgene,'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="BP")
+enrichKEGG(ratite_spec_genes_ext$entrezgene,'gga',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ncbi-geneid")
+
+
+enrichGO(ratite_enrich_genes_ext$entrezgene,'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="MF")
+summary(enrichGO(ratite_enrich_genes_ext$entrezgene,'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="BP"))
+enrichKEGG(ratite_enrich_genes_ext$entrezgene,'gga',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ncbi-geneid")
+
+enrichGO(ratite_selected_genes$entrezgene[ratite_selected_genes$clade_ct > 1],'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="BP")
+enrichGO(ratite_selected_genes$entrezgene[ratite_selected_genes$clade_ct > 1],'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="MF")
+enrichKEGG(ratite_selected_genes$entrezgene[ratite_selected_genes$clade_ct > 1],'gga',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ncbi-geneid")
+
+
