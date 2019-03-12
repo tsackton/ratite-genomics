@@ -2,7 +2,7 @@
 library(tidyverse)
 
 #read real data
-ext<-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/geneperms/extended_ratiteVcorm_gene_galgal4_run1_real.tsv") %>% rename(run = set) %>%
+ext<-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/geneperms/extended_gene_galgal4_run1_real.tsv") %>% rename(run = set) %>%
   mutate(total=in_target_TRUE + in_target_FALSE, 
          set = case_when(
            run == 1 ~ "rar",
@@ -28,7 +28,7 @@ red<-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/
 
 
 #read perms
-ext_perm<-readRDS("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/geneperms/extended_ratiteVcorm_galgal4.robj")
+ext_perm<-readRDS("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/geneperms/extended_galgal4.robj")
 orig_perm<-readRDS("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/geneperms/original_galgal4.robj")
 red_perm<-readRDS("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/geneperms/reduced_galgal4.robj")
 
@@ -46,7 +46,7 @@ exclude_nonsig <- function(DF, cutoff = 0.05) {
   DF %>% filter(qval <= cutoff)
 }
 
-orig_merge %>% filter(set=="rar", version=="gain") %>% filter(count > 0) %>%
+ext_merge %>% filter(set=="rar", version=="gain") %>% filter(count > 0) %>%
   mutate(qval = p.adjust(pval, "fdr")) %>%
   mutate(cnee_total = total, sig = qval < 0.05) %>% 
   separate(gene, into=c("ncbi", "sym"), sep=":") %>% 
@@ -55,7 +55,15 @@ orig_merge %>% filter(set=="rar", version=="gain") %>% filter(count > 0) %>%
   geom_text(data=exclude_nonsig, nudge_x = .1, show.legend=FALSE) + scale_x_continuous(breaks=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15))
 
 #also convergent RARs
-orig_merge %>% filter(set=="crar", version=="gain") %>% filter(count > 0) %>%
+orig_merge %>% filter(set=="rar", version=="gain") %>% filter(count > 0) %>%
   mutate(qval = p.adjust(pval, "fdr")) %>%
   mutate(cnee_total = total, sig = qval < 0.05) %>% 
-  separate(gene, into=c("ncbi", "sym"), sep=":") %>% filter(qval < 0.05)
+  separate(gene, into=c("ncbi", "sym"), sep=":") %>% filter(qval < 0.05) %>%
+  select(sym,count,total) %>% print.data.frame
+
+#also convergent RARs
+ext_merge %>% filter(set=="rar", version=="gain") %>% filter(count > 0) %>%
+  mutate(qval = p.adjust(pval, "fdr")) %>%
+  mutate(cnee_total = total, sig = qval < 0.05) %>% 
+  separate(gene, into=c("ncbi", "sym"), sep=":") %>% filter(qval < 0.05) %>%
+  select(sym,count,total) %>% print.data.frame

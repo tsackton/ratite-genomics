@@ -192,53 +192,114 @@ res_RER_all %>% mutate(direction = case_when(p.adj < 0.05 & Rho < 0 ~ "down", p.
 res_RER_all %>% mutate(direction = case_when(p.adj < 0.01 & Rho < 0 ~ "down", p.adj < 0.01 & Rho > 0 ~ "up", TRUE ~ "ns")) %>%
   group_by(targets, tree) %>% count(direction) %>% spread(direction, n)
 
-res_RER_all %>% mutate(direction = case_when(P < 0.05 & Rho < 0 ~ "down", P < 0.05 & Rho > 0 ~ "up", TRUE ~ "ns")) %>%
-  group_by(targets, tree) %>% count(direction) %>% spread(direction, n) %>% mutate(prop_sig = (down + up) / (down + up + ns))
-
 res_RER_all %>% mutate(direction = case_when(P < 0.01 & Rho < 0 ~ "down", P < 0.01 & Rho > 0 ~ "up", TRUE ~ "ns")) %>%
   group_by(targets, tree) %>% count(direction) %>% spread(direction, n) %>% mutate(prop_sig = (down + up) / (down + up + ns))
 
-res_RER_all %>% filter(tree == "orig", direction=="up") %>% ggplot(aes(P, col=targets)) + geom_freqpoly(binwidth=0.05)
-res_RER_all %>% filter(tree == "orig", direction=="down") %>% ggplot(aes(P, col=targets)) + geom_freqpoly(binwidth=0.05)
-res_RER_all %>% filter(tree == "ext", direction=="up") %>% ggplot(aes(P, col=targets)) + geom_freqpoly(binwidth=0.05)
-res_RER_all %>% filter(tree == "ext", direction=="down") %>% ggplot(aes(P, col=targets)) + geom_freqpoly(binwidth=0.05)
-res_RER_all %>% filter(tree == "red", direction=="up") %>% ggplot(aes(P, col=targets)) + geom_freqpoly(binwidth=0.05)
-res_RER_all %>% filter(tree == "red", direction=="down") %>% ggplot(aes(P, col=targets)) + geom_freqpoly(binwidth=0.05)
+res_RER_all %>% mutate(direction = case_when(P < 0.05 & Rho < 0 ~ "down", P < 0.05 & Rho > 0 ~ "up", TRUE ~ "ns")) %>%
+  group_by(targets, tree) %>% count(direction) %>% spread(direction, n) %>% mutate(prop_sig_up = (up) / (down + up + ns), prop_sig_down = (down) / (down + up + ns))
 
-#SUBSETS TO TEST EFFECT
+res_RER_all %>% filter(tree == "orig", direction=="up") %>% ggplot(aes(P, ..density.., col=targets)) + geom_freqpoly(binwidth=0.01, size=1.5) + theme_classic()
+res_RER_all %>% filter(tree == "orig", direction=="down") %>% ggplot(aes(P, ..density.., col=targets)) + geom_freqpoly(binwidth=0.01, size=1.5) + theme_classic()
+res_RER_all %>% filter(tree == "ext", direction=="up") %>% ggplot(aes(P, ..density.., col=targets)) + geom_freqpoly(binwidth=0.01, size=1.5) + theme_classic()
+res_RER_all %>% filter(tree == "ext", direction=="down") %>% ggplot(aes(P, ..density.., col=targets)) + geom_freqpoly(binwidth=0.01, size=1.5) + theme_classic()
+res_RER_all %>% filter(tree == "red", direction=="up") %>% ggplot(aes(P, ..density.., col=targets)) + geom_freqpoly(binwidth=0.01, size=1.5) + theme_classic()
+res_RER_all %>% filter(tree == "red", direction=="down") %>% ggplot(aes(P, ..density.., col=targets)) + geom_freqpoly(binwidth=0.01, size=1.5) + theme_classic()
 
-#trying subsets
-vl_ext_sub = drop.tip(vl_ext, c("taeGut", "ficAlb", "corBra", "serCan", "geoFor","aptOwe", "aptHaa", "aptRow", "casCas", "rheAme", "rhePen"))
-vl_ext_sub$edge.length[vl_ext_sub$edge.length > 1] = 1
+#SUBSET RATITES#
 
-rat_ext_sub = drop.tip(ratite_ext, c("aptOwe", "aptHaa", "aptRow", "casCas", "rheAme", "rhePen","taeGut", "ficAlb", "corBra", "serCan", "geoFor")) 
-rat_ext_sub$edge.length[rat_ext_sub$edge.length > 1] = 1
+rat_ext_sub_1 = drop.tip(ratite_ext, c("aptOwe", "aptHaa", "aptRow", "casCas", "rheAme", "rhePen")) 
+rat_ext_sub_1$edge.length[rat_ext_sub_1$edge.length > 1] = 1
 
-fl_ext_sub = drop.tip(flightless_ext, c("aptOwe", "aptHaa", "aptRow", "casCas", "rheAme", "rhePen","taeGut", "ficAlb", "corBra", "serCan", "geoFor")) 
-fl_ext_sub$edge.length[fl_ext_sub$edge.length > 1] = 1
+rat_ext_sub_2 = drop.tip(ratite_ext, c("droNov", "aptHaa", "aptRow", "casCas", "rheAme", "rhePen")) 
+rat_ext_sub_2$edge.length[rat_ext_sub_2$edge.length > 1] = 1
 
-RERext_sub <- RERconverge::getAllResiduals(aaSpTreesExt, useSpecies=vl_ext_sub$tip.label, transform = "sqrt", weighted = T, scale = T)
+rat_ext_sub_3 = drop.tip(ratite_ext, c("aptOwe", "droNov", "aptRow", "casCas", "rheAme", "rhePen")) 
+rat_ext_sub_3$edge.length[rat_ext_sub_3$edge.length > 1] = 1
+
+rat_ext_sub_4 = drop.tip(ratite_ext, c("aptOwe", "aptHaa", "droNov", "casCas", "rheAme", "rhePen")) 
+rat_ext_sub_4$edge.length[rat_ext_sub_4$edge.length > 1] = 1
+
+rat_ext_sub_5 = drop.tip(ratite_ext, c("aptOwe", "aptHaa", "aptRow", "droNov", "rheAme", "rhePen")) 
+rat_ext_sub_5$edge.length[rat_ext_sub_5$edge.length > 1] = 1
+
+rat_ext_sub_6 = drop.tip(ratite_ext, c("aptOwe", "aptHaa", "aptRow", "casCas", "droNov", "rhePen")) 
+rat_ext_sub_6$edge.length[rat_ext_sub_6$edge.length > 1] = 1
+
+rat_ext_sub_7 = drop.tip(ratite_ext, c("aptOwe", "aptHaa", "aptRow", "casCas", "rheAme", "droNov")) 
+rat_ext_sub_7$edge.length[rat_ext_sub_7$edge.length > 1] = 1
 
 #make paths -- 7 total
-vl_ext_paths_sub <- tree2Paths(vl_ext_sub, aaSpTreesExt)
-ratite_ext_paths_sub <- tree2Paths(rat_ext_sub, aaSpTreesExt)
-flightless_ext_paths_sub <- tree2Paths(fl_ext_sub, aaSpTreesExt)
+ratite_ext_paths_sub_1 <- tree2Paths(rat_ext_sub_1, aaSpTreesExt)
+ratite_ext_paths_sub_2 <- tree2Paths(rat_ext_sub_2, aaSpTreesExt)
+ratite_ext_paths_sub_3 <- tree2Paths(rat_ext_sub_3, aaSpTreesExt)
+ratite_ext_paths_sub_4 <- tree2Paths(rat_ext_sub_4, aaSpTreesExt)
+ratite_ext_paths_sub_5 <- tree2Paths(rat_ext_sub_5, aaSpTreesExt)
+ratite_ext_paths_sub_6 <- tree2Paths(rat_ext_sub_6, aaSpTreesExt)
+ratite_ext_paths_sub_7 <- tree2Paths(rat_ext_sub_7, aaSpTreesExt)
 
 ### END MAKE PHENOTYPE TREES ### 
 
+
+#prep objects
+RERext1 <- RERconverge::getAllResiduals(aaSpTreesExt, useSpecies=rat_ext_sub_1$tip.label, transform = "sqrt", weighted = T, scale = F)
+RERext2 <- RERconverge::getAllResiduals(aaSpTreesExt, useSpecies=rat_ext_sub_2$tip.label, transform = "sqrt", weighted = T, scale = F)
+RERext3 <- RERconverge::getAllResiduals(aaSpTreesExt, useSpecies=rat_ext_sub_3$tip.label, transform = "sqrt", weighted = T, scale = F)
+RERext4 <- RERconverge::getAllResiduals(aaSpTreesExt, useSpecies=rat_ext_sub_4$tip.label, transform = "sqrt", weighted = T, scale = F)
+RERext5 <- RERconverge::getAllResiduals(aaSpTreesExt, useSpecies=rat_ext_sub_5$tip.label, transform = "sqrt", weighted = T, scale = F)
+RERext6 <- RERconverge::getAllResiduals(aaSpTreesExt, useSpecies=rat_ext_sub_6$tip.label, transform = "sqrt", weighted = T, scale = F)
+RERext7 <- RERconverge::getAllResiduals(aaSpTreesExt, useSpecies=rat_ext_sub_7$tip.label, transform = "sqrt", weighted = T, scale = F)
+
+
+
 ## RUN RER - 7 runs ###
 
-res_vl_ext_sub <- correlateWithBinaryPhenotype(RERext_sub, vl_ext_paths_sub, min.sp=10, min.pos=3, weighted = "auto") %>% as_tibble(rownames="gene")
-res_ratite_ext_sub <- correlateWithBinaryPhenotype(RERext_sub, ratite_ext_paths_sub, min.sp=10, min.pos=3, weighted = "auto") %>% as_tibble(rownames="gene")
-res_flightless_ext_sub <- correlateWithBinaryPhenotype(RERext_sub, flightless_ext_paths_sub, min.sp=10, min.pos=3, weighted = "auto") %>% as_tibble(rownames="gene")
+res_ext_sub_1 <- correlateWithBinaryPhenotype(RERext1, ratite_ext_paths_sub_1, min.sp=5, min.pos=2, weighted = "auto") %>% as_tibble(rownames="gene")
+res_ext_sub_2 <- correlateWithBinaryPhenotype(RERext2, ratite_ext_paths_sub_2, min.sp=5, min.pos=2, weighted = "auto") %>% as_tibble(rownames="gene")
+res_ext_sub_3 <- correlateWithBinaryPhenotype(RERext3, ratite_ext_paths_sub_3, min.sp=5, min.pos=2, weighted = "auto") %>% as_tibble(rownames="gene")
+res_ext_sub_4 <- correlateWithBinaryPhenotype(RERext4, ratite_ext_paths_sub_4, min.sp=5, min.pos=2, weighted = "auto") %>% as_tibble(rownames="gene")
+res_ext_sub_5 <- correlateWithBinaryPhenotype(RERext5, ratite_ext_paths_sub_5, min.sp=5, min.pos=2, weighted = "auto") %>% as_tibble(rownames="gene")
+res_ext_sub_6 <- correlateWithBinaryPhenotype(RERext6, ratite_ext_paths_sub_6, min.sp=5, min.pos=2, weighted = "auto") %>% as_tibble(rownames="gene")
+res_ext_sub_7 <- correlateWithBinaryPhenotype(RERext7, ratite_ext_paths_sub_7, min.sp=5, min.pos=2, weighted = "auto") %>% as_tibble(rownames="gene")
 
-res_RER_all_sub <- bind_rows(list(vl_extsub = res_vl_ext_sub, rat_extsub = res_ratite_ext_sub, fl_extsub = res_flightless_ext_sub), .id = "run") %>% separate(run, into=c("targets", "tree")) %>% mutate(direction = ifelse(Rho < 0, "down", "up"))
-write_tsv(res_RER_all_sub, path="all_RER_results_subsets.tsv")
+res_RER_sub_all_unscaled <- bind_rows(list(sub1 = res_ext_sub_1, sub2 = res_ext_sub_2, sub3 = res_ext_sub_3, sub4 = res_ext_sub_4,
+                                  sub5 = res_ext_sub_5, sub6 = res_ext_sub_6, sub7 = res_ext_sub_7), .id = "run") %>% 
+  mutate(direction = ifelse(Rho < 0, "down", "up"))
 
-res_RER_all_sub %>% mutate(direction = case_when(P < 0.01 & Rho < 0 ~ "down", P < 0.01 & Rho > 0 ~ "up", TRUE ~ "ns")) %>%
-  group_by(targets, tree) %>% count(direction) %>% spread(direction, n) %>% mutate(prop_sig = (down + up) / (down + up + ns))
+res_RER_sub_all %>% mutate(direction = case_when(P < 0.01 & Rho < 0 ~ "down", P < 0.01 & Rho > 0 ~ "up", TRUE ~ "ns")) %>%
+  group_by(run) %>% count(direction) %>% spread(direction, n) %>% mutate(prop_sig = (up + down) / (down + up + ns))
 
 
+#qvalue
+summary(qvalue(res_RER_all %>% filter(targets=="rat", tree=="orig") %>% pull(P)))
+summary(qvalue(res_RER_all %>% filter(targets=="vl", tree=="orig") %>% pull(P)))
+summary(qvalue(res_RER_all %>% filter(targets=="rat", tree=="red") %>% pull(P)))
+summary(qvalue(res_RER_all %>% filter(targets=="vl", tree=="red") %>% pull(P)))
+
+summary(qvalue(res_RER_sub_all %>% filter(run=="sub1") %>% pull(P)))
+summary(qvalue(res_RER_sub_all %>% filter(run=="sub2") %>% pull(P)))
+summary(qvalue(res_RER_sub_all %>% filter(run=="sub3") %>% pull(P)))
+summary(qvalue(res_RER_sub_all %>% filter(run=="sub4") %>% pull(P)))
+summary(qvalue(res_RER_sub_all %>% filter(run=="sub5") %>% pull(P)))
+summary(qvalue(res_RER_sub_all %>% filter(run=="sub6") %>% pull(P)))
+summary(qvalue(res_RER_sub_all %>% filter(run=="sub7") %>% pull(P)))
+
+res_RER_sub_all %>% mutate(direction = case_when(P < 0.01 & Rho < 0 ~ "down", P < 0.01 & Rho > 0 ~ "up", TRUE ~ "ns")) %>%
+  group_by(run) %>% count(direction) %>% spread(direction, n) %>% mutate(prop_up = (up) / (down + up + ns), prop_down = down / (down + up + ns))
+
+res_RER_all %>% mutate(direction = case_when(P < 0.01 & Rho < 0 ~ "down", P < 0.01 & Rho > 0 ~ "up", TRUE ~ "ns")) %>%
+  group_by(targets, tree) %>% count(direction) %>% spread(direction, n) %>% mutate(prop_up = (up) / (down + up + ns), prop_down = down / (down+up+ns))
+
+res_RER_sub_all %>% mutate(direction = case_when(p.adj < 0.01 & Rho < 0 ~ "down", p.adj < 0.01 & Rho > 0 ~ "up", TRUE ~ "ns")) %>%
+  group_by(run) %>% count(direction) %>% spread(direction, n)
+
+res_RER_sub_all %>% mutate(direction = case_when(p.adj < 0.1 & Rho < 0 ~ "down", p.adj < 0.1 & Rho > 0 ~ "up", TRUE ~ "ns")) %>%
+  group_by(run) %>% count(direction) %>% spread(direction, n)
+
+res_RER_all %>% mutate(direction = case_when(p.adj < 0.01 & Rho < 0 ~ "down", p.adj < 0.01 & Rho > 0 ~ "up", TRUE ~ "ns")) %>%
+  group_by(targets, tree) %>% count(direction) %>% spread(direction, n) %>% mutate(prop_up = (up) / (down + up + ns), prop_down = down / (down+up+ns))
+
+res_RER_all %>% mutate(direction = case_when(p.adj < 0.1 & Rho < 0 ~ "down", p.adj < 0.1 & Rho > 0 ~ "up", TRUE ~ "ns")) %>%
+  group_by(targets, tree) %>% count(direction) %>% spread(direction, n) %>% mutate(prop_up = (up) / (down + up + ns), prop_down = down / (down+up+ns))
 
 ## OLD CODE ##
 

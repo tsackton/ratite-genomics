@@ -1,4 +1,4 @@
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/analysis/protein_coding/hyphy_relax/")
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/06_protein_coding_analysis/hyphy_relax/")
 library(data.table)
 
 #ratites
@@ -21,7 +21,7 @@ relax=unique(relax)
 #check for missing
 ancrec.parsed<-fread("gunzip -c ../paml_ancrec/paml_M0_parsed.txt.gz")
 ancrec.treekey<-ancrec.parsed[,c("hog", "treenum", "species_tree"), with=FALSE]
-hog_info<-read.table("../all_hog_info.tsv", sep="\t", header=T)
+hog_info<-read.table("../../03_homology/all_hog_info.tsv", sep="\t", header=T)
 
 hog_info$has_species_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$species_tree]
 hog_info$has_gene_tree = hog_info$hog %in% ancrec.treekey$hog[ancrec.treekey$species_tree == F]
@@ -64,13 +64,14 @@ relax.clean$sig = as.numeric(relax.clean$qval < 0.05) * sign(1 - relax.clean$K)
 table(relax.clean$sig, relax.clean$sample)
 
 #compare with other branch tests
-vl.cmp = relax.clean %>% filter(sample == "VL.all") %>% inner_join(vl_epval, by=c("hog"="hog"), suffix=c(".relax", ".btest"))
-vl.cmp <- vl.cmp %>% mutate(qval.down = p.adjust(p.down, method="fdr"), qval.up = p.adjust(p.up, method = "fdr"))
-ratite.cmp = relax.clean %>% filter(sample == "Ratite.all") %>% inner_join(ratite_epval, by=c("hog"="hog"), suffix=c(".relax", ".btest"))
-ratite.cmp <- ratite.cmp %>% mutate(qval.down = p.adjust(p.down, method="fdr"), qval.up = p.adjust(p.up, method = "fdr"))
+
+vl_rer <- res_RER_all %>% filter(targets == "vl", tree == "red") %>% mutate(hog = as.integer(sub("HOG", "", gene)))
+rat_rer <- res_RER_all %>% filter(targets == "rat", tree == "red") %>% mutate(hog = as.integer(sub("HOG", "", gene)))
+vl.cmp = relax.clean %>% filter(sample == "VL.all") %>% inner_join(vl_rer, by=c("hog"="hog"), suffix=c(".relax", ".btest"))
+ratite.cmp = relax.clean %>% filter(sample == "Ratite.all") %>% inner_join(rat_rer, by=c("hog"="hog"), suffix=c(".relax", ".btest"))
 
 #extended figure 6
-vl.cmp %>% mutate(hy_rank = rank(1-K), bt_rank = rank(est)) %>% ggplot(aes(x=hy_rank, y=bt_rank)) +
+vl.cmp %>% ggplot(aes(x=-log10(pval), y=-log10(P))) +
   geom_hex(bins=50) + geom_hex(bins=50) + labs(x="HyPhy RELAX (rank transformed)", y="Chikina et al (rank transformed)")
 cor.test((1-vl.cmp$K), vl.cmp$est, method="sp")
 
@@ -80,6 +81,17 @@ ratite.cmp %>% mutate(hy_rank = rank(1-K), bt_rank = rank(est)) %>% ggplot(aes(x
 cor.test((1-ratite.cmp$K), ratite.cmp$est, method="sp")
 
 #extended table 6
-table(vl.cmp$qval.down < 0.05, vl.cmp$sig == -1) %>% fisher.test
-table(vl.cmp$qval.up < 0.05, vl.cmp$sig == 1) %>% fisher.test
+table(vl.cmp$p.adj < 0.05 & vl.cmp$direction == "up", vl.cmp$sig == -1) %>% fisher.test
+table(vl.cmp$p.adj < 0.05 & vl.cmp$direction == "down", vl.cmp$sig == 1) %>% fisher.test
+
+table(ratite.cmp$p.adj < 0.05 & ratite.cmp$direction == "up", ratite.cmp$sig == -1) %>% fisher.test
+table(ratite.cmp$p.adj < 0.05 & ratite.cmp$direction == "down", ratite.cmp$sig == 1) %>% fisher.test
+
+
+###FINAL PLOTS##
+
+
+ratite.cmp %>% filter(abs(log10(K)) <= 1) %>% ggplot(aes(Rho, log10(K))) +  geom_point(alpha=0.25) + labs(x="Effect size (Rho) from RERconverge", y="Effect size (log K) from RELAX") + theme_classic(base_size = 14) + geom_smooth(method="lm", se=FALSE, col="red")
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/FullDraftDec11/FigS7-Dec11.pdf")
+cor.test(ratite.cmp$K, ratite.cmp$Rho, method="sp")
 
