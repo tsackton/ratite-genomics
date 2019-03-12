@@ -45,11 +45,32 @@ orig_mf_merge <- full_join(orig_mf, orig_mf_perm, by=c("version" = "version", "s
          qval_frac = p.adjust(pval_frac, "BH"),
          qval_enrich = p.adjust(pval_enrich, "BH"))
 
-orig_mf_merge %>% filter(version == "gain") %>% filter(qval_frac < 0.20) %>% select(set, ID, target_frac, bg_frac, pval_frac, qval_frac) %>% write_tsv("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/orig_gain_mf_results.tsv")
-orig_bp_merge %>% filter(version == "gain") %>% filter(qval_frac < 0.20)  %>% select(set, ID, target_frac, bg_frac, pval_frac, qval_frac)  %>% write_tsv("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/orig_gain_bp_results.tsv")
+orig_mf_merge %>% filter(version == "gain") %>% filter(qval_frac < 0.20) %>% 
+  select(set, ID, target_frac, bg_frac, pval_frac, qval_frac) %>% 
+  write_tsv("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev2/orig_gain_mf_results_2.tsv")
+  
+#ugly hack
+orig_mf_merge %>% filter(version == "gain") %>% filter(qval_frac < 0.20) %>% pull(ecdf_frac) %>% map(., summary) %>% map_dbl(., 3)
+  
+  
+orig_bp_merge %>% filter(version == "gain") %>% filter(qval_frac < 0.20)  %>% 
+  select(set, ID, target_frac, bg_frac, pval_frac, qval_frac)  %>% 
+  write_tsv("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev2/orig_gain_bp_results_2.tsv")
+
+#ugly hack
+orig_bp_merge %>% filter(version == "gain") %>% filter(qval_frac < 0.20) %>% pull(ecdf_frac) %>% map(., summary) %>% map_dbl(., 3) %>% as.data.frame() %>%
+  write_tsv("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev2/orig_gain_bp_results_2-etf.tsv")
+
+
 
 summary((orig_mf_merge %>% filter(ID == "GO:0003676", version == "gain", set == "crar") %>% pull(ecdf_frac))[[1]])
 summary((orig_mf_merge %>% filter(ID == "GO:0003677", version == "gain", set == "crar") %>% pull(ecdf_frac))[[1]])
 summary((orig_mf_merge %>% filter(ID == "GO:0043565", version == "gain", set == "crar") %>% pull(ecdf_frac))[[1]])
 summary((orig_bp_merge %>% filter(ID == "GO:0006355", version == "gain", set == "crar") %>% pull(ecdf_frac))[[1]])
 summary((orig_bp_merge %>% filter(ID == "GO:0060173", version == "gain", set == "crar") %>% pull(ecdf_frac))[[1]])
+
+##GREAT RESULTS -- NOT USED##
+
+orig_great <- read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/08_atacseq/update/great_output/og_gm_full_conv_mm10_vs_cnee.tsv.gz", skip = 3, col_types = "ccc?????????????____")
+orig_great %>% filter(HyperFdrQ < 0.01) %>% select(ID, Desc, RegionFoldEnrich) %>% View()
+

@@ -3,6 +3,7 @@ library(tidyverse)
 library(clusterProfiler)
 library(biomaRt)
 library(ape)
+library(gridExtra)
 
 ##ANNOTATION -- code copied from https://github.com/ajshultz/avian-immunity/blob/master/ComparativeGenomics/PAML_Analyze/02_GeneID_Annotation.R ##
 
@@ -249,6 +250,7 @@ write_tsv(perm_res_orig, path="perm_res_orig.tsv")
 
 perm_res_ext <- read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/06_protein_coding_analysis/hyphy_bsrel/perm_res_ext.tsv")
 perm_res_trio <- read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/06_protein_coding_analysis/hyphy_bsrel/perm_res_trio.tsv")
+perm_res_orig <- read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/06_protein_coding_analysis/hyphy_bsrel/perm_res_orig.tsv")
 
 #real results
 
@@ -264,28 +266,28 @@ orig_counts %>% group_by(clade_ct) %>% summarize(sum(n))
 ext_counts %>% group_by(clade_ct) %>% summarize(sum(n))
 
 #extended counts P-value:
-ecdf(perm_res_ext$rel_conv)(0.2647059)
-1/10000
 
-#ext_counts
-ext_counts %>% arrange(clade_ct) %>% print.data.frame
+(1+sum(perm_res_ext$rel_conv >= (50+11+2)/(50+11+2+175)))/10000
+(1+sum(perm_res_orig$rel_conv >= (1+26)/(1+26+325)))/10000
 
 #trios
 
 #convergent = all three lineages, so moa-ostrich and one more
-conv_trio_ct1 <- 40+4+46+17+10+62+10+3+6
-conv_trio_ct2 <- 14+2+6+2+1+3+2+1+2+1+4+1+1
-frac_trio_ct2 <- conv_trio_ct2 / (conv_trio_ct2+conv_trio_ct1)
-
-perm_res_trio <- perm_res_trio %>% mutate(ct2_frac = ct2/selected, ct3_frac = ct3/selected)
-
-perm_res_trio %>% ggplot(aes(ct2_frac)) + geom_density(adjust=4) + geom_vline(xintercept = frac_trio_ct2, col="red")
-perm_res_trio %>% ggplot(aes(ct3_frac)) + geom_density(adjust=4) 
+#get mean of convergence with each third lineage:
+ext_counts %>% filter(grepl("kiwi", ratite_str_clades))
+kiwi<-(2+6+2+1+1+1)/(ext_counts %>% filter(grepl("kiwi", ratite_str_clades)) %>% pull(n) %>% sum(.))
+ext_counts %>% filter(grepl("rhea", ratite_str_clades))
+rhea<-(1+3+2+1+4+1+1)/(ext_counts %>% filter(grepl("rhea", ratite_str_clades)) %>% pull(n) %>% sum(.))
+ext_counts %>% filter(grepl("emu", ratite_str_clades))
+emu<-(14+2+3+2+2+1)/(ext_counts %>% filter(grepl("emu", ratite_str_clades)) %>% pull(n) %>% sum(.))
 
 #plotting
 
-perm_res_orig %>% ggplot(aes(rel_conv)) + geom_density(adjust=2) + theme_minimal() + xlab("Proportion Selected Genes with Evidence for Convergence") + coord_cartesian(xlim=c(0,0.30)) + geom_vline(xintercept=0.07670455, col="red")
-perm_res_ext %>% ggplot(aes(rel_conv)) + geom_density(adjust=2) + theme_minimal() + xlab("Proportion Selected Genes with Evidence for Convergence") + coord_cartesian(xlim=c(0,0.30)) + geom_vline(xintercept=0.2647059, col="red")
+plot_orig <- perm_res_orig %>% ggplot(aes(rel_conv)) + geom_histogram(bins=50, fill="steelblue") + theme_minimal(base_size = 14) + xlab("Proportion Selected Genes with Evidence for Convergence") + coord_cartesian(xlim=c(0,0.30)) + geom_vline(xintercept=0.07670455, col="red")
+plot_ext <- perm_res_ext %>% ggplot(aes(rel_conv)) + geom_histogram(bins=50, fill="steelblue") + theme_minimal(base_size = 14) + xlab("Proportion Selected Genes with Evidence for Convergence") + coord_cartesian(xlim=c(0,0.30)) + geom_vline(xintercept=0.2647059, col="red")
+
+figS9<-grid.arrange(plot_ext, plot_orig)
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/FullDraftDec11/FigS9-Dec11.pdf", figS9)
 
 #checking consistency of results across original and extended runs:
 merged <- full_join(bsrel_ext_clean, bsrel_orig_clean, by=c("hog" = "hog"), suffix=c(".ext", ".org"))
@@ -309,17 +311,25 @@ ratite_spec_genes_ext <- bsrel_ext_clean %>% filter(ratite_selected_str >= 1,rat
 
 ratite_enrich_genes_ext <- bsrel_ext_clean %>% filter(ratite_selected_str >= 1,ratite_selected_str/strict > 0.50, species_tree == "True")
 
-enrichGO(ratite_spec_genes_ext$entrezgene,'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="MF")
-enrichGO(ratite_spec_genes_ext$entrezgene,'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="BP")
-enrichKEGG(ratite_spec_genes_ext$entrezgene,'gga',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ncbi-geneid")
+ratite_enrich_genes_orig <- bsrel_orig_clean %>% filter(ratite_selected_str >= 1,ratite_selected_str/strict > 0.50, species_tree == "True")
 
+background_ext <- bsrel_ext_clean %>% filter(species_tree == "True")
+background_orig <- bsrel_orig_clean %>% filter(species_tree == "True")
 
-enrichGO(ratite_enrich_genes_ext$entrezgene,'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="MF")
-summary(enrichGO(ratite_enrich_genes_ext$entrezgene,'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="BP"))
-enrichKEGG(ratite_enrich_genes_ext$entrezgene,'gga',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ncbi-geneid")
+#Ratite-specific
+enrichGO(ratite_spec_genes_ext$entrezgene,'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="MF") %>% as.data.frame %>% dplyr::select(ID:qvalue)
+enrichGO(ratite_spec_genes_ext$entrezgene,'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="BP") %>% as.data.frame %>% dplyr::select(ID:qvalue)
+enrichKEGG(ratite_spec_genes_ext$entrezgene,'gga',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ncbi-geneid") %>% as.data.frame %>% dplyr::select(ID:qvalue)
 
+#Ratite enriched
+enrichGO(ratite_enrich_genes_ext$entrezgene,'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="MF") %>% as.data.frame %>% dplyr::select(ID:qvalue)
+summary(enrichGO(ratite_enrich_genes_ext$entrezgene,'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="BP")) %>% as.data.frame %>% dplyr::select(ID:qvalue) 
+enrichKEGG(ratite_enrich_genes_ext$entrezgene,'gga',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ncbi-geneid") %>% as.data.frame %>% dplyr::select(ID:qvalue)
+
+#Ratite convergent
 enrichGO(ratite_selected_genes$entrezgene[ratite_selected_genes$clade_ct > 1],'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="BP")
 enrichGO(ratite_selected_genes$entrezgene[ratite_selected_genes$clade_ct > 1],'org.Gg.eg.db',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ENTREZID",ont="MF")
 enrichKEGG(ratite_selected_genes$entrezgene[ratite_selected_genes$clade_ct > 1],'gga',pvalueCutoff = 0.20, universe=background_ext$entrezgene,keyType="ncbi-geneid")
+
 
 

@@ -3,6 +3,11 @@
 library(tidyverse)
 library(ape)
 
+#functions
+ctb <- function(x, cutoff = 0.90) {
+  ifelse(x >= cutoff, 1, 0)
+}
+
 #set working dir
 setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
 
@@ -80,10 +85,10 @@ ratite_gm_dollo <- list()
 ratite_gl_dollo <- list()
 for (third_sp in c("rheAme", "rhePen", "droNov", "casCas", "aptHaa", "aptOwe", "aptRow")) {
   test_targets <- c("strCam", "anoDid", third_sp)
-  test_tips <- c(test_targets, all_neo_orig, all_tin)
-  ratite_gm_dollo[[third_sp]] <- cnee_orig %>% filter(version=="gain") %>%
+  test_tips <- c(test_targets, all_neo_ext, all_tin)
+  ratite_gm_dollo[[third_sp]] <- cnee_ext %>% filter(version=="gain") %>%
     conv_real(test_targets, test_tips)
-  ratite_gl_dollo[[third_sp]] <- cnee_orig %>% filter(version=="gain_gap") %>%
+  ratite_gl_dollo[[third_sp]] <- cnee_ext %>% filter(version=="gain_gap") %>%
     conv_real(test_targets, test_tips)
 }
 
@@ -92,7 +97,7 @@ gl_dollo <- bind_rows(ratite_gl_dollo, .id="species")
 
 
 #new fig3A
-perms %>% filter(version=="gain", set=="original", test=="neo_conv_3") %>% ggplot(aes(count)) + 
+perms %>% filter(version=="gain", set=="extended", test=="neo_conv_3") %>% ggplot(aes(count)) + 
   geom_histogram(binwidth = 1) + 
   coord_cartesian(xlim=c(0,50)) + theme_classic() + 
   geom_segment(aes(x=mean(gm_dollo$count), xend=mean(gm_dollo$count), y=50, yend=0), arrow=arrow(length=unit(0.5, "cm")), colour="red") +
@@ -100,61 +105,111 @@ perms %>% filter(version=="gain", set=="original", test=="neo_conv_3") %>% ggplo
   ylab("Count") + xlab("Number of Convergently Accelerated Elements")
 
 
+#alt versions
+perms %>% filter(version=="gain_gap", set=="original", test=="neo_conv_3") %>% ggplot(aes(count)) + 
+  geom_histogram(binwidth = 1) + 
+  coord_cartesian(xlim=c(0,50)) + theme_classic() + 
+  geom_segment(aes(x=mean(gl_dollo$count), xend=mean(gl_dollo$count), y=50, yend=0), arrow=arrow(length=unit(0.5, "cm")), colour="red") +
+  geom_jitter(data=gl_dollo, aes(count, y=4), colour="red", width=0, height=3, size=2) +
+  ylab("Count") + xlab("Number of Convergently Accelerated Elements")
+
+
+#compute p-values
+x=mean(gl_dollo$count)
+perms %>% filter(version=="gain_gap", set=="original", test=="neo_conv_3") %>% 
+  summarize(pval=(sum(count >= x)+1)/length(count))
+x=median(gl_dollo$count)
+perms %>% filter(version=="gain_gap", set=="original", test=="neo_conv_3") %>% 
+  summarize(pval=(sum(count >= x)+1)/length(count))
+
+x=mean(gm_dollo$count)
+perms %>% filter(version=="gain", set=="original", test=="neo_conv_3") %>% 
+  summarize(pval=(sum(count >= x)+1)/length(count))
+x=median(gm_dollo$count)
+perms %>% filter(version=="gain", set=="original", test=="neo_conv_3") %>% 
+  summarize(pval=(sum(count >= x)+1)/length(count))
+
+#numbers
+mean(gl_dollo$count)
+median(gl_dollo$count)
+mean(gm_dollo$count)
+median(gm_dollo$count)
+
+#numbers from perms
+perms %>% filter(test=="neo_conv_3") %>% with(., table(set, version))
+
+perms %>% filter(test=="neo_conv_3", set=="original", version=="gain") %>% summarize(mean(count))
+
+#counts / supplemental figures
+#Fig S11 - plots of number of accelerated/convergent elements for gain, original dataset
+
+cnee_gain_orig_conv <- cnee_orig %>% filter(dataset=="ORG_1012-gain", 
+                     logBF1 >= 10, logBF2 > 1,
+                     (it_pp_loss + ti_pp_loss) < 1, neo_tip_loss < 1) %>%
+  mutate(floss_cl_bin = ctb(cd_pp_loss) + ctb(rh_pp_loss) + ctb(os_pp_loss) + ctb(ki_pp_loss) + ctb(mo_pp_loss),
+         floss_cl_bin_dollo = ctb(ctb(cd_pp_loss) + ctb(rh_pp_loss) + ctb(ki_pp_loss)) + ctb(os_pp_loss) + ctb(mo_pp_loss)) %>%
+  select(floss_cl_pp,floss_cl_pp_dollo,floss_cl_bin,floss_cl_bin_dollo,floss_sp_pp)
+
+#different convergence metrics
+
+#numbers
+
+cnee_gain_orig_conv %>% summarize(count = sum(floss_cl_bin > 1.8))
+cnee_gain_orig_conv %>% summarize(count = sum(floss_cl_bin_dollo > 1.8))
+cnee_gain_orig_conv %>% summarize(count = sum(floss_cl_pp > 1.8))
+cnee_gain_orig_conv %>% summarize(count = sum(floss_cl_pp_dollo > 1.8))
+
+#percent
+cnee_gain_orig_conv %>% summarize(count = sum(floss_cl_bin > 1.8)/length(floss_cl_bin))
+cnee_gain_orig_conv %>% summarize(count = sum(floss_cl_bin_dollo > 1.8)/length(floss_cl_bin))
+cnee_gain_orig_conv %>% summarize(count = sum(floss_cl_pp > 1.8)/length(floss_cl_bin))
+cnee_gain_orig_conv %>% summarize(count = sum(floss_cl_pp_dollo > 1.8)/length(floss_cl_bin))
+
+
+#plots
+
+cnee_gain_orig_conv %>% ggplot(aes(x=floss_cl_bin)) + geom_bar(fill="red") + theme_classic() + labs(x="Number of Accelerated Ratite Clades") + geom_vline(xintercept = 1.5)
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/FullDraftDec11/FigS11A.pdf")
+
+cnee_gain_orig_conv %>% ggplot(aes(x=floss_cl_bin_dollo)) + geom_bar(fill="red") + theme_classic() + labs(x="Number of Accelerated Ratite Clades") + geom_vline(xintercept = 1.5)
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/FullDraftDec11/FigS11B.pdf")
+
+cnee_gain_orig_conv %>% ggplot(aes(x=floss_cl_pp)) + geom_freqpoly(bins=50, col="red") + theme_classic() + labs(x="Posterior Estimate of Number of Independent Accelerations") + geom_vline(xintercept = 1.8)
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/FullDraftDec11/FigS11C.pdf")
+
+cnee_gain_orig_conv %>% ggplot(aes(x=floss_cl_pp_dollo)) + geom_freqpoly(bins=50, col="red") + theme_classic() + labs(x="Posterior Estimate of Number of Independent Accelerations") + geom_vline(xintercept = 1.8)
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/FullDraftDec11/FigS11D.pdf")
+
+#Fig S12 - consistency across models
+
+cnee_orig %>% filter(logBF1 >= 10, logBF2 > 1, (it_pp_loss + ti_pp_loss) < 1) %>%
+  ggplot(aes(floss_cl_pp, col=version)) + geom_freqpoly(bins=50, size=1.5) + theme_classic() +
+  scale_color_brewer(palette = "Spectral")
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/FullDraftDec11/FigS12.pdf")
+
+
+#Fig S13 - using gain version, compare original, extended, reduced
+
+gain_comp_bf <- cnee_orig %>% filter(version=="gain") %>% select(cnee, logBF1, logBF2) %>% 
+  inner_join(cnee_red %>% filter(version == "gain") %>% select(cnee, logBF1, logBF2), by=c("cnee" = "cnee"))
+
+base_bf_plot <- gain_comp_bf %>% ggplot(aes(x=logBF1.x, y=logBF1.y)) + geom_hex(binwidth=c(3,3)) + theme_classic() + geom_hline(yintercept = 10, col="red") + geom_vline(xintercept = 10, col="red") + labs(x = "logBF1 (default dataset)", y="logBF1 (reduced dataset)") 
+
+base_bf_plot + annotate("text", label = "Sig. in reduced, \n not in default: 404", x=-30, y=100) +
+  annotate("text", label = "Sig. in both: 3379", x=200, y=100) +
+  annotate("text", label = "Sig. in default, \n not in reduced: 1175", x=200, y=-25)
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/FullDraftDec11/FigS13A.pdf")
+
+table(gain_comp_bf$logBF1.x >= 10, gain_comp_bf$logBF1.y >= 10)
+
+gain_comp_pp <- cnee_orig %>% filter(version=="gain") %>% select(cnee, floss_cl_pp, logBF1, logBF2) %>% 
+  full_join(cnee_red %>% filter(version == "gain") %>% select(cnee, floss_cl_pp, logBF1, logBF2), by=c("cnee" = "cnee")) %>% mutate(original = replace_na(floss_cl_pp.x, 0), reduced = replace_na(floss_cl_pp.y,0)) %>% 
+  filter(logBF1.x >= 10 & logBF2.x >= 1 | logBF1.y >= 10 & logBF2.y >= 1)
+
+gain_comp_pp %>% filter() %>% ggplot(aes(x=original, y=reduced)) + geom_point(alpha=0.2) + theme_classic()
+ggsave("~/Projects/birds/ratite_compgen/manuscript/ScienceSubmissionRev1/FullDraftDec11/FigS13B.pdf")
+
 ##### BELOW TO EDIT ###
-
-
-#add pval
-obs_conv$epval = sapply(obs_conv$conv_count, function(x) (sum(perm_conv$count >= x)+1)/length(perm_conv$count))
-
-#pvals for mean/median
-x=mean(obs_conv$conv_count)
-(sum(perm_conv$count >= x)+1)/length(perm_conv$count)
-x=median(obs_conv$conv_count)
-(sum(perm_conv$count >= x)+1)/length(perm_conv$count)
-
-#null distribution stats
-median(perm_conv$count)
-mean(perm_conv$count)
-length(perm_conv$count)
-
-#counts - BF method
-conv_counts<-list("set1" = cnee %>% filter(ratite_accel.1, ratite_spec.1) %>% count %>% pull(n),
-                   "set2" = cnee %>% filter(ratite_accel.2, ratite_spec.2) %>% count %>% pull(n),
-                   "set3" = cnee %>% filter(ratite_accel.1, ratite_spec.1, ratite_conv.1) %>% count %>% pull(n),
-                   "set4" = cnee %>% filter(ratite_accel.1, ratite_spec.1, ratite_conv.1, ratite_loss_cons_min.mat >= 2) %>% count  %>% pull(n))
-
-#plots [extended figure XX]
-cnee %>% filter(ratite_spec.1, ratite_accel.1) %>% ggplot(aes(x=ratite_loss_cons.prob)) + 
-  theme_classic() + geom_histogram(binwidth=0.1, center=2.05, closed="left") + labs(x="Posterior Number of Independent Ratite Accelerations") + 
-  geom_vline(xintercept=2, col="red") + annotate("text", x=2.6, y=150, label = "839 convergent elements")
-ggsave("~/Projects/birds/ratite_compgen/manuscript/ver5/ExtendedFigure7A.pdf")
-cnee %>% filter(ratite_spec.1, ratite_accel.1) %>% ggplot(aes(x=ratite_loss_cons_min.prob)) + 
-  theme_classic() + geom_histogram(binwidth=0.1, center=2.05, closed="left") + labs(x="Posterior Number of Independent Ratite Accelerations (Parsimony-restricted)") + 
-  geom_vline(xintercept=2, col="red") + annotate("text", x=2.35, y=550, label = "521 convergent elements")
-ggsave("~/Projects/birds/ratite_compgen/manuscript/ver5/ExtendedFigure7B.pdf")
-
-cnee %>% filter(ratite_spec.1, ratite_accel.1) %>% ggplot(aes(x=ratite_loss_cons.mat)) + 
-  theme_classic() + geom_histogram(binwidth=0.1, center=2.05, closed="left") + labs(x="Discrete Number of Independent Ratite Accelerations") + 
-  geom_vline(xintercept=2, col="red") + annotate("text", x=2.65, y=1300, label = "586 convergent elements")
-ggsave("~/Projects/birds/ratite_compgen/manuscript/ver5/ExtendedFigure7C.pdf")
-cnee %>% filter(ratite_spec.1, ratite_accel.1) %>% ggplot(aes(x=ratite_loss_cons_min.mat)) + 
-  theme_classic() + geom_histogram(binwidth=0.1, center=2.05, closed="left") + labs(x="Discrete Number of Independent Ratite Accelerations (Parsimony-restricted)") + 
-  geom_vline(xintercept=2, col="red") + annotate("text", x=2.5, y=1400, label = "399 convergent elements")
-ggsave("~/Projects/birds/ratite_compgen/manuscript/ver5/ExtendedFigure7D.pdf")
-
-cnee %>% filter(ratite_spec.1, ratite_accel.1, ratite_loss_cons.prob >= 2) %>% count() 
-cnee %>% filter(ratite_spec.1, ratite_accel.1, ratite_loss_cons.mat >= 2) %>% count() 
-cnee %>% filter(ratite_spec.1, ratite_accel.1, ratite_loss_cons_min.prob >= 2) %>% count() 
-cnee %>% filter(ratite_spec.1, ratite_accel.1, ratite_loss_cons_min.mat >= 2) %>% count() 
-
-
-#null distribution Figure 3A
-ggplot() + coord_cartesian(xlim=c(0,80)) + theme_classic() + 
-  geom_density(adjust=3, fill="gray60",data=perm_conv, aes(x=count, ..count..)) + 
-  geom_segment(aes(x=mean(obs_conv$conv_count), xend=mean(obs_conv$conv_count), y=50, yend=0), arrow=arrow(length=unit(0.5, "cm")), colour="red") +
-  geom_jitter(data=obs_conv, aes(conv_count, y=1), colour="red", width=0, height=3, size=2) +
-  annotate("text", x = mean(obs_conv$conv_count), y = 60, label = "Ratite mean")
-ggsave("~/Projects/birds/ratite_compgen/manuscript/ver5/Figure3A.pdf")
 
 
 
