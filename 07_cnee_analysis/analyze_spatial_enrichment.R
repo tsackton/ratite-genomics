@@ -1,6 +1,6 @@
 #code updated for revisions Oct 2018
 
-#setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/") #sorry!
 library(tidyverse)
 library(GenomicRanges)
 
@@ -39,15 +39,15 @@ cnee_ext <- read_tsv("final_extended_cnee.tsv.gz") %>%
   select(chr, start, end, cnee, version, rar, crar, crar_dollo)
 
 #note in ext2, convergence defined as ratites + cormorants
-cnee_ext2 <- read_tsv("final_extended_cnee.tsv.gz") %>% 
-  select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo, gc_pp_loss) %>%
-  full_join(pos_gg4_uscs, by=c("cnee" = "cnee")) %>%
-  mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
-         crar = ifelse(rar & floss_cl_pp >= 1.8 & gc_pp_loss > 0.90, TRUE, FALSE),
-         crar_dollo = ifelse(rar & floss_cl_pp_dollo >= 1.8 & gc_pp_loss > 0.90, TRUE, FALSE)) %>%
-  distinct(cnee, version, .keep_all=TRUE) %>%
-  filter(!(chr %in% chr_to_remove)) %>%
-  select(chr, start, end, cnee, version, rar, crar, crar_dollo)
+#cnee_ext2 <- read_tsv("final_extended_cnee.tsv.gz") %>% 
+#  select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, #floss_cl_pp, floss_cl_pp_dollo, gc_pp_loss) %>%
+#  full_join(pos_gg4_uscs, by=c("cnee" = "cnee")) %>%
+#  mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
+#         crar = ifelse(rar & floss_cl_pp >= 1.8 & gc_pp_loss > 0.90, TRUE, FALSE),
+#         crar_dollo = ifelse(rar & floss_cl_pp_dollo >= 1.8 & gc_pp_loss > 0.90, #TRUE, FALSE)) %>%
+#  distinct(cnee, version, .keep_all=TRUE) %>%
+#  filter(!(chr %in% chr_to_remove)) %>%
+#  select(chr, start, end, cnee, version, rar, crar, crar_dollo)
 
 
 #we'll use pbinom to compute a simple test of whether, given random distribution of RARs/cRARS, we'd expect X or more in a window
@@ -69,7 +69,7 @@ compute_spatial_results <- function(DF, outname) {
   
   spa_res <- list()
   
-  for (ver in c("gain", "gap", "gain_gap", "orig")) {
+  for (ver in c("gain", "gain_gap")) {
     
     cnee <- DF %>% filter(version == ver)
     
@@ -142,6 +142,5 @@ compute_spatial_results <- function(DF, outname) {
 
 compute_spatial_results(cnee_orig, "original_spatial_results.tsv")
 compute_spatial_results(cnee_ext, "extended_spatial_results.tsv")
-compute_spatial_results(cnee_ext2, "extended_ratiteVcorm_spatial_results.tsv")
 compute_spatial_results(cnee_red, "reduced_spatial_results.tsv")
 
