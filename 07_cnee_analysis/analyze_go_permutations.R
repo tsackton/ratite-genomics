@@ -33,9 +33,9 @@ orig_mf_merge <- full_join(orig_mf, orig_mf_perm, by=c("version" = "version", "s
 orig_bp_merge <-
   orig_bp_merge %>% 
   rowwise %>% 
-  mutate(pval_frac = max(1-ecdf_frac(target_frac), 1e-04), 
-         pval_logp = max(1-ecdf_logp(logp), 1e-04), 
-         pval_enrich = max(1-ecdf_enrich(enrich), 1e-04)) %>% 
+  mutate(pval_frac = max(1-ecdf_frac(target_frac), 0.0002), 
+         pval_logp = max(1-ecdf_logp(logp), 0.0002), 
+         pval_enrich = max(1-ecdf_enrich(enrich), 0.0002)) %>% 
   ungroup %>% group_by(version, set) %>% 
   mutate(qval_logp = p.adjust(pval_logp, "BH"),
          qval_frac = p.adjust(pval_frac, "BH"),
@@ -44,9 +44,9 @@ orig_bp_merge <-
 orig_mf_merge <-
   orig_mf_merge %>% 
   rowwise %>% 
-  mutate(pval_frac = max(1-ecdf_frac(target_frac), 1e-04), 
-         pval_logp = max(1-ecdf_logp(logp), 1e-04), 
-         pval_enrich = max(1-ecdf_enrich(enrich), 1e-04)) %>% 
+  mutate(pval_frac = max(1-ecdf_frac(target_frac), 0.0002), 
+         pval_logp = max(1-ecdf_logp(logp), 0.0002), 
+         pval_enrich = max(1-ecdf_enrich(enrich), 0.0002)) %>% 
   ungroup %>% group_by(version, set) %>% 
   mutate(qval_logp = p.adjust(pval_logp, "BH"),
          qval_frac = p.adjust(pval_frac, "BH"),
