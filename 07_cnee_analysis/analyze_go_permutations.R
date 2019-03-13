@@ -69,8 +69,3 @@ summary((orig_mf_merge %>% filter(ID == "GO:0043565", version == "gain", set == 
 summary((orig_bp_merge %>% filter(ID == "GO:0006355", version == "gain", set == "crar") %>% pull(ecdf_frac))[[1]])
 summary((orig_bp_merge %>% filter(ID == "GO:0060173", version == "gain", set == "crar") %>% pull(ecdf_frac))[[1]])
 
-##GREAT RESULTS -- NOT USED##
-
-orig_great <- read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/08_atacseq/update/great_output/og_gm_full_conv_mm10_vs_cnee.tsv.gz", skip = 3, col_types = "ccc?????????????____")
-orig_great %>% filter(HyperFdrQ < 0.01) %>% select(ID, Desc, RegionFoldEnrich) %>% View()
-
