@@ -1,4 +1,0 @@
-Tim suggested: "The final set of CNEE predictions is done. If you would like to run your liftover pipeline on them they are in the annotation directory. In this case there is no annotation to compare them to so it is just a question of what % of the length successfully lifts over."
-
-1. Ran cnee_liftover.sh by calling: for FILE in $(ls liftover_psl_out/); do sbatch cnee_liftover.sh ${FILE%%.*}; done #liftover_psl_out had psl files (e.g., galGal.psl) for all 42 genomes we wanted to create a job for.  
-2. 
