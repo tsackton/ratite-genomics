@@ -10,7 +10,7 @@ library(ape)
 #        species_name is a file output by PhyloAcc containing the species name for each column in *postZ* files; 
 #        common_name is optional file with three columns: abbreviation of species name appeared in data files and output files; full species names; and species comman name shown on the plot 
 ## output: a list as input to plotZPost and plotAlign to generate plots
-prepare_data <- function(tree_path = "Data/neut_ver3_final.named.mod", species_name = "Data/species_names.txt", common_name = "Data/birdname2.txt")
+prepare_data <- function(tree_path = "neut_original.named.mod", species_name = "species_names.txt", common_name = "birdname2.txt")
 {
   
   tree <- read.tree(tree_path) # 43 species
@@ -49,7 +49,7 @@ prepare_data <- function(tree_path = "Data/neut_ver3_final.named.mod", species_n
 #         offset=2, posterior of Z start from the third column
 ## output: plot of one element
 
-plotZPost <- function(Z, treeData, target_species=NULL, tit=NULL, offset=3, cex.score = 2)
+plotZPost <- function(Z, treeData, target_species=NULL, tit=NULL, idx_offset=3, cex.score = 2)
 {
   
   species <- treeData$tree$tip.label
@@ -64,8 +64,8 @@ plotZPost <- function(Z, treeData, target_species=NULL, tit=NULL, offset=3, cex.
   
   # color the tree by posterior mean of z
   E = length(Z)
-  posterior_z <- rbind( Z[seq(offset + 2,E,by = 4)],Z[seq(offset +3,E,by = 4)], 
-                        Z[seq(offset +4,E,by = 4)]) # get posterior of z (only 1???2???3)
+  posterior_z <- rbind( Z[seq(idx_offset+2,E,by = 4)],Z[seq(idx_offset+3,E,by = 4)], 
+                        Z[seq(idx_offset+4,E,by = 4)]) # get posterior of z (only 1???2???3)
   
   # get number of losses by posterior of Z
   #loss = sum(posterior_z[3, 1:length(species)]) - sum(posterior_z[3, -1:-length(species)])
@@ -82,7 +82,7 @@ plotZPost <- function(Z, treeData, target_species=NULL, tit=NULL, offset=3, cex.
   edge_col <- rbPal(91)[round(mean_z*30)+1] 
   
   # color grey is missing
-  missing = Z[seq(offset + 1,E,by = 4)]
+  missing = Z[seq(idx_offset + 1,E,by = 4)]
   tip.color[missing >0] = "azure4"
   par(mar= c(2,0,0,0))
   plot(mytree,edge.color = edge_col,tip.color = tip.color,edge.width  =3,label.offset = 0.003,no.margin =F, cex=1.1, bg=NA)
@@ -92,26 +92,35 @@ plotZPost <- function(Z, treeData, target_species=NULL, tit=NULL, offset=3, cex.
 }
 
 ## read in scores and posterior of Z ##
-score <- read.table("Gain/Combined_elem_lik.txt", header=T)
-treeData <- prepare_data(tree_path = "neut_ver3_final.named.mod", species_name = "species_names.txt", common_name = "birdname2.txt")
+data_path <- "/Users/tim/Projects/birds/ratite_compgen/DRYAD/07_cnees/results/orig_v2_phyloAcc"
+version <- "gain"
+score <- read.table(paste0(data_path, "/", version, "/", "Combined_elem_lik.txt"), header=T)
+treeData <- prepare_data(tree_path = "/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/neut_original.named.mod",
+                         species_name = "/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/species_names.txt",
+                         common_name = "/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/birdname2.txt")
 
 treeData$target_species <- c("strCam","rhePen","rheAme","casCas","droNov","aptRow","aptHaa","aptOwe","anoDid") 
 
-postZ <- read.table("Gain/Combined_post_Z_M2.txt", header=T)
+postZ <- read.table(paste0(data_path, "/", version, "/", "Combined_post_Z_M2.txt"), header=T)
 
 
 # selected element to plot
 elements <- c("mCE967994", "mCE1950473", "mCE483595") 
 ks = which(score$ID %in% elements)-1
+
+save_to_pdf <- TRUE
+
 for(k in ks) 
 {
-  pdf(paste("tree_gain_1012_",score$ID[k+1],"_", k,".pdf",sep=""))
- 
+  if (save_to_pdf) {
+    pdf(paste("tree_gain_1012_",score$ID[k+1],"_", k,".pdf",sep=""))
+  }
   lk <- subset(score,No.==k); print(lk); print(postZ[k+1,1:2])
   tit = paste("logBF1:", round(lk$logBF1), "logBF2:",round(lk$logBF2), "  ")
-  plotZPost(unlist(postZ[k+1,]),target_species=treeData$target_species, tit=tit, treeData,offset=5);
-  
-  dev.off()
+  plotZPost(unlist(postZ[k+1,]),target_species=treeData$target_species, tit=tit, treeData,idx_offset=5);
 
+  if (save_to_pdf) {
+    dev.off()
+  }
 }
 
