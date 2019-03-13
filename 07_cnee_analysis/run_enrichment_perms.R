@@ -62,7 +62,7 @@ compute_go_results <- function(DF, outname, CORES, PERMS) {
   mf_perm_all <- list()
   mf_res_all <- list()
   
-  for (ver in c("gain", "gap", "gain_gap", "orig")) {
+  for (ver in c("gain", "gain_gap")) {
   
     cnee <- DF %>% filter(version == ver)
     
