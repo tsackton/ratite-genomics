@@ -10,16 +10,17 @@ args <- commandArgs(trailingOnly = TRUE)
 OUTNUM <- args[1]
 CORES <- args[2]
 NPERM <- args[3]
+path_to_data <-args[4]
 
 ## LOAD DATA ##
 
-cnee_orig <- read_tsv("final_original_cnee.tsv.gz")
-cnee_red <- read_tsv("final_reduced_cnee.tsv.gz")
-cnee_ext <- read_tsv("final_extended_cnee.tsv.gz")
+cnee_orig <- read_tsv(paste0(path_to_data, "/", "final_original_cnee.tsv.gz"))
+cnee_red <- read_tsv(paste0(path_to_data, "/", "final_reduced_cnee.tsv.gz"))
+cnee_ext <- read_tsv(paste0(path_to_data, "/", "final_extended_cnee.tsv.gz"))
 
-phy_orig <- read.tree("original.phy")
-phy_red <- read.tree("reduced.phy")
-phy_ext <- read.tree("extended.phy")
+phy_orig <- read.tree(paste0(path_to_data, "/", "original.phy"))
+phy_red <- read.tree(paste0(path_to_data, "/", "reduced.phy"))
+phy_ext <- read.tree(paste0(path_to_data, "/", "extended.phy"))
 
 ## FUNCTIONS ##
 
@@ -227,6 +228,6 @@ ext_perms[[10]] <- cnee_ext %>% filter(version=="gain_gap") %>%
   mutate(version = "gain_gap", dataset="extended", test="neo_cross_3") %>% 
   distinct(tips, .keep_all=TRUE)
 
-orig_perms %>% bind_rows() %>% write_tsv(paste0("convperms/original_perms_run", args[1], ".tsv"))
-red_perms %>% bind_rows() %>% write_tsv(paste0("convperms/reduced_perms_run", args[1], ".tsv"))
-ext_perms %>% bind_rows() %>% write_tsv(paste0("convperms/extended_perms_run", args[1], ".tsv"))
+orig_perms %>% bind_rows() %>% write_tsv(paste0(path_to_data, "/", "convperms/original_perms_run", args[1], ".tsv"))
+red_perms %>% bind_rows() %>% write_tsv(paste0(path_to_data, "/", "convperms/reduced_perms_run", args[1], ".tsv"))
+ext_perms %>% bind_rows() %>% write_tsv(paste0(path_to_data, "/", "convperms/extended_perms_run", args[1], ".tsv"))

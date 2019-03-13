@@ -124,11 +124,13 @@ compute_go_results <- function(DF, outname, CORES, PERMS) {
 ### REAL WORK ###
 
 args <- commandArgs(trailingOnly = TRUE)
-#args are 1 annotation file name, 2 permutation index ID for slurm batch processing, 3 number of cores, 4 number of permutations, 
+#args are 1 annotation file name, 2 permutation index ID for slurm batch processing, 3 number of cores, 4 number of permutations, 5 is data path
+
+path_to_data <- args[5]
 
 gene_gg<-read_tsv(paste0("../04_wga/03_ce_annotation/cnees.", args[1], ".annotation"), col_names = c("cnee", "gene"))
 
-cnee_orig <- read_tsv("final_original_cnee.tsv.gz") %>% 
+cnee_orig <- read_tsv(paste0(path_to_data, "/final_original_cnee.tsv.gz")) %>% 
   dplyr::select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo) %>%
   full_join(gene_gg, by=c("cnee" = "cnee")) %>%
   mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
@@ -137,7 +139,7 @@ cnee_orig <- read_tsv("final_original_cnee.tsv.gz") %>%
   distinct(cnee, version, .keep_all=TRUE) %>%
   dplyr::select(cnee, version, rar, crar, crar_dollo, gene)
 
-cnee_red <- read_tsv("final_reduced_cnee.tsv.gz") %>% 
+cnee_red <- read_tsv(paste0(path_to_data, "/final_reduced_cnee.tsv.gz")) %>% 
   dplyr::select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo) %>%
   full_join(gene_gg, by=c("cnee" = "cnee")) %>%
   mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
@@ -146,7 +148,7 @@ cnee_red <- read_tsv("final_reduced_cnee.tsv.gz") %>%
   distinct(cnee, version, .keep_all=TRUE) %>%
   dplyr::select(cnee, version, rar, crar, crar_dollo, gene)
 
-cnee_ext <- read_tsv("final_extended_cnee.tsv.gz") %>% 
+cnee_ext <- read_tsv(paste0(path_to_data, "/final_extended_cnee.tsv.gz")) %>% 
   dplyr::select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo) %>%
   full_join(gene_gg, by=c("cnee" = "cnee")) %>%
   mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
@@ -156,16 +158,16 @@ cnee_ext <- read_tsv("final_extended_cnee.tsv.gz") %>%
   dplyr::select(cnee, version, rar, crar, crar_dollo, gene)
 
 #note in ext2, convergence defined as ratites + cormorants
-cnee_ext2 <- read_tsv("final_extended_cnee.tsv.gz") %>% 
-  dplyr::select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo, gc_pp_loss) %>%
-  full_join(gene_gg, by=c("cnee" = "cnee")) %>%
-  mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
-         crar = ifelse(rar & floss_cl_pp >= 1.8 & gc_pp_loss > 0.90, TRUE, FALSE),
-         crar_dollo = ifelse(rar & floss_cl_pp_dollo >= 1.8 & gc_pp_loss > 0.90, TRUE, FALSE)) %>%
-  distinct(cnee, version, .keep_all=TRUE) %>%
-  dplyr::select(cnee, version, rar, crar, crar_dollo, gene)
+#cnee_ext2 <- read_tsv("final_extended_cnee.tsv.gz") %>% 
+#  dplyr::select(version, cnee, logBF1, logBF2, it_pp_loss, ti_pp_loss, neo_tip_loss, floss_cl_pp, floss_cl_pp_dollo, gc_pp_loss) %>%
+#  full_join(gene_gg, by=c("cnee" = "cnee")) %>%
+#  mutate(rar = ifelse(logBF1 >= 10 & logBF2 >= 1 & (it_pp_loss + ti_pp_loss) < 1 & neo_tip_loss < 1, TRUE, FALSE),
+#         crar = ifelse(rar & floss_cl_pp >= 1.8 & gc_pp_loss > 0.90, TRUE, FALSE),
+#         crar_dollo = ifelse(rar & floss_cl_pp_dollo >= 1.8 & gc_pp_loss > 0.90, TRUE, FALSE)) %>%
+#  distinct(cnee, version, .keep_all=TRUE) %>%
+#  dplyr::select(cnee, version, rar, crar, crar_dollo, gene)
 
-compute_go_results(cnee_orig, paste0("goperms/original_GO_", args[1], "_run", args[2]), args[3], args[4])
-compute_go_results(cnee_ext, paste0("goperms/extended_GO_", args[1], "_run", args[2]), args[3], args[4])
-compute_go_results(cnee_ext2, paste0("goperms/extended_ratiteVcorm_GO_", args[1], "_run", args[2]), args[3], args[4])
-compute_go_results(cnee_red, paste0("goperms/reduced_GO_", args[1], "_run", args[2]), args[3], args[4])
+compute_go_results(cnee_orig, paste0(path_to_data, "/goperms/original_GO_", args[1], "_run", args[2]), args[3], args[4])
+compute_go_results(cnee_ext, paste0(path_to_data, "/goperms/extended_GO_", args[1], "_run", args[2]), args[3], args[4])
+#compute_go_results(cnee_ext2, paste0(path_to_data, "/goperms/extended_ratiteVcorm_GO_", args[1], "_run", args[2]), args[3], args[4])
+compute_go_results(cnee_red, paste0(path_to_data, "/goperms/reduced_GO_", args[1], "_run", args[2]), args[3], args[4])

@@ -234,10 +234,10 @@ final_reduced %>% define_groups() %>% write_tsv("final_reduced_cnee.tsv")
 final_original %>% filter(logBF1 >= 10, logBF2 >= 1, (ti_pp_loss + it_pp_loss) < 1, version=="gain") %>%
   select(cd_pp_loss, rh_pp_loss, os_pp_loss, ki_pp_loss, mo_pp_loss) %>% 
   mutate(cas_emu = cd_pp_loss > 0.80, rhea = rh_pp_loss > 0.80, ostrich = os_pp_loss > 0.80, kiwi = ki_pp_loss > 0.80, moa = mo_pp_loss > 0.80) %>% rowwise() %>%
-  mutate(key = paste(cas_emu, rhea, kiwi, ostrich, moa, sep="-")) %>% count(key) %>% View()
+  mutate(key = paste(cas_emu, rhea, kiwi, ostrich, moa, sep="-")) %>% count(key) %>% rename("emu-rhea-kiwi-ostrich-moa" = key) %>% write_tsv("sup_table_s8_orig.tsv")
 
 final_reduced %>% filter(logBF1 >= 10, logBF2 >= 1, (ti_pp_loss + it_pp_loss) < 1, version=="gain") %>%
   select(cd_pp_loss, rh_pp_loss, os_pp_loss, ki_pp_loss) %>% 
   mutate(cas_emu = cd_pp_loss > 0.80, rhea = rh_pp_loss > 0.80, ostrich = os_pp_loss > 0.80, kiwi = ki_pp_loss > 0.80, moa = NA) %>% rowwise() %>%
-  mutate(key = paste(cas_emu, rhea, kiwi, ostrich, moa, sep="-")) %>% count(key) %>% View()
+  mutate(key = paste(cas_emu, rhea, kiwi, ostrich, moa, sep="-")) %>% count(key) %>% rename("emu-rhea-kiwi-ostrich-moa" = key) %>% write_tsv("sup_table_s8_reduced.tsv")
 
