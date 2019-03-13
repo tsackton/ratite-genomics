@@ -8,7 +8,7 @@ wdir<-"/n/holylfs/LABS/edwards_lab/tsackton/RATITE_PAPER_DATA_FREEZE/DRYAD/07_cn
 for (whichset in c("extended", "original", "reduced")) {
   for (whichgenome in c("galgal4", "galgal5")) {
     for (whichont in c("BP", "MF")) {
-    	spec_patt<-glob2rx(paste0(whichset, "_GO_", whichgenome, "_run*_", whichont, "perm.tsv"))
+    	spec_patt<-glob2rx(paste0(whichset, "_GO_", whichgenome, "_run*_", whichont, "_perm.tsv"))
     	files<-list.files(path=paste0(wdir, "/goperms"), pattern=spec_patt, full.names = TRUE)
     	results<-list()
     	for (file in files) {
