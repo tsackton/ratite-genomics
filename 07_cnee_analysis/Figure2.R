@@ -75,7 +75,7 @@ plotZPost <- function(Z, treeData, target_species=NULL, tit=NULL, idx_offset=3, 
   
   mean_z <- colSums(posterior_z * 1:3);  
   
-  rbPal <- colorRampPalette(c('gray','purple','springgreen3','firebrick1'))
+  rbPal <- colorRampPalette(c('gray','goldenrod','navyblue','firebrick1'))
   mytree= treeData$tree
   mytree$edge.length <-  mytree$edge.length*(posterior_z[1,] + posterior_z[2,] * ratio1 + posterior_z[3,]* ratio2)
   mytree$tip.label <- treeData$tip
@@ -105,7 +105,7 @@ postZ <- read.table(paste0(data_path, "/", version, "/", "Combined_post_Z_M2.txt
 
 
 # selected element to plot
-elements <- c("mCE967994", "mCE1950473", "mCE483595") 
+elements <- c("mCE1333824", "mCE967994", "mCE1140641") 
 ks = which(score$ID %in% elements)-1
 
 save_to_pdf <- TRUE
@@ -113,7 +113,7 @@ save_to_pdf <- TRUE
 for(k in ks) 
 {
   if (save_to_pdf) {
-    pdf(paste("tree_gain_1012_",score$ID[k+1],"_", k,".pdf",sep=""))
+    pdf(paste("tree_",version,"_",score$ID[k+1],".pdf",sep=""))
   }
   lk <- subset(score,No.==k); print(lk); print(postZ[k+1,1:2])
   tit = paste("logBF1:", round(lk$logBF1), "logBF2:",round(lk$logBF2), "  ")
