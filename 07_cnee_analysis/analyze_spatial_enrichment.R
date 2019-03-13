@@ -1,6 +1,6 @@
 #code updated for revisions Oct 2018
 
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/") #sorry!
+setwd("/n/holylfs/LABS/edwards_lab/tsackton/RATITE_PAPER_DATA_FREEZE/ratite-genomics/07_cnee_analysis/") #sorry!
 library(tidyverse)
 library(GenomicRanges)
 
