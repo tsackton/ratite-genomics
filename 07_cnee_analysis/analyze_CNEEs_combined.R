@@ -6,7 +6,7 @@ library(tidyverse)
 #master script to run phyloAcc and phyloP parsing and merge
 
 #get phylop and phyloacc
-setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
+setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/") #sorry!
 source("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/analyze_phyloAcc.R")
 source("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/analyze_phyloP.R")
 setwd("~/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/")
@@ -49,7 +49,7 @@ pos_gg5_ncbi<-read_tsv("~/Projects/birds/ratite_compgen/ratite-genomics/04_wga/0
 #  mutate(ratite_conv.1 = ratite_loss_cons.prob > 2, ratite_conv.2 = ratite_conv.1 & ratite_loss_cons_min.mat >= 2 & phylop.rcount > 1)
 
 #old cnees
-final_v1 <- read_tsv("cnees.tsv.gz")
+final_v1 <- read_tsv("cnees_v1.tsv.gz")
 
 #define groups
 
