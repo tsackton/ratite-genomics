@@ -93,13 +93,14 @@ gm_dollo <- bind_rows(ratite_gm_dollo, .id="species")
 gl_dollo <- bind_rows(ratite_gl_dollo, .id="species")
 
 
-#new fig3A
-perms %>% filter(version=="gain", set=="extended", test=="neo_conv_3") %>% ggplot(aes(count)) + 
+#FIG 3A
+perms %>% filter(version=="gain", set=="original", test=="neo_conv_3") %>% ggplot(aes(count)) + 
   geom_histogram(binwidth = 1) + 
   coord_cartesian(xlim=c(0,50)) + theme_classic() + 
   geom_segment(aes(x=mean(gm_dollo$count), xend=mean(gm_dollo$count), y=50, yend=0), arrow=arrow(length=unit(0.5, "cm")), colour="red") +
   geom_jitter(data=gm_dollo, aes(count, y=4), colour="red", width=0, height=3, size=2) +
   ylab("Count") + xlab("Number of Convergently Accelerated Elements")
+ggsave("Fig3A.pdf")
 
 
 #alt versions
