@@ -67,7 +67,7 @@ posteriors <- list()
 
 #read in files
 alignments<-c("extended_phyloAcc", "orig_v2_phyloAcc", "reduced_phyloAcc")
-versions<-c("gain", "gain_gap")
+versions<-c("gain", "gain_gap", "org", "org_gap")
 path_to_data<-"/Users/tim/Projects/birds/ratite_compgen/DRYAD/07_cnees/results"
 
 for (align in alignments) {
@@ -171,10 +171,10 @@ write_tsv(cnee_red_final, path="/Users/tim/Projects/birds/ratite_compgen/ratite-
 
 ## BASIC QC ##
 
-setwd("/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/04_qc")
+setwd("/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/03_qc")
 
 #read in original runs
-final_v1 <- read_tsv("/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/cnees.tsv.gz")
+final_v1 <- read_tsv("/Users/tim/Projects/birds/ratite_compgen/ratite-genomics/07_cnee_analysis/cnees_v1.tsv.gz")
 
 #bf2 vs nonratite loss
 cnee_ext_final %>% filter(logBF1 >= 10) %>% 
