@@ -166,17 +166,13 @@ cnee_gain_orig_conv %>% summarize(count = sum(floss_cl_pp_dollo > 1.8)/length(fl
 
 #plots
 
-cnee_gain_orig_conv %>% ggplot(aes(x=floss_cl_bin)) + geom_bar(fill="red") + theme_classic() + labs(x="Number of Accelerated Ratite Clades") + geom_vline(xintercept = 1.5)
-ggsave("FigS11A.pdf")
+s10a <- cnee_gain_orig_conv %>% ggplot(aes(x=floss_cl_bin)) + geom_bar(fill="red") + theme_classic() + labs(x="Number of Accelerated Ratite Clades") + geom_vline(xintercept = 1.5)
+s10b <- cnee_gain_orig_conv %>% ggplot(aes(x=floss_cl_bin_dollo)) + geom_bar(fill="red") + theme_classic() + labs(x="Number of Accelerated Ratite Clades") + geom_vline(xintercept = 1.5)
+s10c<-cnee_gain_orig_conv %>% ggplot(aes(x=floss_cl_pp)) + geom_freqpoly(bins=50, col="red") + theme_classic() + labs(x="Posterior Estimate of Number of Independent Accelerations") + geom_vline(xintercept = 1.8)
+s10d<-cnee_gain_orig_conv %>% ggplot(aes(x=floss_cl_pp_dollo)) + geom_freqpoly(bins=50, col="red") + theme_classic() + labs(x="Posterior Estimate of Number of Independent Accelerations") + geom_vline(xintercept = 1.8)
+library(gridExtra)
+grid.arrange(s10a,s10b,s10c,s10d,ncol=2)
 
-cnee_gain_orig_conv %>% ggplot(aes(x=floss_cl_bin_dollo)) + geom_bar(fill="red") + theme_classic() + labs(x="Number of Accelerated Ratite Clades") + geom_vline(xintercept = 1.5)
-ggsave("FigS11B.pdf")
-
-cnee_gain_orig_conv %>% ggplot(aes(x=floss_cl_pp)) + geom_freqpoly(bins=50, col="red") + theme_classic() + labs(x="Posterior Estimate of Number of Independent Accelerations") + geom_vline(xintercept = 1.8)
-ggsave("FigS11C.pdf")
-
-cnee_gain_orig_conv %>% ggplot(aes(x=floss_cl_pp_dollo)) + geom_freqpoly(bins=50, col="red") + theme_classic() + labs(x="Posterior Estimate of Number of Independent Accelerations") + geom_vline(xintercept = 1.8)
-ggsave("FigS11D.pdf")
 
 #Fig S12 - consistency across models
 
@@ -193,10 +189,9 @@ gain_comp_bf <- cnee_orig %>% filter(version=="gain") %>% select(cnee, logBF1, l
 
 base_bf_plot <- gain_comp_bf %>% ggplot(aes(x=logBF1.x, y=logBF1.y)) + geom_hex(binwidth=c(3,3)) + theme_classic() + geom_hline(yintercept = 10, col="red") + geom_vline(xintercept = 10, col="red") + labs(x = "logBF1 (default dataset)", y="logBF1 (reduced dataset)") 
 
-base_bf_plot + annotate("text", label = "Sig. in reduced, \n not in default: 404", x=-30, y=100) +
-  annotate("text", label = "Sig. in both: 3379", x=200, y=100) +
-  annotate("text", label = "Sig. in default, \n not in reduced: 1175", x=200, y=-25)
-ggsave("FigS13A.pdf")
+figS12A<-base_bf_plot + annotate("text", label = "Sig. in reduced, \n not in default: 256", x=-30, y=100) +
+  annotate("text", label = "Sig. in both: 3527", x=200, y=100) +
+  annotate("text", label = "Sig. in default, \n not in reduced: 1290", x=200, y=-25)
 
 table(gain_comp_bf$logBF1.x >= 10, gain_comp_bf$logBF1.y >= 10)
 
@@ -204,6 +199,5 @@ gain_comp_pp <- cnee_orig %>% filter(version=="gain") %>% select(cnee, floss_cl_
   full_join(cnee_red %>% filter(version == "gain") %>% select(cnee, floss_cl_pp, logBF1, logBF2), by=c("cnee" = "cnee")) %>% mutate(original = replace_na(floss_cl_pp.x, 0), reduced = replace_na(floss_cl_pp.y,0)) %>% 
   filter(logBF1.x >= 10 & logBF2.x >= 1 | logBF1.y >= 10 & logBF2.y >= 1)
 
-gain_comp_pp %>% filter() %>% ggplot(aes(x=original, y=reduced)) + geom_point(alpha=0.2) + theme_classic()
-ggsave("FigS13B.pdf")
-
+figS12B<-gain_comp_pp %>% filter() %>% ggplot(aes(x=original, y=reduced)) + geom_point(alpha=0.2) + theme_classic()
+grid.arrange(figS12A,figS12B)
