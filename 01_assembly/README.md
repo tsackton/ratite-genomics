@@ -12,3 +12,4 @@ Subdirectories:
 - logs: contains ALLPATHS-LG output logs for each species we assembled
 - busco: contains scripts and other materials for running BUSCO on the assemblies, as well as summary outputs
 - demultiplex: additional scripts for custom demultiplexing of a handful of libraries
+- ncbi: workflow / code for fixing errors in genome assemblies identified by NCBI submission pipeline

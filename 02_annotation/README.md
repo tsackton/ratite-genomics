@@ -51,4 +51,9 @@ However, we believe that the gene models should be relatively robust to a low le
 Ultimately we see little evidence that the droNov gene models are notably different in any way than the other ratite gene models, and given the computational costs to rerun MAKER we are considering these models frozen, despite being produced with pooled RNA-seq data that included some misclassified sequence (i.e, tinamou reads called as emu)
 
 
+NCBI
+-----
+
+After NCBI submission screening, we generated mask files to screen for gene models that may potentially contain masked sequence, and to update GFF files. Ultimately we did not submit gene models to NCBI but retain the code used to generate updated GFFs in case it is useful. See final_ncbi_submission_code.md for details.
+
 
