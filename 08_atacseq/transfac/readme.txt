@@ -1,4 +1,3 @@
-# from Tim's email:
 # The protocol:
 # 1) Run the R code in the repo (https://github.com/tsackton/ratite-genomics/tree/master/07_cnee_analysis/transfac_input) to generate an input bed file. Currently makes a file with just elements with score != "none" but this is easy to modify.
 
