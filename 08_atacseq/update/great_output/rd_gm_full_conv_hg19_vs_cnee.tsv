@@ -1,3 +1,0 @@
-# GREAT version 3.0.0	Species assembly: hg19	Association rule: Basal+extension: 5000 bp upstream, 1000 bp downstream, 1000000 bp max extension, curated regulatory domains included
-# Ontology	 Term Name 	 Hyper Rank 	 Hyper Raw P-Value 	  Hyper FDR Q-Val  	 Hyper Fold Enrichment 	 Hyper Foreground Region Hits 	 Hyper Total Regions 	 Hyper Region Set Coverage 	 Hyper Foreground Gene Hits 	 Total Genes Annotated
-MSigDB miRNA Motifs	Targets of MicroRNA GTGTCAA,MIR-514	1	0.0000746824	0.0165048104	5.794107	8	1612	0.1	6	58	
